@@ -1,0 +1,81 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <Style TargetType="DataGridColumnHeader">
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="Height" Value="30"/>
+    </Style>
+    
+    <Style TargetType="DataGrid">
+        <Setter Property="BorderBrush" Value="#efefef"></Setter>
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="CanUserResizeColumns" Value="false"/>
+        <Setter Property="CanUserAddRows" Value="False" />
+        <Setter Property="BorderBrush" Value="#d6c79b" />
+        <Setter Property="RowHeaderWidth" Value="0"></Setter>
+        <Setter Property="AutoGenerateColumns" Value="False"></Setter>
+        <Setter Property="EnableRowVirtualization" Value="False"></Setter>
+        <Setter Property="IsReadOnly" Value="False"></Setter>
+        <Setter Property="HorizontalGridLinesBrush">
+            <Setter.Value>
+                <SolidColorBrush Color="#d6c79b"/>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="VerticalGridLinesBrush">
+            <Setter.Value>
+                <SolidColorBrush Color="#d6c79b"/>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <Style TargetType="DataGridRow">
+        <Setter Property="Height" Value="25" />        
+        <Setter Property="BorderBrush">
+            <Setter.Value>
+                <SolidColorBrush Color="#d6c79b"/>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background">
+                    <Setter.Value>
+                        <SolidColorBrush Color="#efefef"/>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>          
+        </Style.Triggers>
+    </Style>
+            
+    <Style x:Key="StyleCellText" TargetType="{x:Type TextBlock}">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="TextTrimming" Value="WordEllipsis"/>
+    </Style>
+    
+    <Style x:Key="StyleCellCheck" TargetType="{x:Type CheckBox}">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style TargetType="DataGridCell">
+        <Setter Property="ToolTipService.ToolTip" Value="{Binding RelativeSource={RelativeSource Mode=Self},Path=Content.Text}" />
+    </Style>
+        
+    <Style TargetType="Border">
+        <Setter Property="BorderBrush">
+            <Setter.Value>
+                <SolidColorBrush Color="#d6c79b"/>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type MenuItem}">
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="true">
+                <Setter Property="Background" Value="#efefef"/>
+                <Setter Property="Height" Value="25"></Setter>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+</ResourceDictionary>

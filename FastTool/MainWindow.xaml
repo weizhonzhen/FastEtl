@@ -1,0 +1,40 @@
+﻿<Window x:Class="FastTool.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Height="700" Width="1024">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary  Source="Css/style.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+        <Menu Height="35" VerticalAlignment="Center" Margin="0,-2,0,631">
+            <MenuItem FontSize="13" Height="25" Header="数据源" Margin="5,5,0,-2" VerticalAlignment="Bottom" Click="OpenDs">
+                <MenuItem.Icon>
+                    <Image Source="/img/ds.png"  Width="20" Height="20" Margin="2,0,-8,3"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem FontSize="13" Height="25" Header="业务数据集" Margin="0,5,0,-2" VerticalAlignment="Bottom" Click="OpenData">
+                <MenuItem.Icon>
+                    <Image Source="/img/data.png"  Width="20" Height="20" Margin="2,0,-8,3"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem FontSize="13" Height="25" Header="字典对照" Margin="0,5,0,-2" VerticalAlignment="Bottom">
+                <MenuItem.Icon>
+                    <Image Source="/img/dic.png" Width="20" Height="20" Margin="2,0,-8,3"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem FontSize="13" Height="25" Header="ETL策略" Margin="0,5,0,-2" VerticalAlignment="Bottom"  Click="OpenEtl">
+                <MenuItem.Icon>
+                    <Image Source="/img/unload.png"  Width="20" Height="20" Margin="2,0,-8,3"/>
+                </MenuItem.Icon>
+            </MenuItem>
+        </Menu>
+    </Grid>
+</Window>

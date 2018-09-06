@@ -1,0 +1,9 @@
+﻿<Window x:Class="FastTool.CodeBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="#efefef"
+        Height="150" Width="200">
+    <Grid>
+        <Button Content="确 定" HorizontalAlignment="Left" Margin="60,73,0,0" VerticalAlignment="Top" Width="65" Click="Button_Click"/>
+        <TextBlock Name="labMessage" HorizontalAlignment="Center" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Center" Margin="30,20,29,62"/>
+    </Grid>
+</Window>

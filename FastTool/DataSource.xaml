@@ -1,0 +1,44 @@
+﻿<Window x:Class="FastTool.DataSource"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FastTool"
+        Height="435" Width="300" Background="#efefef">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary  Source="Css/style.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid Name="grid">
+        <Label Content="连接名：" HorizontalAlignment="Left" Margin="20,10,0,0" VerticalAlignment="Top"/>
+        <ComboBox Name="dbTypeLink" HorizontalAlignment="Left" ItemsSource="{Binding}" SelectedValuePath="LinkName" SelectionChanged="Link_Selected" DisplayMemberPath="LinkName" Margin="85,10,0,0" VerticalAlignment="Top" Width="180"/>
+        <ComboBox HorizontalAlignment="Left" Name="boxDbType" SelectedIndex="0" SelectionChanged="Box_Selected" Margin="85,50,0,0" VerticalAlignment="Top" Width="180">
+            <ComboBoxItem Content="Oracle"></ComboBoxItem>
+            <ComboBoxItem Content="SqlServer"></ComboBoxItem>
+            <ComboBoxItem Content="MySql"></ComboBoxItem>
+        </ComboBox>
+        <Label Content="库类型：" Name="labDbType" HorizontalAlignment="Left" Margin="20,50,0,0" VerticalAlignment="Top"/>
+        <Label Content="用户名：" Name="labUserName" HorizontalAlignment="Left" Margin="20,90,0,0" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Name="txtUserName" Height="23" Margin="85,90,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="180"/>
+        <Label Content="密码：" Name="labPwd" HorizontalAlignment="Left" Margin="32,130,0,0" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Name="txtPwd" Height="23" Margin="85,130,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="180"/>
+        <TextBox HorizontalAlignment="Left" Name="txtHostName" Height="23" Margin="85,170,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="180"/>
+        <Label Content="主机名：" Name="labHostName" HorizontalAlignment="Left" Margin="20,170,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.126,0.429"/>
+        <Label Content="端口：" Name="labPort" HorizontalAlignment="Left" Margin="32,210,0,0" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Name="txtPort" Height="23" Margin="85,210,0,0" TextWrapping="Wrap" Text="1521" VerticalAlignment="Top" Width="180"/>
+        <Label Content="服务名：" Name="labServerName" HorizontalAlignment="Left" Margin="20,250,0,0" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Name="txtServerName" Height="23" Margin="85,250,0,0" TextWrapping="Wrap" Text="Orcl" VerticalAlignment="Top" Width="180"/>
+        <Label Content="连接名：" HorizontalAlignment="Left" Margin="20,290,0,0" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Name="txtLinkName" Height="23" Margin="85,290,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="180"/>
+        <Button Content="测 试" HorizontalAlignment="Left" Margin="38,330,0,0" Click="Conn_Click" VerticalAlignment="Top" Width="55"/>
+        <Button Content="确 定" HorizontalAlignment="Left" Margin="193,330,0,0" Click="Save_Click" VerticalAlignment="Top" Width="55"/>
+        <Button Content="删 除" HorizontalAlignment="Left" Margin="113,330,0,0" Click="Del_Click" VerticalAlignment="Top" Width="55"/>
+        <Button Content="加载数据源" HorizontalAlignment="Left" Height="23" Margin="38,365,0,0" Click="LoadData_Click" VerticalAlignment="Top" Width="85"/>
+        <Button Content="更新数据源" HorizontalAlignment="Left" Height="23" Margin="160,365,0,0" Click="UpdateData_Click" VerticalAlignment="Top" Width="85"/>
+    </Grid>
+</Window>

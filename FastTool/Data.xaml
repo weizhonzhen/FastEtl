@@ -1,0 +1,132 @@
+﻿<Window x:Class="FastTool.Data"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Height="600" Width="1054">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary  Source="Css/style.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+        <DataGrid Name="Bussiness" SelectionChanged="Bussiness_Selected" CanUserAddRows="True" Margin="15,10,755,14" ItemsSource="{Binding}" FrozenColumnCount="1" RenderTransformOrigin="0.846,0.541">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="业务名称"  CanUserSort="False" ElementStyle="{StaticResource StyleCellText}" Binding="{Binding Path=Name,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="145">
+                    <DataGridTextColumn.EditingElementStyle>
+                        <Style TargetType="TextBox">
+                            <Setter Property="HorizontalAlignment" Value="Center" />
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                            <Setter Property="Width" Value="145"/>
+                        </Style>
+                    </DataGridTextColumn.EditingElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="业务表名"  CanUserSort="False" ElementStyle="{StaticResource StyleCellText}" Binding="{Binding Path=TableName,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="120">
+                    <DataGridTextColumn.EditingElementStyle>
+                        <Style TargetType="TextBox">
+                            <Setter Property="HorizontalAlignment" Value="Center" />
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                            <Setter Property="Width" Value="120"/>
+                        </Style>
+                    </DataGridTextColumn.EditingElementStyle>
+                </DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <DataGrid Name="BussinessDetails" SelectionChanged="BussinessDetails_Selected" Margin="300,10,10,55" CanUserAddRows="True" ItemsSource="{Binding}" FrozenColumnCount="2">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="字段名" CanUserSort="False" ElementStyle="{StaticResource StyleCellText}" Binding="{Binding Path=FieldName,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="120" >
+                    <DataGridTextColumn.EditingElementStyle>
+                        <Style TargetType="TextBox">
+                            <Setter Property="HorizontalAlignment" Value="Center" />
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                            <Setter Property="Width" Value="120"/>
+                        </Style>
+                    </DataGridTextColumn.EditingElementStyle>
+                </DataGridTextColumn>
+
+                <DataGridTemplateColumn Width="120">
+                    <DataGridTemplateColumn.Header>
+                        数据源
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox HorizontalAlignment="Center" Width="110" Name="DataSourceBox" VerticalAlignment="Center" SelectionChanged="DataSource_Selected"  ItemsSource="{Binding}" SelectedValuePath="LinkName" DisplayMemberPath="LinkName"></ComboBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Width="120">
+                    <DataGridTemplateColumn.Header>
+                        表名
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox HorizontalAlignment="Center" Width="110" Name="TabelBox" VerticalAlignment="Center" ItemsSource="{Binding}"  SelectionChanged="Table_Selected"  SelectedValuePath="Name" DisplayMemberPath="Name"></ComboBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Width="120">
+                    <DataGridTemplateColumn.Header>
+                        列名
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox HorizontalAlignment="Center" Width="110" VerticalAlignment="Center" Name="ColumnBox" ItemsSource="{Binding}" SelectedValuePath="Name" DisplayMemberPath="Name"></ComboBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Width="120">
+                    <DataGridTemplateColumn.Header>
+                        关联主键
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox HorizontalAlignment="Center" Width="110" Name="KeyBox" VerticalAlignment="Center" ItemsSource="{Binding}"  SelectedValuePath="Name" DisplayMemberPath="Name"></ComboBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Width="120">
+                    <DataGridTemplateColumn.Header>
+                        排序
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox HorizontalAlignment="Center" Width="110" Name="OrderByBox" VerticalAlignment="Center" ItemsSource="{Binding}"  SelectedValuePath="Name" DisplayMemberPath="Name"></ComboBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Width="120">
+                    <DataGridTemplateColumn.Header>
+                        字典
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox HorizontalAlignment="Center" Width="110" Name="DicBox" VerticalAlignment="Center" ItemsSource="{Binding}"  SelectedValuePath="value" DisplayMemberPath="key"></ComboBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTextColumn Header="自定义SQL"  CanUserSort="False" ElementStyle="{StaticResource StyleCellText}" Binding="{Binding Path=Sql,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="340">
+                    <DataGridTextColumn.EditingElementStyle>
+                        <Style TargetType="TextBox">
+                            <Setter Property="HorizontalAlignment" Value="Center" />
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                            <Setter Property="Width" Value="340"/>
+                        </Style>
+                    </DataGridTextColumn.EditingElementStyle>
+                </DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button Content="保 存" Height="28" HorizontalAlignment="Left" Margin="536,525,0,0" VerticalAlignment="Top" Width="75" Click="Btn_SaveData"/>
+        <Button Content="删 除" Height="28" HorizontalAlignment="Left" Margin="651,525,0,0" VerticalAlignment="Top" Width="75" Click="Btn_DelData"/>
+    </Grid>
+</Window>

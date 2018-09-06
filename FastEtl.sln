@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2042
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastTool", "FastTool\FastTool.csproj", "{1F492FC7-68A0-4480-B0C3-F51803D9BDD7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastService", "FastServer\FastService.csproj", "{9262B36F-64B8-42A6-8B62-73C5DD3777E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastModel", "Model\FastModel.csproj", "{AD297CA7-DDF7-49C1-ACA6-4353E8E7995D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1F492FC7-68A0-4480-B0C3-F51803D9BDD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F492FC7-68A0-4480-B0C3-F51803D9BDD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F492FC7-68A0-4480-B0C3-F51803D9BDD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F492FC7-68A0-4480-B0C3-F51803D9BDD7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9262B36F-64B8-42A6-8B62-73C5DD3777E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9262B36F-64B8-42A6-8B62-73C5DD3777E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9262B36F-64B8-42A6-8B62-73C5DD3777E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9262B36F-64B8-42A6-8B62-73C5DD3777E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD297CA7-DDF7-49C1-ACA6-4353E8E7995D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD297CA7-DDF7-49C1-ACA6-4353E8E7995D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD297CA7-DDF7-49C1-ACA6-4353E8E7995D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD297CA7-DDF7-49C1-ACA6-4353E8E7995D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E9478FEC-066A-4DA4-8085-985C10FAD844}
+	EndGlobalSection
+EndGlobal
