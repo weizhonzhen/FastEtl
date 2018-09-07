@@ -31,7 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FastData">
-      <HintPath>..\packages\Data\FastData.dll</HintPath>
+      <HintPath>..\..\ShareTool\Etl\packages\Data\FastData.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -49,6 +49,7 @@
     <Compile Include="DataModel\Data_Business.cs" />
     <Compile Include="DataModel\Data_Business_Details.cs" />
     <Compile Include="DataModel\Data_Source.cs" />
+    <Compile Include="DataModel\Data_Dic.cs" />
     <Compile Include="DataModel\Data_Log.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

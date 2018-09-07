@@ -16,7 +16,6 @@ namespace FastTool
         public SetEtl()
         {
             InitializeComponent();
-            InitializeComponent();
             Common.InitWindows(this, "ETL策略", false);
 
             if (AppCache.GetLink.Host != null)

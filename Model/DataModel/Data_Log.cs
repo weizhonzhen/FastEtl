@@ -7,7 +7,7 @@ namespace FastModel.DataModel
     /// 日志表
     /// </summary>
     [Table(Comments = "日志表")]
-    public class Base_Log
+    public class Data_Log
     {
         /// <summary>
         /// 日记id

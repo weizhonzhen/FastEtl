@@ -15,7 +15,7 @@
     </Window.Resources>
 
     <Grid>
-        <DataGrid Name="Bussiness" SelectionChanged="Bussiness_Selected" CanUserAddRows="True" Margin="15,10,755,14" ItemsSource="{Binding}" FrozenColumnCount="1" RenderTransformOrigin="0.846,0.541">
+        <DataGrid Name="Bussiness" SelectionChanged="Bussiness_Selected" CanUserAddRows="True" Margin="15,10,755,14" ItemsSource="{Binding}" RenderTransformOrigin="0.846,0.541">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="业务名称"  CanUserSort="False" ElementStyle="{StaticResource StyleCellText}" Binding="{Binding Path=Name,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="145">
                     <DataGridTextColumn.EditingElementStyle>

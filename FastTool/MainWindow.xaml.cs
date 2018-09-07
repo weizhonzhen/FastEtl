@@ -132,5 +132,18 @@ namespace FastTool
             Common.OpenWin(etl, this);
         }
         #endregion
+
+        #region 打开字典
+        /// <summary>
+        /// 打开字典
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OpenDic(object sender, RoutedEventArgs e)
+        {
+            var dic = new DataDic();
+            Common.OpenWin(dic, this);
+        }
+        #endregion
     }
 }
