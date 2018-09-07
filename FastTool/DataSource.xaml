@@ -33,7 +33,7 @@
         <Label Content="连接名：" HorizontalAlignment="Left" Margin="20,290,0,0" VerticalAlignment="Top"/>
         <TextBox HorizontalAlignment="Left" Name="txtLinkName" Height="23" Margin="85,290,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="180"/>
         <Button Content="测 试" HorizontalAlignment="Left" Margin="38,330,0,0" Click="Conn_Click" VerticalAlignment="Top" Width="55"/>
-        <Button Content="确 定" HorizontalAlignment="Left" Margin="193,330,0,0" Click="Save_Click" VerticalAlignment="Top" Width="55"/>
+        <Button Content="增 加" HorizontalAlignment="Left" Margin="193,330,0,0" Click="Save_Click" VerticalAlignment="Top" Width="55"/>
         <Button Content="删 除" HorizontalAlignment="Left" Margin="113,330,0,0" Click="Del_Click" VerticalAlignment="Top" Width="55"/>
         <Button Content="加载数据源" HorizontalAlignment="Left" Height="23" Margin="38,365,0,0" Click="LoadData_Click" VerticalAlignment="Top" Width="85"/>
         <Button Content="更新数据源" HorizontalAlignment="Left" Height="23" Margin="160,365,0,0" Click="UpdateData_Click" VerticalAlignment="Top" Width="85"/>
