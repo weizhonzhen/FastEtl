@@ -129,6 +129,7 @@ namespace FastService.Base
                     var dic = new Dictionary<string, object>();
                     dic.Add("key", dr[0]);
                     dic.Add("data", dr[1]);
+                    
                     list.Add(dic);
                 }
                 dr.Close();
@@ -238,7 +239,7 @@ namespace FastService.Base
         /// </summary>
         /// <param name="db"></param>
         /// <returns></returns>
-        public static void AddList(DataContext db, DataTable dt, ref Base_Log log)
+        public static void AddList(DataContext db, DataTable dt, ref Data_Log log)
         {
             try
             {

@@ -85,7 +85,7 @@ namespace FastService
 
                                      if (leaf.Count > 0)
                                      {
-                                         var log = new Base_Log();
+                                         var log = new Data_Log();
                                          log.Id = Guid.NewGuid().ToStr();
                                          log.TableName = item.TableName;
                                          log.BeginDateTime = DateTime.Now;
@@ -108,6 +108,11 @@ namespace FastService
                                                  dtRow["AddTime"] = DateTime.Now;
                                                  dtRow["Key"]= firstColumnList[row].GetValue("key");
                                                  dtRow[columnName] = firstColumnList[row].GetValue("data");
+
+                                                 //字典对照
+                                                 if (tempLeaf.IsDic == "1")
+                                                     dtRow[columnName] = FastRead.Query<Data_Dic>(a => a.Value.ToLower() == dtRow[columnName].ToStr().ToLower(), a => new { a.ContrastValue }).ToDic(db).GetValue("ContrastValue");
+
                                                  DataSchema.RepeatData(db, item, dtRow["Key"]);
 
                                                  for (var col = 3; col < dt.Columns.Count; col++)
@@ -117,6 +122,10 @@ namespace FastService
                                                      {
                                                          tempLeaf = leaf.Find(a => a.FieldName.ToLower() == columnName);
                                                          dtRow[columnName] = DataSchema.GetColumnData(link[col], tempLeaf, dtRow["Key"]);
+
+                                                         //字典对照
+                                                         if (tempLeaf.IsDic == "1")
+                                                             dtRow[columnName] = FastRead.Query<Data_Dic>(a => a.Value.ToLower() == dtRow[columnName].ToStr().ToLower(), a => new { a.ContrastValue }).ToDic(db).GetValue("ContrastValue");
                                                      }
                                                  }
 
