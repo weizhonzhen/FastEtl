@@ -22,10 +22,10 @@ namespace FastTool.Base
         /// <param name="txtServerName"></param>
         /// <param name="labServerName"></param>
         /// <returns></returns>
-        public static Base_DataSource ControlsToData(string dbType, TextBox txtHostName, TextBox txtUserName, TextBox txtPwd,
+        public static Data_Source ControlsToData(string dbType, TextBox txtHostName, TextBox txtUserName, TextBox txtPwd,
             TextBox txtPort, TextBox txtServerName, Label labServerName, bool isLink, TextBox txtLinkName)
         {
-            var item = new Base_DataSource();
+            var item = new Data_Source();
             item.Type = dbType;
             item.Host = txtHostName.Text.Trim();
             item.UserName = txtUserName.Text.Trim();
@@ -57,7 +57,7 @@ namespace FastTool.Base
         /// <param name="txtServerName"></param>
         /// <param name="labServerName"></param>
         /// <param name="txtLinkName"></param>
-        public static void DataToControls(Base_DataSource link, ref TextBox txtHostName, ref TextBox txtUserName, ref TextBox txtPwd,
+        public static void DataToControls(Data_Source link, ref TextBox txtHostName, ref TextBox txtUserName, ref TextBox txtPwd,
                                            ref TextBox txtPort, ref TextBox txtServerName, ref Label labServerName, ref TextBox txtLinkName)
         {
             txtHostName.Text = link.Host;
@@ -97,7 +97,7 @@ namespace FastTool.Base
             {
                 if (isDataLink)
                 {
-                    var boxItem = item as Base_DataSource;
+                    var boxItem = item as Data_Source;
                     if (boxItem.LinkName == value)
                         box.SelectedItem = item;
                 }
@@ -178,7 +178,7 @@ namespace FastTool.Base
         /// <summary>
         /// 获取连接字符串
         /// </summary>
-        public static string GetConnStr(Base_DataSource link)
+        public static string GetConnStr(Data_Source link)
         {
             var connStr = "";
 
@@ -282,7 +282,7 @@ namespace FastTool.Base
         /// <param name="userName">用户名</param>
         /// <param name="serverValue">数据库名</param>
         /// <returns></returns>
-        public static string GetLinkName(Base_DataSource item)
+        public static string GetLinkName(Data_Source item)
         {
             return string.Format("{0}_{1}_{2}", item.Type, item.UserName, item.ServerName);
         }

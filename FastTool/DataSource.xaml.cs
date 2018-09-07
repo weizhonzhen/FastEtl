@@ -66,7 +66,7 @@ namespace FastTool
         /// <param name="e"></param>
         private void Link_Selected(object sender, RoutedEventArgs e)
         {
-            var boxItem = dbTypeLink.SelectedItem as Base_DataSource;
+            var boxItem = dbTypeLink.SelectedItem as Data_Source;
 
             if (boxItem != null)
             {
@@ -95,9 +95,9 @@ namespace FastTool
                 buildLink.Id = Guid.NewGuid().ToString();
                 AppCache.SetLink(buildLink);
 
-                if (FastRead.Query<Base_DataSource>(a => a.LinkName == buildLink.LinkName).ToCount() == 1)
+                if (FastRead.Query<Data_Source>(a => a.LinkName == buildLink.LinkName).ToCount() == 1)
                 {
-                    FastWrite.Update<Base_DataSource>(buildLink, a => a.LinkName == buildLink.LinkName,
+                    FastWrite.Update<Data_Source>(buildLink, a => a.LinkName == buildLink.LinkName,
                         a => new { a.Host, a.PassWord, a.Port, a.ServerName, a.Type, a.UserName });
                 }
                 else
@@ -128,12 +128,12 @@ namespace FastTool
         /// <param name="e"></param>
         private void Del_Click(object sender, RoutedEventArgs e)
         {
-            var item = dbTypeLink.SelectedItem as Base_DataSource;
+            var item = dbTypeLink.SelectedItem as Data_Source;
             if (item != null)
             {
-                if (FastRead.Query<Base_Business_Details>(a => a.DataSourceId == item.Id).ToCount() == 0)
+                if (FastRead.Query<Data_Business_Details>(a => a.DataSourceId == item.Id).ToCount() == 0)
                 {
-                    FastWrite.Delete<Base_DataSource>(a => a.LinkName == item.LinkName);
+                    FastWrite.Delete<Data_Source>(a => a.LinkName == item.LinkName);
                     AppCache.RemoveLink();
                     dbTypeLink.ItemsSource = AppCache.GetAllLink;
                     InitLinkInfo();

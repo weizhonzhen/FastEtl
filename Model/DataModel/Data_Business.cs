@@ -7,7 +7,7 @@ namespace FastModel.DataModel
     /// 业务配置表 
     /// </summary>
     [Table(Comments = "业务配置表")]
-    public class Base_Business
+    public class Data_Business
     {
         /// <summary>
         /// 业务id

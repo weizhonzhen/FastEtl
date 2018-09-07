@@ -24,7 +24,7 @@ namespace FastTool.Base
         /// 表说明
         /// </summary>
         /// <returns></returns>
-        public static void InitTable(Base_DataSource link, bool IsLoad)
+        public static void InitTable(Data_Source link, bool IsLoad)
         {
             if (AppCache.ExistsTable(link) && IsLoad)
                 return;
@@ -102,7 +102,7 @@ namespace FastTool.Base
         /// 获取列的信息
         /// </summary>
         /// <returns></returns>
-        private static void InitColumn(Base_DataSource link, bool IsLoad, string tableName)
+        private static void InitColumn(Data_Source link, bool IsLoad, string tableName)
         {
             if (AppCache.ExistsColumn(link,tableName) && IsLoad)
                 return;
@@ -251,7 +251,7 @@ namespace FastTool.Base
         /// 修改列备注
         /// </summary>
         /// <returns></returns>
-        public static bool UpdateColumnComment(DataContext db, Base_Business table, Base_Business_Details column, Cache_Column columnInfo, Base_DataSource dataSource)
+        public static bool UpdateColumnComment(DataContext db, Data_Business table, Data_Business_Details column, Cache_Column columnInfo, Data_Source dataSource)
         {
             var sql = "";
             if (db.config.DbType == DataDbType.MySql)
@@ -279,7 +279,7 @@ namespace FastTool.Base
         /// 修改表备注
         /// </summary>
         /// <returns></returns>
-        public static bool UpdateTableComment(DataContext db, Base_Business table)
+        public static bool UpdateTableComment(DataContext db, Data_Business table)
         {
             var sql = "";
             if (db.config.DbType == DataDbType.MySql)
@@ -307,7 +307,7 @@ namespace FastTool.Base
         /// 创建表
         /// </summary>
         /// <returns></returns>
-        public static bool CreateTable(DataContext db, Base_Business table)
+        public static bool CreateTable(DataContext db, Data_Business table)
         {
             if (db.config.DbType == DataDbType.Oracle)
                 return db.ExecuteSql(string.Format("create table {0}(Id varchar2(64) primary key,AddTime date,key varchar2(255))", table.TableName), null, false).writeReturn.IsSuccess;
@@ -327,7 +327,7 @@ namespace FastTool.Base
         /// 修改表名
         /// </summary>
         /// <returns></returns>
-        public static bool UpdateTableName(DataContext db, Base_Business table, string oldTableName)
+        public static bool UpdateTableName(DataContext db, Data_Business table, string oldTableName)
         {
             var sql = "";
             if (db.config.DbType == DataDbType.Oracle)
@@ -348,7 +348,7 @@ namespace FastTool.Base
         /// 增加列
         /// </summary>
         /// <returns></returns>
-        public static bool AddColumn(DataContext db, Base_Business table,Base_Business_Details column, Cache_Column columnInfo, Base_DataSource dataSource)
+        public static bool AddColumn(DataContext db, Data_Business table,Data_Business_Details column, Cache_Column columnInfo, Data_Source dataSource)
         {
             return db.ExecuteSql(string.Format("alter table {0} add {1} {2}", table.TableName, column.FieldName, GetFieldType(columnInfo,db.config,dataSource)), null, false).writeReturn.IsSuccess;
         }
@@ -359,7 +359,7 @@ namespace FastTool.Base
         /// 修改列
         /// </summary>
         /// <returns></returns>
-        public static bool UpdateColumn(DataContext db, Base_Business table, Base_Business_Details column, Cache_Column columnInfo, Base_DataSource dataSource)
+        public static bool UpdateColumn(DataContext db, Data_Business table, Data_Business_Details column, Cache_Column columnInfo, Data_Source dataSource)
         {
             var sql = "";
 
@@ -382,7 +382,7 @@ namespace FastTool.Base
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        private static string GetFieldType(Cache_Column item, ConfigModel config, Base_DataSource source)
+        private static string GetFieldType(Cache_Column item, ConfigModel config, Data_Source source)
         {
             if (config.DbType == DataDbType.Oracle && source.Type.ToLower() == DataDbType.SqlServer.ToLower())
             {

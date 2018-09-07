@@ -73,7 +73,7 @@ namespace FastService
                         this.CanStop = false;
 
                         var taskList = new List<Task>();
-                        var list = FastRead.Query<Base_Business>(a => a.Id != null).ToList<Base_Business>(db);
+                        var list = FastRead.Query<Data_Business>(a => a.Id != null).ToList<Data_Business>(db);
 
                         foreach (var item in list)
                         {
@@ -81,7 +81,7 @@ namespace FastService
                             {
                                 taskList.Add(Task.Factory.StartNew(() =>
                                  {
-                                     var leaf = FastRead.Query<Base_Business_Details>(a => a.Id == item.Id).ToList<Base_Business_Details>(db);
+                                     var leaf = FastRead.Query<Data_Business_Details>(a => a.Id == item.Id).ToList<Data_Business_Details>(db);
 
                                      if (leaf.Count > 0)
                                      {
@@ -129,7 +129,7 @@ namespace FastService
                                          DataSchema.AddList(db, dt, ref log);
                                          db.Add(log);
                                          item.LastUpdateTime = DateTime.Now;
-                                         FastWrite.Update<Base_Business>(item, a => a.Id == item.Id, a => new { a.LastUpdateTime }, db);
+                                         FastWrite.Update<Data_Business>(item, a => a.Id == item.Id, a => new { a.LastUpdateTime }, db);
                                      }
                                  }));
                             }

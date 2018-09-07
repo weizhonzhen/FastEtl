@@ -38,7 +38,7 @@ namespace FastTool
                 var isUpdateTable = false;
                 var isSuccess = true;
                 db.BeginTrans();
-                var main = Bussiness.SelectedItem as Base_Business;
+                var main = Bussiness.SelectedItem as Data_Business;
                 
                 if (main == null||string.IsNullOrEmpty(main.Name))
                 {
@@ -87,8 +87,8 @@ namespace FastTool
                     //修改业务
                     if (isSuccess)
                     {
-                        var oldTableName = FastRead.Query<Base_Business>(a => a.Id == main.Id, a => new { a.Name }).ToDic(db).GetValue("name").ToString();
-                        isSuccess = db.Update<Base_Business>(main, a => a.Id == main.Id, a => new {a.Name }).writeReturn.IsSuccess;
+                        var oldTableName = FastRead.Query<Data_Business>(a => a.Id == main.Id, a => new { a.Name }).ToDic(db).GetValue("name").ToString();
+                        isSuccess = db.Update<Data_Business>(main, a => a.Id == main.Id, a => new {a.Name }).writeReturn.IsSuccess;
 
                         if (oldTableName != main.TableName)
                         {
@@ -112,7 +112,7 @@ namespace FastTool
                 #region 业务明细
                 foreach (var temp in BussinessDetails.Items)
                 {
-                    var leaf = temp as Base_Business_Details;
+                    var leaf = temp as Data_Business_Details;
 
                     if (leaf == null)
                         continue;
@@ -123,7 +123,7 @@ namespace FastTool
                     //数据源id
                     if (Common.GetTemplateColumn<ComboBox>(BussinessDetails, 1, "DataSourceBox", temp).SelectedItem == null)
                         continue;
-                    var dataSource = (Common.GetTemplateColumn<ComboBox>(BussinessDetails, 1, "DataSourceBox", temp).SelectedItem as Base_DataSource);
+                    var dataSource = (Common.GetTemplateColumn<ComboBox>(BussinessDetails, 1, "DataSourceBox", temp).SelectedItem as Data_Source);
                     leaf.DataSourceId = dataSource.Id;
 
                     //表名
@@ -160,7 +160,7 @@ namespace FastTool
                     }
 
                     //sql
-                    leaf.Sql = (temp as Base_Business_Details).Sql;
+                    leaf.Sql = (temp as Data_Business_Details).Sql;
 
                     if (string.IsNullOrEmpty(leaf.FieldId))
                     {
@@ -183,7 +183,7 @@ namespace FastTool
                     {
                         //修改业务明细
                         if (isSuccess)
-                            isSuccess = db.Update<Base_Business_Details>(leaf, a => a.FieldId == leaf.FieldId, a => new { a.FieldName, a.DataSourceId, a.ColumnName, a.Key,a.OrderBy, a.TableName,a.IsDic,a.Sql }).writeReturn.IsSuccess;
+                            isSuccess = db.Update<Data_Business_Details>(leaf, a => a.FieldId == leaf.FieldId, a => new { a.FieldName, a.DataSourceId, a.ColumnName, a.Key,a.OrderBy, a.TableName,a.IsDic,a.Sql }).writeReturn.IsSuccess;
 
                         //列增加修改
                         if (isSuccess)
@@ -225,7 +225,7 @@ namespace FastTool
         /// <param name="e"></param>
         private void Btn_DelData(object sender, RoutedEventArgs e)
         {
-            var main = Bussiness.SelectedItem as Base_Business;
+            var main = Bussiness.SelectedItem as Data_Business;
 
             if (main == null || string.IsNullOrEmpty(main.Name))
             {
@@ -237,10 +237,10 @@ namespace FastTool
             {
                 var isSuccess = true;
                 db.BeginTrans();
-                isSuccess = db.Delete<Base_Business>(a => a.Id == main.Id).writeReturn.IsSuccess;
+                isSuccess = db.Delete<Data_Business>(a => a.Id == main.Id).writeReturn.IsSuccess;
 
                 if (isSuccess)
-                    isSuccess = db.Delete<Base_Business_Details>(a => a.Id == main.Id).writeReturn.IsSuccess;
+                    isSuccess = db.Delete<Data_Business_Details>(a => a.Id == main.Id).writeReturn.IsSuccess;
 
                 if (isSuccess)
                     isSuccess = db.ExecuteSql(string.Format("drop table {0}", main.TableName), null, false).writeReturn.IsSuccess;
@@ -294,13 +294,13 @@ namespace FastTool
         /// <param name="e"></param>
         private void Bussiness_Selected(object sender, RoutedEventArgs e)
         {
-            var item = (sender as DataGrid).SelectedItem as Base_Business;
+            var item = (sender as DataGrid).SelectedItem as Data_Business;
             if (item != null)
             {
                 var list = AppCache.GetBusinessDetails(item.Id);
 
                 if (list.Count == 0)
-                    list.Add(new Base_Business_Details());
+                    list.Add(new Data_Business_Details());
 
                 BussinessDetails.ItemsSource = list;
                 Common.UpdateWindow();
@@ -321,8 +321,8 @@ namespace FastTool
             }
             else
             {
-                var list = new List<Base_Business_Details>();
-                list.Add(new Base_Business_Details());
+                var list = new List<Data_Business_Details>();
+                list.Add(new Data_Business_Details());
                 BussinessDetails.ItemsSource = list;
             }
         }
@@ -336,7 +336,7 @@ namespace FastTool
         /// <param name="e"></param>
         private void BussinessDetails_Selected(object sender, RoutedEventArgs e)
         {
-            var item = (sender as DataGrid).SelectedItem as Base_Business_Details??new Base_Business_Details();
+            var item = (sender as DataGrid).SelectedItem as Data_Business_Details??new Data_Business_Details();
             if (item != null)
             {
                 BindComboBox(item, BussinessDetails);
@@ -350,7 +350,7 @@ namespace FastTool
         /// </summary>
         private void BindComboBox(object selectedItem, DataGrid grid, bool isDataSource = false, bool isTable = false)
         {
-            var item = selectedItem as Base_Business_Details ?? new Base_Business_Details();
+            var item = selectedItem as Data_Business_Details ?? new Data_Business_Details();
 
             if (item == null)
                 return;
@@ -376,7 +376,7 @@ namespace FastTool
             {
                 if (dataBox.SelectedItem != null)
                 {
-                    var itemSource = AppCache.GetTableList(dataBox.SelectedItem as Base_DataSource) ?? new List<Cache_Table>();
+                    var itemSource = AppCache.GetTableList(dataBox.SelectedItem as Data_Source) ?? new List<Cache_Table>();
 
                     if (itemSource.Count == 0)
                         itemSource.Add(new Cache_Table { Name="请加载数据源" });
@@ -398,7 +398,7 @@ namespace FastTool
             {
                 if (tableBox.SelectedItem != null)
                 {
-                    var itemSource = AppCache.GetColumnList(dataBox.SelectedItem as Base_DataSource, (tableBox.SelectedItem as Cache_Table).Name);
+                    var itemSource = AppCache.GetColumnList(dataBox.SelectedItem as Data_Source, (tableBox.SelectedItem as Cache_Table).Name);
                     columnBox.ItemsSource = itemSource;
                     columnBox.SelectedItem = itemSource.Find(a => a.Name == item.ColumnName);
                 }
@@ -414,7 +414,7 @@ namespace FastTool
             {
                 if (tableBox.SelectedItem != null)
                 {
-                    var itemSource = AppCache.GetColumnList(dataBox.SelectedItem as Base_DataSource, (tableBox.SelectedItem as Cache_Table).Name);
+                    var itemSource = AppCache.GetColumnList(dataBox.SelectedItem as Data_Source, (tableBox.SelectedItem as Cache_Table).Name);
                     keyBox.ItemsSource = itemSource;
                     keyBox.SelectedItem = itemSource.Find(a => a.Name == item.Key);
                 }
@@ -430,7 +430,7 @@ namespace FastTool
             {
                 if (tableBox.SelectedItem != null)
                 {
-                    var itemSource = AppCache.GetColumnList(dataBox.SelectedItem as Base_DataSource, (tableBox.SelectedItem as Cache_Table).Name);
+                    var itemSource = AppCache.GetColumnList(dataBox.SelectedItem as Data_Source, (tableBox.SelectedItem as Cache_Table).Name);
                     orderByBox.ItemsSource = itemSource;
                     orderByBox.SelectedItem = itemSource.Find(a => a.Name == item.OrderBy);
                 }

@@ -20,7 +20,7 @@ namespace FastService.Base
         /// <summary>
         /// 获取连接字符串
         /// </summary>
-        private static string GetConnStr(Base_DataSource link)
+        private static string GetConnStr(Data_Source link)
         {
             var connStr = "";
 
@@ -109,7 +109,7 @@ namespace FastService.Base
         /// 取读取第一列数据
         /// </summary>
         /// <returns></returns>
-        public static List<Dictionary<string, object>> GetFirstColumnData(Dictionary<string, object> link, Base_Business_Details columnInfo, Base_Business tableInfo)
+        public static List<Dictionary<string, object>> GetFirstColumnData(Dictionary<string, object> link, Data_Business_Details columnInfo, Data_Business tableInfo)
         {
             var list = new List<Dictionary<string, object>>();
             var type = link.GetValue("type").ToStr();
@@ -182,7 +182,7 @@ namespace FastService.Base
         /// 取读取列数据第一条数据
         /// </summary>
         /// <returns></returns>
-        public static object GetColumnData(Dictionary<string, object> link, Base_Business_Details columnInfo, object key)
+        public static object GetColumnData(Dictionary<string, object> link, Data_Business_Details columnInfo, object key)
         {
             object result = DBNull.Value;
             var type = link.GetValue("type").ToStr();
@@ -353,7 +353,7 @@ namespace FastService.Base
         /// <summary>
         /// 过期数据
         /// </summary>
-        public static void ExpireData(DataContext db, Base_Business item)
+        public static void ExpireData(DataContext db, Data_Business item)
         {
             var month = item.SaveDataMonth.ToStr().ToInt(0) * -1;
             var sql = string.Format("delete from {0} where addtime<='{1}'", item.TableName, DateTime.Now.AddMonths(month));
@@ -366,7 +366,7 @@ namespace FastService.Base
         /// <summary>
         /// 重复数据
         /// </summary>
-        public static void RepeatData(DataContext db, Base_Business item, object key)
+        public static void RepeatData(DataContext db, Data_Business item, object key)
         {
             if (item.IsDel == "1")
             {
@@ -585,12 +585,12 @@ namespace FastService.Base
         /// 初始化取数据长连接
         /// </summary>
         /// <returns></returns>
-        public static List<Dictionary<string, object>> InitColLink(List<Base_Business_Details> list, DataContext db)
+        public static List<Dictionary<string, object>> InitColLink(List<Data_Business_Details> list, DataContext db)
         {
             var result = new List<Dictionary<string, object>>();
             foreach (var item in list)
             {
-                var link = FastRead.Query<Base_DataSource>(a => a.Id == item.DataSourceId).ToItem<Base_DataSource>(db);
+                var link = FastRead.Query<Data_Source>(a => a.Id == item.DataSourceId).ToItem<Data_Source>(db);
 
                 if (link.Type.ToLower() == FastApp.DataDbType.SqlServer.ToLower())
                 {

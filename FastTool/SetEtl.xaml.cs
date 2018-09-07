@@ -37,7 +37,7 @@ namespace FastTool
         /// <param name="e"></param>
         private void Bussiness_Selected(object sender, RoutedEventArgs e)
         {
-            var item = (sender as DataGrid).SelectedItem as Base_Business;
+            var item = (sender as DataGrid).SelectedItem as Data_Business;
 
             if (item != null)
             {
@@ -177,7 +177,7 @@ namespace FastTool
         /// <param name="e"></param>
         private void Btn_SaveData(object sender, RoutedEventArgs e)
         {
-            var item = Bussiness.SelectedItem as Base_Business;
+            var item = Bussiness.SelectedItem as Data_Business;
 
             if (item == null)
                 CodeBox.Show("请求选择业务", this);
@@ -189,7 +189,7 @@ namespace FastTool
                 item.SaveDataMonth = (DataMonth.SelectedItem as BindModel).value;
                 item.IsDel = (IsDel.SelectedItem as BindModel).value.ToStr();
 
-                var isSuccess = FastWrite.Update<Base_Business>(item, a => a.Id == item.Id, a => new { a.UpdateCount, a.UpdateTime, a.UpdateDay,a.SaveDataMonth,a.IsDel }).IsSuccess;
+                var isSuccess = FastWrite.Update<Data_Business>(item, a => a.Id == item.Id, a => new { a.UpdateCount, a.UpdateTime, a.UpdateDay,a.SaveDataMonth,a.IsDel }).IsSuccess;
                 if (isSuccess)
                 {
                     Bussiness.ItemsSource = AppCache.GetAllBusiness;

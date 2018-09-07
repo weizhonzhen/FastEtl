@@ -8,7 +8,7 @@ namespace FastModel.DataModel
     /// </summary>
     [Serializable]
     [Table(Comments = "数据源")]
-    public class Base_DataSource
+    public class Data_Source
     {
         /// <summary>
         /// 数据源id
