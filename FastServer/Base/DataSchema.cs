@@ -576,7 +576,17 @@ namespace FastService.Base
         /// <returns></returns>
         private static List<Dictionary<string, object>> ColumnList(DataContext db, string tableName)
         {
-            var sql = string.Format("select a.COLUMN_NAME name,a.DATA_TYPE type from user_tab_columns a where table_name='{0}'", tableName);
+            var sql = "";
+
+            if (db.config.DbType == FastApp.DataDbType.Oracle)
+                sql = string.Format("select a.COLUMN_NAME name,a.DATA_TYPE type from user_tab_columns a where table_name='{0}'", tableName);
+
+            if (db.config.DbType == FastApp.DataDbType.SqlServer)
+                sql = string.Format("select name,(select top 1 name from sys.systypes c where a.xtype=c.xtype) as type from syscolumns a where id = object_id('{0}')", tableName);
+
+            if (db.config.DbType == FastApp.DataDbType.MySql)
+                sql = string.Format("select select column_name name,data_type type from information_schema.columns where table_name='{0}'", tableName);
+
             return db.ExecuteSql(sql, null, false).DicList;
         }
         #endregion
