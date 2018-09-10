@@ -315,9 +315,9 @@ namespace FastTool.Base
                 isSuccess = db.ExecuteSql(string.Format("create table {0}(Id varchar2(64) primary key,AddTime date,key varchar2(255))", table.TableName), null, false).writeReturn.IsSuccess;
                 if (isSuccess)
                 {
-                    db.ExecuteSql(string.Format("alter table {0} modify Id varchar2(64) comment '主键'", table.TableName), null, false);
-                    db.ExecuteSql(string.Format("alter table {0} modify AddTime date comment '抽取时间'", table.TableName), null, false);
-                    db.ExecuteSql(string.Format("alter table {0} modify key varchar2(255) comment '关键主键'", table.TableName), null, false);
+                    db.ExecuteSql(string.Format("Comment on column {0}.Id is '主键'", table.TableName), null, false);
+                    db.ExecuteSql(string.Format("Comment on column {0}.AddTime is '抽取时间'", table.TableName), null, false);
+                    db.ExecuteSql(string.Format("Comment on column {0}.key is '关键主键'", table.TableName), null, false);
                 }
             }
 
@@ -326,9 +326,9 @@ namespace FastTool.Base
                 isSuccess = db.ExecuteSql(string.Format("create table {0}(Id varchar(64) primary key,AddTime date,key varchar(255))", table.TableName), null, false).writeReturn.IsSuccess;
                 if (isSuccess)
                 {
-                    db.ExecuteSql(string.Format("Comment on column {0}.Id is '主键'", table.TableName), null, false);
-                    db.ExecuteSql(string.Format("Comment on column {0}.AddTime is '抽取时间'", table.TableName), null, false);
-                    db.ExecuteSql(string.Format("Comment on column {0}.key is '关键主键'", table.TableName), null, false);
+                    db.ExecuteSql(string.Format("alter table {0} modify Id varchar2(64) comment '主键'", table.TableName), null, false);
+                    db.ExecuteSql(string.Format("alter table {0} modify AddTime date comment '抽取时间'", table.TableName), null, false);
+                    db.ExecuteSql(string.Format("alter table {0} modify key varchar2(255) comment '关键主键'", table.TableName), null, false);
                 }
             }
 
@@ -342,7 +342,7 @@ namespace FastTool.Base
                     db.ExecuteSql(string.Format("exec sys.sp_addextendedproperty N'MS_Description',N'关键主键',N'SCHEMA', N'dbo', N'TABLE',N'{0}',N'column',N'key'", table.TableName), null, false);
                 }
             }
-
+            
             return isSuccess;
         }
         #endregion
@@ -378,7 +378,7 @@ namespace FastTool.Base
             return db.ExecuteSql(string.Format("alter table {0} add {1} {2}", table.TableName, column.FieldName, GetFieldType(columnInfo,db.config,dataSource)), null, false).writeReturn.IsSuccess;
         }
         #endregion
-
+        
         #region 修改列
         /// <summary>
         /// 修改列
