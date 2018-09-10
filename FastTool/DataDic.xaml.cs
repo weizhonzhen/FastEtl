@@ -91,7 +91,7 @@ namespace FastTool
                 if (box != null && box.IsChecked == true)
                 {
                     var temp = item as Data_Dic;
-                    if (temp != null && string.IsNullOrEmpty(temp.Id))
+                    if (temp != null && !string.IsNullOrEmpty(temp.Id))
                         FastWrite.Delete<Data_Dic>(a => a.Id == temp.Id);
                     count++;
                 }
