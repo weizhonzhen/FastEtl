@@ -172,6 +172,7 @@ namespace FastTool
                             isSuccess = db.Add(leaf).writeReturn.IsSuccess;
 
                         //增加列
+                        columnInfo = Common.GetTemplateColumn<ComboBox>(BussinessDetails, 3, "ColumnBox", temp).SelectedItem as Cache_Column;
                         if (isSuccess)
                             isSuccess = DataSchema.AddColumn(db, main, leaf, columnInfo,dataSource);
 
