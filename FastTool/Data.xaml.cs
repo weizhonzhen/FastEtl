@@ -155,8 +155,9 @@ namespace FastTool
                     //字典
                     if (Common.GetTemplateColumn<ComboBox>(BussinessDetails, 6, "DicBox", temp).SelectedItem != null)
                     {
-                        var dic = Common.GetTemplateColumn<ComboBox>(BussinessDetails, 6, "DicBox", temp).SelectedItem as BindModel;
-                        leaf.IsDic = dic.value.ToStr();
+                        var dic = Common.GetTemplateColumn<ComboBox>(BussinessDetails, 6, "DicBox", temp).SelectedItem as Data_Dic;
+                        if (dic != null && !string.IsNullOrEmpty(dic.Id))
+                            leaf.Dic = dic.Id;
                     }
 
                     //sql
@@ -174,7 +175,7 @@ namespace FastTool
                         //增加列
                         columnInfo = Common.GetTemplateColumn<ComboBox>(BussinessDetails, 3, "ColumnBox", temp).SelectedItem as Cache_Column;
                         if (isSuccess)
-                            isSuccess = DataSchema.AddColumn(db, main, leaf, columnInfo,dataSource);
+                            isSuccess = DataSchema.AddColumn(db, main, leaf, columnInfo, dataSource);
 
                         //修改备注
                         if (isSuccess)
@@ -184,7 +185,7 @@ namespace FastTool
                     {
                         //修改业务明细
                         if (isSuccess)
-                            isSuccess = db.Update<Data_Business_Details>(leaf, a => a.FieldId == leaf.FieldId, a => new { a.FieldName, a.DataSourceId, a.ColumnName, a.Key,a.OrderBy, a.TableName,a.IsDic,a.Sql }).writeReturn.IsSuccess;
+                            isSuccess = db.Update<Data_Business_Details>(leaf, a => a.FieldId == leaf.FieldId, a => new { a.FieldName, a.DataSourceId, a.ColumnName, a.Key,a.OrderBy, a.TableName,a.Dic,a.Sql }).writeReturn.IsSuccess;
 
                         //列增加修改
                         if (isSuccess)
@@ -447,11 +448,9 @@ namespace FastTool
             {
                 if (tableBox.SelectedItem != null)
                 {
-                    var tempSource = new List<BindModel>();
-                    tempSource.Add(new BindModel { value = 1, key = "是" });
-                    tempSource.Add(new BindModel { value = 0, key = "否" });
+                    var tempSource = FastRead.Query<Data_Dic>(a => a.Id != null).ToList<Data_Dic>();
                     dicBox.ItemsSource = tempSource;
-                    dicBox.SelectedItem = tempSource.Find(a => a.value == item.IsDic.ToInt(0));
+                    dicBox.SelectedItem = tempSource.Find(a => a.Id == item.Dic);
                 }
             }
         }

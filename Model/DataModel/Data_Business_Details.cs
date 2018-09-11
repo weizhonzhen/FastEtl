@@ -57,10 +57,10 @@ namespace FastModel.DataModel
         public string OrderBy { get; set; }
 
         /// <summary>
-        /// 是否字典(1=是,0=否)
+        /// 字典
         /// </summary>
-        [Column(Comments = "是否字典(1=是,0=否)", DataType = "varchar2", Length = 1, IsNull = true)]
-        public string IsDic { get; set; }
+        [Column(Comments = "字典", DataType = "varchar2", Length = 64, IsNull = true)]
+        public string Dic { get; set; }
 
         /// <summary>
         /// Sql

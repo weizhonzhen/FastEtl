@@ -110,8 +110,8 @@ namespace FastService
                                                  dtRow[columnName] = firstColumnList[row].GetValue("data");
 
                                                  //字典对照
-                                                 if (tempLeaf.IsDic == "1")
-                                                     dtRow[columnName] = FastRead.Query<Data_Dic>(a => a.Value.ToLower() == dtRow[columnName].ToStr().ToLower(), a => new { a.ContrastValue }).ToDic(db).GetValue("ContrastValue");
+                                                 if (!string.IsNullOrEmpty(tempLeaf.Dic))
+                                                     dtRow[columnName] = FastRead.Query<Data_Dic_Details>(a => a.Value.ToLower() == dtRow[columnName].ToStr().ToLower() && a.DicId == tempLeaf.Dic, a => new { a.ContrastValue }).ToDic(db).GetValue("ContrastValue");
 
                                                  DataSchema.RepeatData(db, item, dtRow["Key"]);
 
@@ -124,8 +124,8 @@ namespace FastService
                                                          dtRow[columnName] = DataSchema.GetColumnData(link[col], tempLeaf, dtRow["Key"]);
 
                                                          //字典对照
-                                                         if (tempLeaf.IsDic == "1")
-                                                             dtRow[columnName] = FastRead.Query<Data_Dic>(a => a.Value.ToLower() == dtRow[columnName].ToStr().ToLower(), a => new { a.ContrastValue }).ToDic(db).GetValue("ContrastValue");
+                                                         if (!string.IsNullOrEmpty(tempLeaf.Dic))
+                                                             dtRow[columnName] = FastRead.Query<Data_Dic_Details>(a => a.Value.ToLower() == dtRow[columnName].ToStr().ToLower() && a.DicId == tempLeaf.Dic, a => new { a.ContrastValue }).ToDic(db).GetValue("ContrastValue");
                                                      }
                                                  }
 

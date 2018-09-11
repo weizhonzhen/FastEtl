@@ -110,7 +110,7 @@
                     </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <ComboBox HorizontalAlignment="Center" Width="110" Name="DicBox" VerticalAlignment="Center" ItemsSource="{Binding}"  SelectedValuePath="value" DisplayMemberPath="key"></ComboBox>
+                            <ComboBox HorizontalAlignment="Center" Width="110" Name="DicBox" VerticalAlignment="Center" ItemsSource="{Binding}"  SelectedValuePath="Id" DisplayMemberPath="Name"></ComboBox>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

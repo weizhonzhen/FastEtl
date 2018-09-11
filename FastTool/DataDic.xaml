@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="DataDic" Height="450" Width="800" Background="#efefef">
+        Title="DataDic" Height="450" Width="900" Background="#efefef">
 
     <Window.Resources>
         <ResourceDictionary>
@@ -15,7 +15,7 @@
     </Window.Resources>
     
     <Grid>
-        <DataGrid Name="Dic" Margin="20,10,20,54" CanUserAddRows="True" ItemsSource="{Binding}" FrozenColumnCount="4">
+        <DataGrid Name="DicLeaf" Margin="260,10,20,54" CanUserAddRows="True" ItemsSource="{Binding}">
             <DataGrid.Columns>
                 <DataGridTemplateColumn Width="50">
                     <DataGridTemplateColumn.Header>
@@ -27,37 +27,50 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="名称" ElementStyle="{StaticResource StyleCellText}" Binding="{Binding Path=Name,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="230">
+                <DataGridTextColumn Header="名称" ElementStyle="{StaticResource StyleCellText}" Binding="{Binding Path=Name,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="185">
                     <DataGridTextColumn.EditingElementStyle>
                         <Style TargetType="TextBox">
                             <Setter Property="HorizontalAlignment" Value="Center" />
                             <Setter Property="VerticalAlignment" Value="Center" />
-                            <Setter Property="Width" Value="230"/>
+                            <Setter Property="Width" Value="185"/>
                         </Style>
                     </DataGridTextColumn.EditingElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="值" ElementStyle="{StaticResource StyleCellText}" Binding="{Binding Path=Value,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="230">
+                <DataGridTextColumn Header="值" ElementStyle="{StaticResource StyleCellText}" Binding="{Binding Path=Value,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="185">
                     <DataGridTextColumn.EditingElementStyle>
                         <Style TargetType="TextBox">
                             <Setter Property="HorizontalAlignment" Value="Center" />
                             <Setter Property="VerticalAlignment" Value="Center" />
-                            <Setter Property="Width" Value="230"/>
+                            <Setter Property="Width" Value="185"/>
                         </Style>
                     </DataGridTextColumn.EditingElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="对照值" ElementStyle="{StaticResource StyleCellText}" Binding="{Binding Path=ContrastValue,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="230">
+                <DataGridTextColumn Header="对照值" ElementStyle="{StaticResource StyleCellText}" Binding="{Binding Path=ContrastValue,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="180">
                     <DataGridTextColumn.EditingElementStyle>
                         <Style TargetType="TextBox">
                             <Setter Property="HorizontalAlignment" Value="Center" />
                             <Setter Property="VerticalAlignment" Value="Center" />
-                            <Setter Property="Width" Value="230"/>
+                            <Setter Property="Width" Value="180"/>
                         </Style>
                     </DataGridTextColumn.EditingElementStyle>
                 </DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
-
-        <Button Content="保 存" Height="28" HorizontalAlignment="Left" Margin="270,373,0,0" VerticalAlignment="Top" Width="75" Click="Save_Click"/>
-        <Button Content="删 除" Height="28" HorizontalAlignment="Left" Margin="432,373,0,0" VerticalAlignment="Top" Width="75" Click="Del_Click"/>
+        <DataGrid Name="Dic" SelectionChanged="Dic_Selected"  CanUserAddRows="True" ItemsSource="{Binding}" Margin="10,10,652,55"> 
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="字典类型名称" ElementStyle="{StaticResource StyleCellText}" Binding="{Binding Path=Name,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="218">
+                    <DataGridTextColumn.EditingElementStyle>
+                        <Style TargetType="TextBox">
+                            <Setter Property="HorizontalAlignment" Value="Center" />
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                            <Setter Property="Width" Value="218"/>
+                        </Style>
+                    </DataGridTextColumn.EditingElementStyle>
+                </DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button Content="保 存" Height="28" HorizontalAlignment="Left" Margin="280,373,0,0" VerticalAlignment="Top" Width="75" Click="Save_Click"/>
+        <Button Content="删除字典类型" Height="28" HorizontalAlignment="Left" Margin="382,373,0,0" VerticalAlignment="Top" Width="100" Click="Del_Dic_Click"/>
+        <Button Content="删除字典明细" Height="28" HorizontalAlignment="Left" Margin="512,373,0,0" VerticalAlignment="Top" Width="100" Click="Del_DicLeaf_Click"/>
     </Grid>
 </Window>
