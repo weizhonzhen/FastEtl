@@ -41,9 +41,9 @@ namespace FastTool
         }
 
         #region 托盘方法
-        #region 打开温州中西医数据库共享工具
+        #region 打开工具
         /// <summary>
-        /// 温州中西医数据库共享工具
+        /// 打开工具
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -55,9 +55,9 @@ namespace FastTool
         }
         #endregion
 
-        #region 隐藏温州中西医数据库共享工具
+        #region 隐藏工具
         /// <summary>
-        /// 隐藏温州中西医数据库共享工具
+        /// 打开工具
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -68,9 +68,9 @@ namespace FastTool
         }
         #endregion
 
-        #region 退出温州中西医数据库共享工具
+        #region 退出工具
         /// <summary>
-        /// 退出温州中西医数据库共享工具
+        /// 退出工具
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
