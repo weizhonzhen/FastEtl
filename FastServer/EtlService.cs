@@ -90,6 +90,7 @@ namespace FastService
                                          log.TableName = item.TableName;
                                          log.BeginDateTime = DateTime.Now;
 
+                                         var isAdd = true;
                                          var dt = DataSchema.GetTable(db, item.TableName);
                                          var link = DataSchema.InitColLink(leaf, db);
                                          var columnName = dt.Columns[3].ColumnName.ToLower();    
@@ -113,8 +114,9 @@ namespace FastService
                                                  if (!string.IsNullOrEmpty(tempLeaf.Dic))
                                                      dtRow[columnName] = FastRead.Query<Data_Dic_Details>(a => a.Value.ToLower() == dtRow[columnName].ToStr().ToLower() && a.DicId == tempLeaf.Dic, a => new { a.ContrastValue }).ToDic(db).GetValue("ContrastValue");
 
-                                                 DataSchema.RepeatData(db, item, dtRow["Key"]);
-
+                                                 //数据策略
+                                                 isAdd = DataSchema.DataPolicy(db, item, dtRow["Key"], columnName, dtRow[columnName]);
+                                                 
                                                  for (var col = 3; col < dt.Columns.Count; col++)
                                                  {
                                                      columnName = dt.Columns[col].ColumnName.ToLower();
@@ -126,10 +128,15 @@ namespace FastService
                                                          //字典对照
                                                          if (!string.IsNullOrEmpty(tempLeaf.Dic))
                                                              dtRow[columnName] = FastRead.Query<Data_Dic_Details>(a => a.Value.ToLower() == dtRow[columnName].ToStr().ToLower() && a.DicId == tempLeaf.Dic, a => new { a.ContrastValue }).ToDic(db).GetValue("ContrastValue");
+
+                                                         //数据策略
+                                                         if (item.Policy == "2")
+                                                             isAdd = DataSchema.DataPolicy(db, item, dtRow["Key"], columnName, dtRow[columnName]);
                                                      }
                                                  }
 
-                                                 dt.Rows.Add(dtRow);
+                                                 if (isAdd)
+                                                     dt.Rows.Add(dtRow);
                                              }
                                          }
 

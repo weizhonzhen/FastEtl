@@ -67,8 +67,8 @@ namespace FastTool
                     //默认上次更新时间
                     main.LastUpdateTime = DateTime.Now;
 
-                    //关联主键重复是否删除(1=是,0=否)
-                    main.IsDel = "1";
+                    //关联主键策略(1=重复删除,0=重复保留，2=重复更新)
+                    main.Policy = "1";
 
                     //增加业务
                     main.Id = Guid.NewGuid().ToString();

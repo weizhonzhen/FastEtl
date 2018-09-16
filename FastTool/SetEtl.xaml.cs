@@ -57,7 +57,7 @@ namespace FastTool
                 DataMonth.SelectedItem = temp;
 
                 list = IsDel.ItemsSource as List<BindModel>;
-                temp = list.Find(a => a.value == item.IsDel.ToInt(0));
+                temp = list.Find(a => a.value == item.Policy.ToInt(0));
                 IsDel.SelectedItem = temp;
             }
             else
@@ -125,6 +125,11 @@ namespace FastTool
             info.key = "重复删除";
             info.value = 1;
             list.Add(info);
+            
+            var temp = new BindModel();
+            temp.key = "重复更新";
+            temp.value = 2;
+            list.Add(temp);
 
             IsDel.ItemsSource = list;
         }
@@ -186,9 +191,9 @@ namespace FastTool
                 item.UpdateCount = (UpdateCount.SelectedItem as BindModel).value;
                 item.UpdateTime = (UpdateTime.SelectedItem as BindModel).value;
                 item.SaveDataMonth = (DataMonth.SelectedItem as BindModel).value;
-                item.IsDel = (IsDel.SelectedItem as BindModel).value.ToStr();
+                item.Policy = (IsDel.SelectedItem as BindModel).value.ToStr();
 
-                var isSuccess = FastWrite.Update<Data_Business>(item, a => a.Id == item.Id, a => new { a.UpdateCount, a.UpdateTime, a.UpdateDay,a.SaveDataMonth,a.IsDel }).IsSuccess;
+                var isSuccess = FastWrite.Update<Data_Business>(item, a => a.Id == item.Id, a => new { a.UpdateCount, a.UpdateTime, a.UpdateDay,a.SaveDataMonth,a.Policy }).IsSuccess;
                 if (isSuccess)
                 {
                     Bussiness.ItemsSource = AppCache.GetAllBusiness;

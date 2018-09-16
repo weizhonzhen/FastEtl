@@ -58,9 +58,9 @@ namespace FastModel.DataModel
         public decimal SaveDataMonth { get; set; }
 
         /// <summary>
-        /// 关联主键重复是否删除(1=是,0=否)
+        /// 关联主键策略(1=重复删除,0=重复保留，2=重复更新)
         /// </summary>
-        [Column(Comments = "关联主键重复是否删除(1=是,0=否)", DataType = "varchar2", Length = 1, IsNull = false)]
-        public string IsDel { get; set; }
+        [Column(Comments = "关联主键策略(1=重复删除,0=重复保留，2=重复更新)", DataType = "varchar2", Length = 1, IsNull = false)]
+        public string Policy { get; set; }
     }
 }

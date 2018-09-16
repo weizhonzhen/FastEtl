@@ -363,17 +363,28 @@ namespace FastService.Base
         }
         #endregion
 
-        #region 重复数据
+        #region 数据策略
         /// <summary>
-        /// 重复数据
+        /// 数据策略
         /// </summary>
-        public static void RepeatData(DataContext db, Data_Business item, object key)
+        public static bool DataPolicy(DataContext db, Data_Business item, object key,string columnName, object columnValue)
         {
-            if (item.IsDel == "1")
+            if (item.Policy == "1")
             {
                 var sql = string.Format("delete from {0} where key='{1}'", item.TableName, key);
                 db.ExecuteSql(sql, null, true);
+                return true;
             }
+
+            if (item.Policy == "2")
+            {
+                var sql = string.Format("update {0} set {1}='{2}'  where key='{3}'", item.TableName, columnName, columnValue, key);
+                db.ExecuteSql(sql, null, true);
+
+                return false;
+            }
+
+            return true;
         }
         #endregion
 
