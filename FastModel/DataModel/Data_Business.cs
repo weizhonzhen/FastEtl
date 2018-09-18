@@ -38,11 +38,11 @@ namespace FastModel.DataModel
         /// </summary>
         [Column(Comments = "更新频率(天)", DataType = "number(2)",IsNull = false)]
         public decimal UpdateDay { get; set; }
-        
+
         /// <summary>
-        /// 更新条数(万)
+        /// 抽取条数(万)
         /// </summary>
-        [Column(Comments = "更新条数(万)", DataType = "number(3)", IsNull = false)]
+        [Column(Comments = "抽取条数(万)", DataType = "number(3)", IsNull = false)]
         public decimal UpdateCount { get; set; }
 
         /// <summary>

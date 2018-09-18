@@ -33,7 +33,7 @@
         <Label Content="更新频率" HorizontalAlignment="Left" Margin="268,60,0,0" VerticalAlignment="Top"/>
         <ComboBox HorizontalAlignment="Left" Name="UpdateDay" SelectedIndex="0"  Margin="350,60,0,0" VerticalAlignment="Top" Width="180" ItemsSource="{Binding}" SelectedValuePath="value" DisplayMemberPath="key"/>
 
-        <Label Content="批量条数" HorizontalAlignment="Left" Margin="268,100,0,0" VerticalAlignment="Top"/>
+        <Label Content="抽取条数" HorizontalAlignment="Left" Margin="268,100,0,0" VerticalAlignment="Top"/>
         <ComboBox HorizontalAlignment="Left" Name="UpdateCount" SelectedIndex="0" Margin="350,100,0,0" VerticalAlignment="Top" Width="180" ItemsSource="{Binding}" SelectedValuePath="value" DisplayMemberPath="key"/>
 
         <Label Content="存放月数" HorizontalAlignment="Left" Margin="268,140,0,0" VerticalAlignment="Top"/>

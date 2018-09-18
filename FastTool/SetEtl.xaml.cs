@@ -135,9 +135,9 @@ namespace FastTool
         }
         #endregion
 
-        #region 初始化批量条数
+        #region 初始化抽取条数
         /// <summary>
-        /// 初始化批量条数
+        /// 初始化抽取条数
         /// </summary>
         private void InitUpdateCount()
         {
