@@ -31,7 +31,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FastData">
-      <HintPath>..\..\ShareTool\Etl\packages\Data\FastData.dll</HintPath>
+      <HintPath>..\packages\Data\FastData.dll</HintPath>
+    </Reference>
+    <Reference Include="FastRedis">
+      <HintPath>..\packages\Data\FastRedis.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -48,6 +51,7 @@
     <Compile Include="CacheModel\Cache_Table.cs" />
     <Compile Include="DataModel\Data_Business.cs" />
     <Compile Include="DataModel\Data_Business_Details.cs" />
+    <Compile Include="DataModel\Data_Dic_Details.cs" />
     <Compile Include="DataModel\Data_Source.cs" />
     <Compile Include="DataModel\Data_Dic.cs" />
     <Compile Include="DataModel\Data_Log.cs" />

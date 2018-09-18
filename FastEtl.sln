@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastTool", "FastTool\FastTo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastService", "FastServer\FastService.csproj", "{9262B36F-64B8-42A6-8B62-73C5DD3777E9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastModel", "Model\FastModel.csproj", "{AD297CA7-DDF7-49C1-ACA6-4353E8E7995D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastModel", "FastModel\FastModel.csproj", "{AD297CA7-DDF7-49C1-ACA6-4353E8E7995D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

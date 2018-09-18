@@ -142,7 +142,8 @@ namespace FastService
 
                                          DataSchema.CloseLink(link);
                                          DataSchema.ExpireData(db, item);
-                                         DataSchema.AddList(db, dt, ref log);
+                                         if (dt.Rows.Count > 0)
+                                             DataSchema.AddList(db, dt, ref log);
                                          db.Add(log);
                                          item.LastUpdateTime = DateTime.Now;
                                          FastWrite.Update<Data_Business>(item, a => a.Id == item.Id, a => new { a.LastUpdateTime }, db);
