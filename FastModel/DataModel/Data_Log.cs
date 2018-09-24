@@ -40,9 +40,9 @@ namespace FastModel.DataModel
         public int State { get; set; }
 
         /// <summary>
-        /// 成功条数(万)
+        /// 成功条数
         /// </summary>
-        [Column(Comments = "成功条数(万)", DataType = "number(3)", IsNull = false)]
+        [Column(Comments = "成功条数", DataType = "number(10)", IsNull = false)]
         public int SuccessCount { get; set; }
 
         /// <summary>
