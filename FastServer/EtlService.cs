@@ -92,61 +92,70 @@ namespace FastService
 
                                          var isAdd = true;
                                          var dt = DataSchema.GetTable(db, item.TableName);
-                                         var link = DataSchema.InitColLink(leaf, db);
                                          var columnName = dt.Columns[3].ColumnName.ToLower();    
                                          
                                          if (leaf.Exists(a => a.FieldName.ToLower() == columnName))
                                          {
+                                             DataSchema.ExpireData(db, item);
+
                                              //第一列
+                                             var link = DataSchema.InitColLink(leaf, db);
                                              var tempLeaf = leaf.Find(a => a.FieldName.ToLower() == columnName);
-                                             var firstColumnList = DataSchema.GetFirstColumnData(link[0], tempLeaf, item);
-                                             
-                                             //遍历填充table
-                                             for (var row = 0; row < firstColumnList.Count; row++)
+                                             var pageInfo = DataSchema.GetTableCount(link[0], tempLeaf, item);
+
+                                             for (var i = 1; i <= pageInfo.pageCount; i++)
                                              {
-                                                 var dtRow = dt.NewRow();
-                                                 dtRow["Id"] = Guid.NewGuid().ToString();
-                                                 dtRow["AddTime"] = DateTime.Now;
-                                                 dtRow["Key"]= firstColumnList[row].GetValue("key");
-                                                 dtRow[columnName] = firstColumnList[row].GetValue("data");
+                                                 pageInfo.pageId = i;
+                                                 var pageData = DataSchema.GetFirstColumnData(link[0], tempLeaf, item, pageInfo);
 
-                                                 //字典对照
-                                                 if (!string.IsNullOrEmpty(tempLeaf.Dic))
-                                                     dtRow[columnName] = FastRead.Query<Data_Dic_Details>(a => a.Value.ToLower() == dtRow[columnName].ToStr().ToLower() && a.DicId == tempLeaf.Dic, a => new { a.ContrastValue }).ToDic(db).GetValue("ContrastValue");
-
-                                                 //数据策略
-                                                 isAdd = DataSchema.DataPolicy(db, item, dtRow["Key"], columnName, dtRow[columnName]);
-                                                 
-                                                 for (var col = 3; col < dt.Columns.Count; col++)
+                                                 //遍历填充table
+                                                 for (var row = 0; row < pageData.list.Count; row++)
                                                  {
-                                                     columnName = dt.Columns[col].ColumnName.ToLower();
-                                                     if (leaf.Exists(a => a.FieldName.ToLower() == columnName))
+                                                     var dtRow = dt.NewRow();
+                                                     dtRow["Id"] = Guid.NewGuid().ToString();
+                                                     dtRow["AddTime"] = DateTime.Now;
+                                                     dtRow["Key"] = pageData.list[row].GetValue("key");
+                                                     dtRow[columnName] = pageData.list[row].GetValue("data");
+
+                                                     //字典对照
+                                                     if (!string.IsNullOrEmpty(tempLeaf.Dic))
+                                                         dtRow[columnName] = FastRead.Query<Data_Dic_Details>(a => a.Value.ToLower() == dtRow[columnName].ToStr().ToLower() && a.DicId == tempLeaf.Dic, a => new { a.ContrastValue }).ToDic(db).GetValue("ContrastValue");
+
+                                                     //数据策略
+                                                     isAdd = DataSchema.DataPolicy(db, item, dtRow["Key"], columnName, dtRow[columnName]);
+
+                                                     for (var col = 3; col < dt.Columns.Count; col++)
                                                      {
-                                                         tempLeaf = leaf.Find(a => a.FieldName.ToLower() == columnName);
-                                                         dtRow[columnName] = DataSchema.GetColumnData(link[col], tempLeaf, dtRow["Key"]);
+                                                         columnName = dt.Columns[col].ColumnName.ToLower();
+                                                         if (leaf.Exists(a => a.FieldName.ToLower() == columnName))
+                                                         {
+                                                             tempLeaf = leaf.Find(a => a.FieldName.ToLower() == columnName);
+                                                             dtRow[columnName] = DataSchema.GetColumnData(link[col], tempLeaf, dtRow["Key"]);
 
-                                                         //字典对照
-                                                         if (!string.IsNullOrEmpty(tempLeaf.Dic))
-                                                             dtRow[columnName] = FastRead.Query<Data_Dic_Details>(a => a.Value.ToLower() == dtRow[columnName].ToStr().ToLower() && a.DicId == tempLeaf.Dic, a => new { a.ContrastValue }).ToDic(db).GetValue("ContrastValue");
+                                                             //字典对照
+                                                             if (!string.IsNullOrEmpty(tempLeaf.Dic))
+                                                                 dtRow[columnName] = FastRead.Query<Data_Dic_Details>(a => a.Value.ToLower() == dtRow[columnName].ToStr().ToLower() && a.DicId == tempLeaf.Dic, a => new { a.ContrastValue }).ToDic(db).GetValue("ContrastValue");
 
-                                                         //数据策略
-                                                         if (item.Policy == "2")
-                                                             isAdd = DataSchema.DataPolicy(db, item, dtRow["Key"], columnName, dtRow[columnName]);
+                                                             //数据策略
+                                                             if (item.Policy == "2")
+                                                                 isAdd = DataSchema.DataPolicy(db, item, dtRow["Key"], columnName, dtRow[columnName]);
+                                                         }
                                                      }
+
+                                                     if (isAdd)
+                                                         dt.Rows.Add(dtRow);
                                                  }
 
-                                                 if (isAdd)
-                                                     dt.Rows.Add(dtRow);
+                                                 if (dt.Rows.Count > 0)
+                                                     DataSchema.AddList(db, dt, ref log);
+                                                 db.Add(log);
+                                                 dt.Clear();
                                              }
-                                         }
 
-                                         DataSchema.CloseLink(link);
-                                         DataSchema.ExpireData(db, item);
-                                         if (dt.Rows.Count > 0)
-                                             DataSchema.AddList(db, dt, ref log);
-                                         db.Add(log);
-                                         item.LastUpdateTime = DateTime.Now;
-                                         FastWrite.Update<Data_Business>(item, a => a.Id == item.Id, a => new { a.LastUpdateTime }, db);
+                                             DataSchema.CloseLink(link);
+                                             item.LastUpdateTime = DateTime.Now;
+                                             FastWrite.Update<Data_Business>(item, a => a.Id == item.Id, a => new { a.LastUpdateTime }, db);
+                                         }
                                      }
                                  }));
                             }

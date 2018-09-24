@@ -33,9 +33,6 @@
     <Reference Include="FastData">
       <HintPath>..\packages\Data\FastData.dll</HintPath>
     </Reference>
-    <Reference Include="FastRedis">
-      <HintPath>..\packages\Data\FastRedis.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -55,6 +52,8 @@
     <Compile Include="DataModel\Data_Source.cs" />
     <Compile Include="DataModel\Data_Dic.cs" />
     <Compile Include="DataModel\Data_Log.cs" />
+    <Compile Include="Model\PageData.cs" />
+    <Compile Include="Model\PageModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

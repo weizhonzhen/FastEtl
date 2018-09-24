@@ -11,6 +11,7 @@ using MySql.Data.MySqlClient;
 using System.Text;
 using System.Data.SqlClient;
 using FastData;
+using FastModel.Model;
 
 namespace FastService.Base
 {
@@ -109,28 +110,37 @@ namespace FastService.Base
         /// 取读取第一列数据
         /// </summary>
         /// <returns></returns>
-        public static List<Dictionary<string, object>> GetFirstColumnData(Dictionary<string, object> link, Data_Business_Details columnInfo, Data_Business tableInfo)
+        public static PageData GetFirstColumnData(Dictionary<string, object> link, Data_Business_Details columnInfo, Data_Business tableInfo,PageModel page)
         {
-            var list = new List<Dictionary<string, object>>();
+            var data = new PageData();
             var type = link.GetValue("type").ToStr();
             var conn = link.GetValue("conn") as DbConnection;
+            var sql = "";
 
             if (type == FastApp.DataDbType.Oracle.ToLower())
             {
                 var cmd = conn.CreateCommand();
-                if (string.IsNullOrEmpty(columnInfo.TableName))
-                    cmd.CommandText = string.Format("select * from ({0}) where rownum <={1}", columnInfo.Sql, tableInfo.UpdateCount);
+
+                if (IsFirtExtract(cmd, tableInfo.TableName))
+                    sql = string.Format("select * from(select field.a,field.b,ROWNUM RN from(select {0} a,{1} b from {2}) field where rownum<={3}) where rn>={4}"
+                                        , columnInfo.Key, columnInfo.ColumnName, columnInfo.TableName, (page.pageId - 1) * page.pageSize + 1, page.pageId * page.pageSize);
                 else
-                    cmd.CommandText = string.Format("select {0} a,{1} b from {2} where rownum <={3} order by {4} desc"
-                                        , columnInfo.Key, columnInfo.ColumnName, columnInfo.TableName, tableInfo.UpdateCount, columnInfo.OrderBy);
+                {
+                    if (string.IsNullOrEmpty(columnInfo.TableName))
+                        sql = string.Format("select * from ({0}) where rownum <={1}", columnInfo.Sql, tableInfo.UpdateCount);
+                    else
+                        sql = string.Format("select {0} a,{1} b from {2} where rownum <={3} order by {4} desc"
+                                            , columnInfo.Key, columnInfo.ColumnName, columnInfo.TableName, tableInfo.UpdateCount, columnInfo.OrderBy);
+                }
+
+                cmd.CommandText = sql;
                 var dr = cmd.ExecuteReader();
                 while (dr.Read())
                 {
                     var dic = new Dictionary<string, object>();
                     dic.Add("key", dr[0]);
                     dic.Add("data", dr[1]);
-                    
-                    list.Add(dic);
+                    data.list.Add(dic);
                 }
                 dr.Close();
             }
@@ -138,18 +148,28 @@ namespace FastService.Base
             if (type == FastApp.DataDbType.SqlServer.ToLower())
             {
                 var cmd = conn.CreateCommand();
-                if (string.IsNullOrEmpty(columnInfo.TableName))
-                    cmd.CommandText = string.Format("select top {1} * from ({0})a", columnInfo.Sql, tableInfo.UpdateCount);
+                if (IsFirtExtract(cmd, tableInfo.TableName))
+                {
+                    sql = string.Format("select top {0} * from (select row_number()over({1})temprownumber,* from (select tempcolumn=0,{1} a,{2} b from {3})t)tt where temprownumber>={4}"
+                                , page.pageSize, columnInfo.Key, columnInfo.ColumnName, columnInfo.TableName, page.pageId * page.pageSize - 1);
+                }
                 else
-                    cmd.CommandText = string.Format("select top {0} {1} a,{2} b from {3} order by {4} desc"
-                            , tableInfo.UpdateCount, columnInfo.Key, columnInfo.ColumnName, columnInfo.TableName, columnInfo.OrderBy);
+                {
+                    if (string.IsNullOrEmpty(columnInfo.TableName))
+                        sql = string.Format("select top {1} * from ({0})a", columnInfo.Sql, tableInfo.UpdateCount);
+                    else
+                        sql = string.Format("select top {0} {1} a,{2} b from {3} order by {4} desc"
+                                , tableInfo.UpdateCount, columnInfo.Key, columnInfo.ColumnName, columnInfo.TableName, columnInfo.OrderBy);
+                }
+
+                cmd.CommandText = sql;
                 var dr = cmd.ExecuteReader();
                 while (dr.Read())
                 {
                     var dic = new Dictionary<string, object>();
                     dic.Add("key", dr[0]);
                     dic.Add("data", dr[1]);
-                    list.Add(dic);
+                    data.list.Add(dic);
                 }
                 dr.Close();
             }
@@ -157,24 +177,32 @@ namespace FastService.Base
             if (type == FastApp.DataDbType.MySql.ToLower())
             {
                 var cmd = conn.CreateCommand();
-                if (string.IsNullOrEmpty(columnInfo.TableName))
-                    cmd.CommandText = string.Format("select * from ({0}) limit {1}", columnInfo.Sql, tableInfo.UpdateCount);
+                if (IsFirtExtract(cmd, tableInfo.TableName))
+                    sql = string.Format("select {0} a,{1} b from {2} where limit {3},{4}"
+                                , columnInfo.Key, columnInfo.ColumnName, columnInfo.TableName, (page.pageId - 1) * page.pageSize + 1, page.pageId * page.pageSize);
                 else
-                    cmd.CommandText = string.Format("select {0} a,{1} b from {2} where limit {3} order by {4} desc"
-                                , columnInfo.Key, columnInfo.ColumnName, columnInfo.TableName, tableInfo.UpdateCount, columnInfo.OrderBy);
+                {
+                    if (string.IsNullOrEmpty(columnInfo.TableName))
+                        sql = string.Format("select * from ({0}) limit {1}", columnInfo.Sql, tableInfo.UpdateCount);
+                    else
+                        sql = string.Format("select {0} a,{1} b from {2} where limit {3} order by {4} desc"
+                                    , columnInfo.Key, columnInfo.ColumnName, columnInfo.TableName, tableInfo.UpdateCount, columnInfo.OrderBy);
+                }
+
+                cmd.CommandText = sql;
                 var dr = cmd.ExecuteReader();
                 while (dr.Read())
                 {
                     var dic = new Dictionary<string, object>();
                     dic.Add("key", dr[0]);
                     dic.Add("data", dr[1]);
-                    list.Add(dic);
+                    data.list.Add(dic);
                 }
 
                 dr.Close();
             }
 
-            return list;
+            return data;
         }
         #endregion
 
@@ -663,6 +691,118 @@ namespace FastService.Base
                 conn.Close();
                 conn.Dispose();
             }
+        }
+        #endregion
+
+        #region 获取条数
+        /// <summary>
+        /// 获取条数
+        /// </summary>
+        /// <param name="link"></param>
+        /// <param name="tableInfo"></param>
+        /// <returns></returns>
+        public static PageModel GetTableCount(Dictionary<string, object> link, Data_Business_Details columnInfo, Data_Business tableInfo)
+        {
+            var page = new PageModel();
+            var type = link.GetValue("type").ToStr();
+            var conn = link.GetValue("conn") as DbConnection;
+
+            if (type == FastApp.DataDbType.MySql.ToLower())
+            {
+                var cmd = conn.CreateCommand();
+                if (IsFirtExtract(cmd, tableInfo.TableName))
+                {
+                    if (string.IsNullOrEmpty(columnInfo.TableName))
+                        cmd.CommandText = string.Format("select count(*) from ({0})", columnInfo.Sql);
+                    else
+                        cmd.CommandText = string.Format("select count(*) from {0}", columnInfo.TableName);
+
+                    var dr = cmd.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        page.total = dr[0].ToStr().ToLong(0);
+                    }
+                    dr.Close();
+                }
+                else
+                    page.total = (long)tableInfo.UpdateCount;
+            }
+
+            if (type == FastApp.DataDbType.SqlServer.ToLower())
+            {
+                var cmd = conn.CreateCommand();
+                if (IsFirtExtract(cmd, tableInfo.TableName))
+                {
+                    if (string.IsNullOrEmpty(columnInfo.TableName))
+                        cmd.CommandText = string.Format("select count(*) from ({0}) a", columnInfo.Sql);
+                    else
+                        cmd.CommandText = string.Format("select count(*) from {0}", columnInfo.TableName);
+
+                    var dr = cmd.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        page.total = dr[0].ToStr().ToLong(0);
+                    }
+                    dr.Close();
+                }
+                else
+                    page.total = (long)tableInfo.UpdateCount;
+            }
+
+            if (type == FastApp.DataDbType.MySql.ToLower())
+            {
+                var cmd = conn.CreateCommand();
+                if (IsFirtExtract(cmd, tableInfo.TableName))
+                {
+                    if (string.IsNullOrEmpty(columnInfo.TableName))
+                        cmd.CommandText = string.Format("select count(*) from ({0})", columnInfo.Sql);
+                    else
+                        cmd.CommandText = string.Format("select count(*) from {0}", columnInfo.TableName);
+
+                    var dr = cmd.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        page.total = dr[0].ToStr().ToLong(0);
+                    }
+                    dr.Close();
+                }
+                else
+                    page.total = (long)tableInfo.UpdateCount;
+            }
+
+            page.pageId = 1;
+            page.pageSize = 1000;
+
+            if ((page.total % page.pageSize) == 0)
+                page.pageCount = long.Parse((page.total / page.pageSize).ToString());
+            else
+                page.pageCount = long.Parse(((page.total / page.pageSize) + 1).ToString());
+
+            return page;
+        }
+        #endregion
+
+        #region 是否第一次抽取数据
+        /// <summary>
+        /// 是否第一次抽取数据
+        /// </summary>
+        /// <param name="cmd"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private static bool IsFirtExtract(DbCommand cmd,string tableName)
+        {
+            var isExists = false;
+            cmd.CommandText = string.Format("select count(0) from {0}", tableName);
+            var dr = cmd.ExecuteReader();
+
+            while(dr.Read())
+            {
+                if (dr[0].ToStr().ToInt(0) > 0)
+                    isExists = true;
+            }
+
+            dr.Close();
+            return isExists;
         }
         #endregion
     }
