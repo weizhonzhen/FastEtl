@@ -102,7 +102,7 @@ namespace FastService
                                              {
                                                  var log = new Data_Log();
                                                  log.Id = Guid.NewGuid().ToStr();
-                                                 log.TableName = item.TableName;
+                                                 log.TableName = string.Format("{0}_page_{1}", item.TableName, i);
                                                  log.BeginDateTime = DateTime.Now;
 
                                                  pageInfo.pageId = i;
@@ -130,7 +130,7 @@ namespace FastService
                                                          if (leaf.Exists(a => a.FieldName.ToLower() == columnName))
                                                          {
                                                              tempLeaf = leaf.Find(a => a.FieldName.ToLower() == columnName);
-                                                             dtRow[columnName] = DataSchema.GetColumnData(link[col], tempLeaf, dtRow["Key"]);
+                                                             dtRow[columnName] = DataSchema.GetColumnData(link[col-3], tempLeaf, dtRow["Key"]);
 
                                                              //字典对照
                                                              if (!string.IsNullOrEmpty(tempLeaf.Dic))

@@ -110,7 +110,7 @@ namespace FastService.Base
         /// 取读取第一列数据
         /// </summary>
         /// <returns></returns>
-        public static PageData GetFirstColumnData(Dictionary<string, object> link, Data_Business_Details columnInfo, Data_Business tableInfo,PageModel page)
+        public static PageData GetFirstColumnData(Dictionary<string, object> link, Data_Business_Details columnInfo, Data_Business tableInfo, PageModel page)
         {
             var data = new PageData();
             var type = link.GetValue("type").ToStr();
@@ -123,7 +123,7 @@ namespace FastService.Base
 
                 if (IsFirtExtract(cmd, tableInfo.TableName))
                     sql = string.Format("select * from(select field.a,field.b,ROWNUM RN from(select {0} a,{1} b from {2}) field where rownum<={3}) where rn>={4}"
-                                        , columnInfo.Key, columnInfo.ColumnName, columnInfo.TableName, (page.pageId - 1) * page.pageSize + 1, page.pageId * page.pageSize);
+                                        , columnInfo.Key, columnInfo.ColumnName, columnInfo.TableName, page.pageId * page.pageSize, (page.pageId - 1) * page.pageSize + 1);
                 else
                 {
                     if (string.IsNullOrEmpty(columnInfo.TableName))
@@ -323,7 +323,7 @@ namespace FastService.Base
                     {
                         conn.Open();
                         var cmd = conn.CreateCommand();
-                        cmd.CommandText = GetMySql(dt,db);
+                        cmd.CommandText = GetMySql(dt, db);
                         log.SuccessCount = cmd.ExecuteNonQuery();
                         if (log.SuccessCount > 0)
                             log.State = 1;
@@ -386,7 +386,7 @@ namespace FastService.Base
         {
             var month = item.SaveDataMonth.ToStr().ToInt(0) * -1;
             var sql = string.Format("delete from {0} where addtime<='{1}'", item.TableName, DateTime.Now.AddMonths(month));
-            
+
             db.ExecuteSql(sql, null, true);
         }
         #endregion
@@ -395,7 +395,7 @@ namespace FastService.Base
         /// <summary>
         /// 数据策略
         /// </summary>
-        public static bool DataPolicy(DataContext db, Data_Business item, object key,string columnName, object columnValue)
+        public static bool DataPolicy(DataContext db, Data_Business item, object key, string columnName, object columnValue)
         {
             if (item.Policy == "1")
             {
@@ -476,12 +476,12 @@ namespace FastService.Base
             var list = DataSchema.ColumnList(db, dt.TableName);
             foreach (var item in list)
             {
-                sql.AppendFormat("{0},",item.GetValue("name"));
+                sql.AppendFormat("{0},", item.GetValue("name"));
             }
             sql.Append(")").Replace(",)", ")");
             sql.Append("values");
 
-            foreach(DataRow dr in dt.Rows)
+            foreach (DataRow dr in dt.Rows)
             {
                 sql.Append("(");
                 for (int i = 0; i < dt.Columns.Count; i++)
@@ -704,71 +704,25 @@ namespace FastService.Base
         public static PageModel GetTableCount(Dictionary<string, object> link, Data_Business_Details columnInfo, Data_Business tableInfo)
         {
             var page = new PageModel();
-            var type = link.GetValue("type").ToStr();
             var conn = link.GetValue("conn") as DbConnection;
+            var cmd = conn.CreateCommand();
 
-            if (type == FastApp.DataDbType.MySql.ToLower())
+            if (!IsFirtExtract(cmd, tableInfo.TableName))
             {
-                var cmd = conn.CreateCommand();
-                if (IsFirtExtract(cmd, tableInfo.TableName))
-                {
-                    if (string.IsNullOrEmpty(columnInfo.TableName))
-                        cmd.CommandText = string.Format("select count(*) from ({0})", columnInfo.Sql);
-                    else
-                        cmd.CommandText = string.Format("select count(*) from {0}", columnInfo.TableName);
-
-                    var dr = cmd.ExecuteReader();
-                    while (dr.Read())
-                    {
-                        page.total = dr[0].ToStr().ToLong(0);
-                    }
-                    dr.Close();
-                }
+                if (string.IsNullOrEmpty(columnInfo.TableName))
+                    cmd.CommandText = string.Format("select count(*) from ({0})", columnInfo.Sql);
                 else
-                    page.total = (long)tableInfo.UpdateCount;
-            }
+                    cmd.CommandText = string.Format("select count(*) from {0}", columnInfo.TableName);
 
-            if (type == FastApp.DataDbType.SqlServer.ToLower())
-            {
-                var cmd = conn.CreateCommand();
-                if (IsFirtExtract(cmd, tableInfo.TableName))
+                var dr = cmd.ExecuteReader();
+                while (dr.Read())
                 {
-                    if (string.IsNullOrEmpty(columnInfo.TableName))
-                        cmd.CommandText = string.Format("select count(*) from ({0}) a", columnInfo.Sql);
-                    else
-                        cmd.CommandText = string.Format("select count(*) from {0}", columnInfo.TableName);
-
-                    var dr = cmd.ExecuteReader();
-                    while (dr.Read())
-                    {
-                        page.total = dr[0].ToStr().ToLong(0);
-                    }
-                    dr.Close();
+                    page.total = dr[0].ToStr().ToLong(0);
                 }
-                else
-                    page.total = (long)tableInfo.UpdateCount;
+                dr.Close();
             }
-
-            if (type == FastApp.DataDbType.MySql.ToLower())
-            {
-                var cmd = conn.CreateCommand();
-                if (IsFirtExtract(cmd, tableInfo.TableName))
-                {
-                    if (string.IsNullOrEmpty(columnInfo.TableName))
-                        cmd.CommandText = string.Format("select count(*) from ({0})", columnInfo.Sql);
-                    else
-                        cmd.CommandText = string.Format("select count(*) from {0}", columnInfo.TableName);
-
-                    var dr = cmd.ExecuteReader();
-                    while (dr.Read())
-                    {
-                        page.total = dr[0].ToStr().ToLong(0);
-                    }
-                    dr.Close();
-                }
-                else
-                    page.total = (long)tableInfo.UpdateCount;
-            }
+            else
+                page.total = (long)tableInfo.UpdateCount;
 
             page.pageId = 1;
             page.pageSize = 1000;
@@ -789,16 +743,16 @@ namespace FastService.Base
         /// <param name="cmd"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        private static bool IsFirtExtract(DbCommand cmd,string tableName)
+        private static bool IsFirtExtract(DbCommand cmd, string tableName)
         {
-            var isExists = false;
+            var isExists = true;
             cmd.CommandText = string.Format("select count(0) from {0}", tableName);
             var dr = cmd.ExecuteReader();
 
-            while(dr.Read())
+            while (dr.Read())
             {
                 if (dr[0].ToStr().ToInt(0) > 0)
-                    isExists = true;
+                    isExists = false;
             }
 
             dr.Close();
