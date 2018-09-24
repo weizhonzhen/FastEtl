@@ -85,11 +85,6 @@ namespace FastService
 
                                      if (leaf.Count > 0)
                                      {
-                                         var log = new Data_Log();
-                                         log.Id = Guid.NewGuid().ToStr();
-                                         log.TableName = item.TableName;
-                                         log.BeginDateTime = DateTime.Now;
-
                                          var isAdd = true;
                                          var dt = DataSchema.GetTable(db, item.TableName);
                                          var columnName = dt.Columns[3].ColumnName.ToLower();    
@@ -105,6 +100,11 @@ namespace FastService
 
                                              for (var i = 1; i <= pageInfo.pageCount; i++)
                                              {
+                                                 var log = new Data_Log();
+                                                 log.Id = Guid.NewGuid().ToStr();
+                                                 log.TableName = item.TableName;
+                                                 log.BeginDateTime = DateTime.Now;
+
                                                  pageInfo.pageId = i;
                                                  var pageData = DataSchema.GetFirstColumnData(link[0], tempLeaf, item, pageInfo);
 
