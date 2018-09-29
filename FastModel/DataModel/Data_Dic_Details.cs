@@ -1,5 +1,5 @@
 ﻿using FastData.Property;
-namespace FastModel.DataModel
+namespace FastEtlModel.DataModel
 {
     /// <summary>
     /// 字典明细表

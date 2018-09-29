@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FastModel.CacheModel
+namespace FastEtlModel.CacheModel
 {
     /// <summary>
     /// 列

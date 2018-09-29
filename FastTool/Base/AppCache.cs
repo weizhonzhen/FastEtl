@@ -1,10 +1,10 @@
 ﻿using FastData;
 using FastData.Context;
-using FastModel.CacheModel;
-using FastModel.DataModel;
+using FastEtlModel.CacheModel;
+using FastEtlModel.DataModel;
 using System.Collections.Generic;
 
-namespace FastTool.Base
+namespace FastEtlTool.Base
 {
     public static class AppCache
     {

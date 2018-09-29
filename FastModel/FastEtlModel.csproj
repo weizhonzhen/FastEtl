@@ -7,8 +7,8 @@
     <ProjectGuid>{AD297CA7-DDF7-49C1-ACA6-4353E8E7995D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FastModel</RootNamespace>
-    <AssemblyName>FastModel</AssemblyName>
+    <RootNamespace>FastEtlModel</RootNamespace>
+    <AssemblyName>FastEtlModel</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

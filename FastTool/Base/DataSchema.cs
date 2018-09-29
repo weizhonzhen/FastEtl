@@ -1,8 +1,8 @@
 ﻿using FastData.Context;
 using MySql.Data.MySqlClient;
 using Oracle.ManagedDataAccess.Client;
-using FastModel.CacheModel;
-using FastModel.DataModel;
+using FastEtlModel.CacheModel;
+using FastEtlModel.DataModel;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -12,7 +12,7 @@ using FastUntility.Base;
 using FastData.Model;
 using FastApp;
 
-namespace FastTool.Base
+namespace FastEtlTool.Base
 {
     /// <summary>
     /// 获取表 列

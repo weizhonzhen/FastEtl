@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FastModel.CacheModel
+namespace FastEtlModel.CacheModel
 {
     /// <summary>
     /// 表

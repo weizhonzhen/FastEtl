@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace FastModel.Model
+namespace FastEtlModel.Model
 {
     /// <summary>
     /// 分页数据

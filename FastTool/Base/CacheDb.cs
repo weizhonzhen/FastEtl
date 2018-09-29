@@ -3,7 +3,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Aoite.LevelDB;
 
-namespace FastTool.Base
+namespace FastEtlTool.Base
 {
     public static class CacheDb
     {

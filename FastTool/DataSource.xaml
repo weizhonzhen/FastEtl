@@ -1,4 +1,4 @@
-﻿<Window x:Class="FastTool.DataSource"
+﻿<Window x:Class="FastEtlTool.DataSource"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Height="435" Width="300" Background="#efefef">

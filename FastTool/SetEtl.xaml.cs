@@ -1,12 +1,12 @@
-﻿using FastTool.Base;
-using FastModel.DataModel;
+﻿using FastEtlTool.Base;
+using FastEtlModel.DataModel;
 using System.Collections.Generic;
 using System.Windows;
 using FastData;
 using System.Windows.Controls;
 using FastUntility.Base;
 
-namespace FastTool
+namespace FastEtlTool
 {
     /// <summary>
     /// SetEtl.xaml 的交互逻辑

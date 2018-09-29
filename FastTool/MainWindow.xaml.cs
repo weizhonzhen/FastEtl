@@ -1,9 +1,9 @@
-﻿using FastTool.Base;
+﻿using FastEtlTool.Base;
 using System;
 using System.Windows;
 using System.Windows.Forms;
 
-namespace FastTool
+namespace FastEtlTool
 {
     /// <summary>
     /// MainWindow.xaml 的交互逻辑

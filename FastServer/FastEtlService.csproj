@@ -92,9 +92,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FastModel\FastModel.csproj">
+    <ProjectReference Include="..\FastModel\FastEtlModel.csproj">
       <Project>{ad297ca7-ddf7-49c1-aca6-4353e8e7995d}</Project>
-      <Name>FastModel</Name>
+      <Name>FastEtlModel</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,12 +1,12 @@
-﻿using FastTool.Base;
+﻿using FastEtlTool.Base;
 using System.Windows;
 using FastData;
 using System;
-using FastModel.DataModel;
+using FastEtlModel.DataModel;
 using FastData.Context;
 using System.Configuration;
 
-namespace FastTool
+namespace FastEtlTool
 {
     /// <summary>
     /// Ds.xaml 的交互逻辑

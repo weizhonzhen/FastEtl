@@ -1,6 +1,6 @@
 ﻿using FastData.Property;
 
-namespace FastModel.DataModel
+namespace FastEtlModel.DataModel
 {
     /// <summary>
     /// 业务配置表详情表

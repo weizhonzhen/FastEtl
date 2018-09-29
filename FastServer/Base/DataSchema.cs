@@ -1,4 +1,4 @@
-﻿using FastModel.DataModel;
+﻿using FastEtlModel.DataModel;
 using FastData.Context;
 using FastUntility.Base;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ using MySql.Data.MySqlClient;
 using System.Text;
 using System.Data.SqlClient;
 using FastData;
-using FastModel.Model;
+using FastEtlModel.Model;
 
 namespace FastEtlService.Base
 {

@@ -4,7 +4,7 @@ using System.ServiceProcess;
 using System.Timers;
 using FastData;
 using FastData.Context;
-using FastModel.DataModel;
+using FastEtlModel.DataModel;
 using System.Threading.Tasks;
 using FastEtlService.Base;
 using System.Collections.Generic;

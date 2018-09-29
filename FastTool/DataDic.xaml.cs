@@ -1,5 +1,5 @@
-﻿using FastModel.DataModel;
-using FastTool.Base;
+﻿using FastEtlModel.DataModel;
+using FastEtlTool.Base;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -7,7 +7,7 @@ using FastData;
 using FastData.Context;
 using System;
 
-namespace FastTool
+namespace FastEtlTool
 {
     /// <summary>
     /// DataDic.xaml 的交互逻辑

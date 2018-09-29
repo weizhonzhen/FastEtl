@@ -1,4 +1,4 @@
-﻿namespace FastModel.Model
+﻿namespace FastEtlModel.Model
 {
     public class PageModel
     {

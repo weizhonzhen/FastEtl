@@ -7,7 +7,7 @@ using System.Windows.Threading;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace FastTool.Base
+namespace FastEtlTool.Base
 {
     /// <summary>
     /// 公用类

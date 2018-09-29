@@ -1,7 +1,7 @@
-﻿using FastTool.Base;
+﻿using FastEtlTool.Base;
 using System.Windows;
 
-namespace FastTool
+namespace FastEtlTool
 {
     /// <summary>
     /// CodeBox.xaml 的交互逻辑

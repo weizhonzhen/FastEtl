@@ -1,7 +1,7 @@
 ﻿using FastData.Property;
 using System;
 
-namespace FastModel.DataModel
+namespace FastEtlModel.DataModel
 {
     /// <summary>
     /// 数据源

@@ -1,11 +1,11 @@
 ﻿using MySql.Data.MySqlClient;
 using Oracle.ManagedDataAccess.Client;
-using FastModel.DataModel;
+using FastEtlModel.DataModel;
 using System;
 using System.Data.SqlClient;
 using System.Windows.Controls;
 
-namespace FastTool.Base
+namespace FastEtlTool.Base
 {
     public static class BaseLink
     {           
