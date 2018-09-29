@@ -24,11 +24,11 @@ namespace FastEtlTool
         protected override void OnStartup(StartupEventArgs e)
         {
             //初始化表
-            FastData.FastMap.InstanceTable(AppDomain.CurrentDomain.GetAssemblies(), "FastModel.DataModel", "FastModel.dll");
+            FastData.FastMap.InstanceTable(AppDomain.CurrentDomain.GetAssemblies(), "FastEtlModel.DataModel", "FastEtlModel.dll");
             
-            if (Process.GetProcessesByName("FastTool").Count() > 1)
+            if (Process.GetProcessesByName("FastEtlTool").Count() > 1)
             {
-                var handle = Process.GetProcessesByName("FastTool")[1].MainWindowHandle;
+                var handle = Process.GetProcessesByName("FastEtlTool")[1].MainWindowHandle;
                 if (handle.ToInt32() == 0)
                 {
                     var frmHwnd = FindWindow(null, FastApp.Config.Title);
