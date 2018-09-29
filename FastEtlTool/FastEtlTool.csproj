@@ -201,7 +201,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FastModel\FastEtlModel.csproj">
+    <ProjectReference Include="..\FastEtlModel\FastEtlModel.csproj">
       <Project>{ad297ca7-ddf7-49c1-aca6-4353e8e7995d}</Project>
       <Name>FastEtlModel</Name>
     </ProjectReference>

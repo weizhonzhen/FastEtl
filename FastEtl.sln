@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2042
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastEtlTool", "FastTool\FastEtlTool.csproj", "{1F492FC7-68A0-4480-B0C3-F51803D9BDD7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastEtlTool", "FastEtlTool\FastEtlTool.csproj", "{1F492FC7-68A0-4480-B0C3-F51803D9BDD7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastEtlService", "FastServer\FastEtlService.csproj", "{9262B36F-64B8-42A6-8B62-73C5DD3777E9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastEtlService", "FastEtlServer\FastEtlService.csproj", "{9262B36F-64B8-42A6-8B62-73C5DD3777E9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastEtlModel", "FastModel\FastEtlModel.csproj", "{AD297CA7-DDF7-49C1-ACA6-4353E8E7995D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastEtlModel", "FastEtlModel\FastEtlModel.csproj", "{AD297CA7-DDF7-49C1-ACA6-4353E8E7995D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
