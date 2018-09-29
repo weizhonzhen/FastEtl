@@ -1,6 +1,6 @@
 ﻿using System.ServiceProcess;
 
-namespace FastService
+namespace FastEtlService
 {
     static class Program
     {

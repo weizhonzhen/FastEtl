@@ -13,7 +13,7 @@ using System.Data.SqlClient;
 using FastData;
 using FastModel.Model;
 
-namespace FastService.Base
+namespace FastEtlService.Base
 {
     public static class DataSchema
     {

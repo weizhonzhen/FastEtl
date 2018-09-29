@@ -6,10 +6,10 @@ using FastData;
 using FastData.Context;
 using FastModel.DataModel;
 using System.Threading.Tasks;
-using FastService.Base;
+using FastEtlService.Base;
 using System.Collections.Generic;
 
-namespace FastService
+namespace FastEtlService
 {
     public partial class EtlService : ServiceBase
     {

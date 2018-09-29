@@ -1,4 +1,4 @@
-﻿namespace FastService
+﻿namespace FastEtlService
 {
     partial class ProjectInstaller
     {
@@ -38,8 +38,8 @@
 
             //服务名称
             this.serviceInstaller1.ServiceName = "FastEtlService";
-            this.serviceInstaller1.Description = "数据抽取";
-            this.serviceInstaller1.DisplayName = "数据抽取";
+            this.serviceInstaller1.Description = "FastEtl(数据抽取)";
+            this.serviceInstaller1.DisplayName = "FastEtl(数据抽取)";
 
             this.Installers.AddRange(new System.Configuration.Install.Installer[] {
             this.serviceProcessInstaller1,

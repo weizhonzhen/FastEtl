@@ -1,4 +1,4 @@
-﻿namespace FastService
+﻿namespace FastEtlService
 {
     partial class EtlService
     {

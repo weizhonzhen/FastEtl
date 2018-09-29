@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace FastService
+namespace FastEtlService
 {
     [RunInstaller(true)]
     public partial class ProjectInstaller : System.Configuration.Install.Installer
