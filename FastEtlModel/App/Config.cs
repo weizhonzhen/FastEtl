@@ -37,7 +37,7 @@ namespace FastApp
         /// <summary>
         /// mysql
         /// </summary>
-        public readonly static string MySql = "System.Data.SqlClient";
+         public readonly static string MySql = "MySql.Data.MySqlClient";
 
         /// <summary>
         /// sql server
