@@ -30,7 +30,6 @@ namespace FastEtlWeb
             services.AddMvc(options =>
             {
                 options.Filters.Add(new CheckFilter());
-                options.Filters.Add(new ErrorFilter());
             }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0).AddRazorPagesOptions(o =>
             {
                 o.Conventions.ConfigureFilter(new IgnoreAntiforgeryTokenAttribute());
