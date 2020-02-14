@@ -1,0 +1,330 @@
+﻿@page
+@model FastEtlWeb.Pages.BusinessDetailsModel
+@{
+    Layout = null;
+}
+<html>
+<head>
+    @Html.Partial("Meta")
+    @Html.Partial("link")
+    @Html.Partial("script")
+</head>
+<body class="form-body" style="padding: 20px 10px 20px 10px">
+    <div class="box-body table-responsive" style="margin-top:-20px;">
+        <table id="BusinessTable" class="table table-bordered TableList">
+            <thead>
+                <tr>
+                    <td align="center">字段名</td>
+                    <td align="center">数据源</td>
+                    <td align="center">表名</td>
+                    <td align="center">列名</td>
+                    <td align="center">关联主键</td>
+                    <td align="center">排序</td>
+                    <td align="center">字典</td>
+                    <td align="center" width="25%">自定义SQL</td>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    var i = 1;
+                    if (Model.list.Count != 0)
+                    {
+                        foreach (var item in Model.list)
+                        {
+                            <tr data-value="@item.GetValue("fieldid")">
+                                <td>
+                                    <input type="text" id="input1-@i" value="@item.GetValue("fieldname")" class="form-control" style="margin:0px 0px;width:100px;" autocomplete="off" />
+                                </td>
+                                <td data-value="@item.GetValue("datasourceid")">
+                                    <input type="text" data-type="source" id="input2-@i" value="@item.GetValue("linkname")" class="form-control" style="margin:0px 0px;width:150px;" autocomplete="off" />
+                                </td>
+                                <td data-value="@item.GetValue("tablename")">
+                                    <input type="text" data-type="table" id="input3-@i" value="@item.GetValue("tablename")" class="form-control" style="margin:0px 0px;width:250px;" autocomplete="off" />
+                                </td>
+                                <td data-value="@item.GetValue("columnname")">
+                                    <input type="text" data-type="field" id="input4-@i" value="@item.GetValue("columnname")" class="form-control" style="margin:0px 0px;width:250px;" autocomplete="off" />
+                                </td>
+                                <td data-value="@item.GetValue("key")">
+                                    <input type="text" data-type="field" id="input5-@i" value="@item.GetValue("key")" class="form-control" style="margin:0px 0px;width:250px;" autocomplete="off" />
+                                </td>
+                                <td data-value="@item.GetValue("orderby")">
+                                    <input type="text" data-type="field" id="input6-@i" value="@item.GetValue("orderby")" class="form-control" style="margin:0px 0px;width:250px;" autocomplete="off" />
+                                </td>
+                                <td data-value="@item.GetValue("dic")">
+                                    <input type="text" data-type="dic" id="input7-@i" value="@item.GetValue("dicname")" class="form-control" style="margin:0px 0px;width:150px;" autocomplete="off" />
+                                </td>
+                                <td>
+                                    <input type="text" id="input8" value="@item.GetValue("sql")" class="form-control" style="margin:0px 0px;width:350px;" autocomplete="off" />
+                                </td>
+                            </tr>
+                            i++;
+                        }
+                    }
+                    <tr>
+                        <td><input type="text" id="input1-@i" class="form-control" style="margin:0px 0px;width:100px;" autocomplete="off" /></td>
+                        <td><input type="text" data-type="source" id="input2-@i" class="form-control" style="margin:0px 0px;width:150px;" autocomplete="off" /></td>
+                        <td><input type="text" data-type="table" id="input3-@i" class="form-control" style="margin:0px 0px;width:250px;" autocomplete="off" /></td>
+                        <td><input type="text" data-type="field" id="input4-@i" class="form-control" style="margin:0px 0px;width:250px;" autocomplete="off" /></td>
+                        <td><input type="text" data-type="field" id="input5-@i" class="form-control" style="margin:0px 0px;width:250px;" autocomplete="off" /></td>
+                        <td><input type="text" data-type="field" id="input6-@i" class="form-control" style="margin: 0px 0px;width:250px;" autocomplete="off" /></td>
+                        <td><input type="text" data-type="dic" id="input7-@i" class="form-control" style="margin:0px 0px;width:150px;" autocomplete="off" /></td>
+                        <td><input type="text" id="input8-@i" class="form-control" style="margin:0px 0px;width:350px;" autocomplete="off" /></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="center">
+        <button type="button" class="btn btn-primary center" id="AddBtn">增加</button>
+        <button type="button" class="btn btn-primary center" id="DelBtn">删除</button>
+        <button type="button" class="btn btn-primary center" id="SubmitBtn">提交</button>
+        <button type="button" class="btn btn-primary center" id="CloseBtn">关闭</button>
+    </div>
+</body>
+</html>
+<script>
+    $(function () {
+        $("#BusinessTable tbody tr").last().find("input").first().focus();
+        init();
+        initAuto();
+    });
+
+    $("#CloseBtn").click(function () {
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+    });
+
+    $("#SubmitBtn").click(function () {
+        parent.layer.load(2);
+        $("#BusinessTable tbody tr").each(function () {
+            $.ajax({
+                type: "post",
+                async: false,
+                url: "BusinessDetails?handler=BusinessDetailsForm",
+                data: {
+                    "FieldId": $(this).data("value") == undefined ? "" : $(this).data("value"),
+                    "Id": "@Model.BusinessId",
+                    "FieldName": $(this).children().eq(0).children().val(),
+                    "DataSourceId": GetValue(this, 1),
+                    "TableName": GetValue(this, 2),
+                    "ColumnName": GetValue(this, 3),
+                    "Key": GetValue(this, 4),
+                    "OrderBy": GetValue(this, 5),
+                    "Dic": GetValue(this, 6),
+                    "Sql": $(this).children().eq(7).children().val()
+                },
+                success: function (result) {
+                    parent.layer.msg(result.msg);
+                }
+            });
+        });
+
+        parent.layer.closeAll('loading');
+        window.location.reload();
+    });
+
+    function GetValue(id, i) {
+        var value = $(id).children().eq(i).data("value");
+        return value == undefined ? "" : value;
+    }
+
+    $("#AddBtn").click(function () {
+        $("#BusinessTable tbody tr").eq(0).clone().each(function () {
+            var row = $("#BusinessTable tbody tr").length + 1;
+            $(this).children().each(function () {
+                $(this).data("value", "");
+                $(this).children().val("");
+                var id = $(this).children().attr("id");
+                id = id.substring(0, id.length - 2) + "-" + row;
+                $(this).children().removeAttr("id");
+                $(this).children().attr("id", id);
+            });            
+        }).appendTo("#BusinessTable tbody");
+        $("#BusinessTable tbody tr").last().find("input").first().focus();
+        init();
+        initAuto();
+    });  
+
+    $("#DelBtn").click(function () {
+        $("#BusinessTable tbody tr").each(function () {
+            if ($(this).data("checked") && $("#BusinessTable tbody tr").length > 1) {
+                var tr = this;
+                if ($(tr).data("value") == undefined)
+                    $(tr).remove();
+                else {
+                    $.ajax({
+                        type: "post",
+                        url: "BusinessDetails?handler=Del",
+                        data: { "id": $(tr).data("value") },
+                        success: function (result) {
+                            debugger;
+                            if (result.success)
+                                $(tr).remove();
+                            else
+                                parent.layer.msg(result.msg);
+                        }
+                    });
+                }
+            }
+        });
+        init();
+    });
+
+    function init() {
+        $("#BusinessTable tbody tr").click(function () {
+            $(this).data("checked", true);
+            $("#BusinessTable tbody tr").not(this).data("checked", false);
+            $(this).children().each(function () { $(this).children().removeAttr("readonly"); });
+            $("#BusinessTable tbody tr").not(this).children().each(function () { $(this).children().attr("readonly", "readonly"); });            
+            $(this).find("input").keyup(function (event) {
+                if (event.keyCode == 13) 
+                    $(this).parent().next().children().focus();
+            });
+        });
+        $.TableClickColor("BusinessTable");
+        $("#BusinessTable tbody tr").children().last().click();
+    }
+
+    function initAuto() {
+        $("#BusinessTable tbody tr").each(function () {
+            if ($(this).data("checked")) {
+                $(this).children().each(function () {
+                    var type = $(this).children().data("type");
+                    if (type != undefined) {
+                        var id = $(this).children().attr("id");
+                        if (type.toLowerCase() == "source")
+                            InitAutoSource(id);
+                        if (type.toLowerCase() == "table")
+                            InitAutoTable(id);
+                        if (type.toLowerCase() == "field")
+                            InitAutoField(id);
+                        if (type.toLowerCase() == "dic")
+                            InitAutoDic(id);
+                    }
+                });
+            }
+        });
+    }
+
+    function InitAutoSource(id) {
+        $("#" + id).autocomplete({
+            lookup: function (request, response) {
+                $.ajax({
+                    type: "POST",
+                    url: "BusinessDetails?handler=DropList",
+                    data: {
+                        "Type": "Source",
+                        "key": $("#" + id).val()
+                    },
+                    success: function (result) {
+                        if (result.success) {
+                            var result = { suggestions: $.map(result.data, function (item) { return { value: item.linkname, data: item } }) };
+                            response(result);
+                        }
+                        else {
+                            parent.layer.msg(result.msg);
+                            var result = { suggestions: {} };
+                            response(result);
+                        }
+                    }
+                });
+            },
+            onSelect: function (suggestion) {
+                $("#" + id).parent().data("value", suggestion.data.id);
+            }
+        });
+    }
+
+    function InitAutoTable(id) {
+        $("#" + id).autocomplete({
+            lookup: function (request, response) {
+                $.ajax({
+                    type: "POST",
+                    url: "BusinessDetails?handler=DropList",
+                    data: {
+                        "Type": "Table",
+                        "Key": $("#" + id).val(),
+                        "HostId": $("#" + id).parent().parent().children().eq(1).data("value")
+                    },
+                    success: function (result) {
+                        if (result.success) {
+                            var result = { suggestions: $.map(result.data, function (item) { return { value: item.name, data: item } }) };
+                            response(result);
+                        }
+                        else {
+                            parent.layer.msg(result.msg);
+                            var result = { suggestions: {} };
+                            response(result);
+                        }
+                    }
+                });
+            },
+            onSelect: function (suggestion) {
+                $("#" + id).parent().data("value", suggestion.data.name);
+            }
+        });
+    }
+
+    function InitAutoField(id) {
+        $("#" + id).autocomplete({
+            lookup: function (request, response) {
+                var table = $("#" + id).parent().parent().children().eq(2).data("value");
+                var HostId =$("#" + id).parent().parent().children().eq(1).data("value");
+
+                $.ajax({
+                    type: "POST",
+                    url: "BusinessDetails?handler=DropList",
+                    data: {
+                        "Type": "Field",
+                        "Key": $("#" + id).val(),
+                        "Table": $("#" + id).parent().parent().children().eq(2).data("value"),
+                        "HostId": $("#" + id).parent().parent().children().eq(1).data("value")
+                    },
+                    success: function (result) {
+                        if (result.success) {
+                            var result = { suggestions: $.map(result.data, function (item) { return { value: item.name , data: item } }) };
+                            response(result);
+                        }
+                        else {
+                            parent.layer.msg(result.msg);
+                            var result = { suggestions: {} };
+                            response(result);
+                        }
+                    }
+                });
+            },
+            onSelect: function (suggestion) {
+                $("#" + id).parent().data("value", suggestion.data.name);
+            }
+        });
+    }
+
+    function InitAutoDic(id) {
+        $("#" + id).autocomplete({
+            lookup: function (request, response) {
+                $.ajax({
+                    type: "POST",
+                    url: "BusinessDetails?handler=DropList",
+                    data: {
+                        "Type": "Dic",
+                        "Key": $("#" + id).val()
+                    },
+                    success: function (result) {
+                        if (result.success) {
+                            var result = { suggestions: $.map(result.data, function (item) { return { value: item.name, data: item } }) };
+                            response(result);
+                        }
+                        else {
+                            parent.layer.msg(result.msg);
+                            var result = { suggestions: {} };
+                            response(result);
+                        }
+                    }
+                });
+            },
+            onSelect: function (suggestion) {
+               $("#" + id).parent().data("value", suggestion.data.id);
+            }
+        });
+    }
+</script>

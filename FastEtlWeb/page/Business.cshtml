@@ -1,0 +1,71 @@
+﻿@page
+@model FastEtlWeb.Pages.BusinessModel
+<section class="content-header" style="padding:5px 5px 5px 20px;color:blue;">业务数据集</section>
+<section class="content">
+    <form class="form-inline" id="BusinessForm" style="margin-top:-10px;">
+        <button type="button" class="btn btn-primary btn-sm" id="AddBtn">增加</button>
+    </form>
+    <div id="BusinessContent" style="margin-top:-8px;"></div>
+</section>
+
+<script>
+    $(function () {
+        $.QueryList("Business?handler=BusinessList", "BusinessForm", "BusinessContent", "BusinessTable");
+    });
+
+    $("#AddBtn").click(function () {
+        layer.open({
+            type: 2,
+            area: ['500px', '450px'],
+            fixed: false,
+            content: "BusinessForm",
+            title: "增加业务数据集",
+            end: function () {
+                $.QueryList("Business?handler=BusinessList", "BusinessForm", "BusinessContent", "BusinessTable");
+            }
+        });
+    });
+
+    function FnEdit(id) {
+        layer.open({
+            type: 2,
+            area: ['500px', '450px'],
+            fixed: false,
+            content: "BusinessForm?id="+id,
+            title: "编辑业务数据集",
+            end: function () {
+                $.QueryList("Business?handler=BusinessList", "BusinessForm", "BusinessContent", "BusinessTable");
+            }
+        });
+    }
+
+    function FnDel(id) {
+        var index = layer.confirm("是否删除业务数据集", {
+            btn: ['是', '否']
+        }, function () {
+            layer.close(index);
+            $.ajax({
+                type: "post",
+                url: "Business?handler=Del",
+                data: { "id": id },
+                success: function (result) {
+                    layer.closeAll('loading');
+                    layer.msg(result.msg);
+                    if (result.success)
+                        $.QueryList("Business?handler=BusinessList", "BusinessForm", "BusinessContent", "BusinessTable");
+                }
+            });
+        }, function () { });
+    }
+
+    function FnEditDetails(id,name) {
+        var index = layer.open({
+            type: 2,
+            area: ['500px', '450px'],
+            fixed: false,
+            content: "BusinessDetails?id=" + id,
+            title: "编辑业务数据集明细--<font color='red'>"+name+"</font>"
+        });
+        layer.full(index);
+    }
+</script>

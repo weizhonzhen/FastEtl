@@ -1,0 +1,104 @@
+﻿@page
+@model FastEtlWeb.Pages.BusinessFormModel
+@using FastUntility.Core.Base;
+@{
+    Layout = null;
+    var UpdateTimeList = new List<SelectListItem>();
+    var UpdateDayList = new List<SelectListItem>();
+    var UpdateCountList = new List<SelectListItem>();
+    var SaveDataMonthList = new List<SelectListItem>();
+    var PolicyList = new List<SelectListItem>();
+
+    for (var i = 0; i < 24; i++)
+    {
+        UpdateTimeList.Add(new SelectListItem { Text = i + " 点", Value = i.ToStr() });
+    }
+
+    for (var i = 1; i <= 7; i++)
+    {
+        UpdateDayList.Add(new SelectListItem { Text = i + " 天", Value = i.ToStr() });
+    }
+
+    for (var i = 1; i <= 10; i++)
+    {
+        UpdateCountList.Add(new SelectListItem { Text = i + " 万条", Value = i.ToStr() });
+    }
+
+    for (var i = 1; i <= 10; i++)
+    {
+        SaveDataMonthList.Add(new SelectListItem { Text = i + " 年", Value = i.ToStr() });
+    }
+    
+    PolicyList.Add(new SelectListItem { Text = "重复保留", Value = "0" });
+    PolicyList.Add(new SelectListItem { Text = "重复删除", Value = "1" });
+    PolicyList.Add(new SelectListItem { Text = "重复更新", Value = "2" });
+}
+<html>
+<head>
+    @Html.Partial("Meta")
+    @Html.Partial("link")
+    @Html.Partial("script")
+    <link href="/content/css/Form.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="form-body">
+    <form id="submitForm" style="margin-top:-10px;">
+        @Html.HiddenFor(a => Model.info.Id)
+        @Html.HiddenFor(a => Model.info.LastUpdateTime)
+        <div class="input-group">
+            <div class="input-group-addon input-group-none"><label>业务表名</label></div>
+            @Html.TextBoxFor(a => a.info.TableName, new { @class = "form-control" , @autocomplete = "off"})
+        </div>
+        <div class="input-group">
+            <div class="input-group-addon input-group-none"><label>业务名称</label></div>
+            @Html.TextBoxFor(a => a.info.Name, new { @class = "form-control", @autocomplete = "off" })
+        </div>
+        <div class="input-group">
+            <div class="input-group-addon input-group-none"><label>更新时间</label></div>
+            @Html.DropDownListFor(a => a.info.UpdateTime,UpdateTimeList, new { @class = "form-control" })
+        </div>
+        <div class="input-group">
+            <div class="input-group-addon input-group-none"><label>更新频率</label></div>
+            @Html.DropDownListFor(a => a.info.UpdateDay,UpdateDayList, new { @class = "form-control" })
+        </div>
+        <div class="input-group">
+            <div class="input-group-addon input-group-none"><label>抽取条数</label></div>
+            @Html.DropDownListFor(a => a.info.UpdateCount, UpdateCountList,new { @class = "form-control" })
+        </div>
+        <div class="input-group">
+            <div class="input-group-addon input-group-none"><label>存放月数</label></div>
+            @Html.DropDownListFor(a => a.info.SaveDataMonth,SaveDataMonthList, new { @class = "form-control"})
+        </div>
+        <div class="input-group">
+            <div class="input-group-addon input-group-none"><label>策略</label></div>
+            @Html.DropDownListFor(a => a.info.Policy,PolicyList, new { @class = "form-control" })
+        </div>
+    </form>
+    <div class="center">
+        <button type="button" class="btn btn-primary center" id="FormBtn">确定</button>
+        <button type="button" class="btn btn-primary center" id="CloseBtn">关闭</button>
+    </div>
+</body>
+</html>
+<script>
+    $("#CloseBtn").click(function () {
+         var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+    });
+
+     $("#FormBtn").click(function () {
+        parent.layer.load(2);
+        var reg = new RegExp("info.", "g");
+         $.ajax({
+             type: "post",
+             url: "BusinessForm?handler=BusinessForm",
+             data: $("#submitForm").serialize().replace(reg, ""),
+             success: function (result) {
+                 parent.layer.closeAll('loading');
+                 parent.layer.msg(result.msg);
+
+                 if (result.success)
+                     $("#CloseBtn").click();
+             }
+         });
+    });
+</script>
