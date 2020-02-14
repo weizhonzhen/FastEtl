@@ -41,6 +41,19 @@ namespace FastEtlWeb
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+             app.UseExceptionHandler(error =>
+            {
+                error.Use(async (context, next) =>
+                {
+                    var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
+                    if (contextFeature != null)
+                    {                       
+                        BaseLog.SaveLog(contextFeature.Error.Message, "error");
+                        await next();
+                    }                    
+                });
+            });
+            
             app.UseStaticFiles();
             app.UseRouting();            
             app.UseEndpoints(endpoints =>
