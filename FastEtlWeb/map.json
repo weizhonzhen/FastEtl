@@ -1,0 +1,7 @@
+{
+  "SqlMap": {
+    "Path": [
+      "map/query.xml"
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "DataConfig": [
+    {
+      "ProviderName": "Oracle.ManagedDataAccess",
+      "DbType": "Oracle",
+      "ConnStr": "User Id=test;Password=test;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=127.0.0.1)(PORT=1521)))(CONNECT_DATA=(SERVICE_NAME=test)));",
+      "IsOutSql": false,
+      "IsOutError": true,
+      "IsPropertyCache": true,
+      "IsMapSave": false,
+      "Flag": ":",
+      "FactoryClient": "Oracle.ManagedDataAccess.Client.OracleClientFactory",
+      "Key": "Etl",
+      "DesignModel": "DbFirst", //CodeFirst,DbFirst
+      "SqlErrorType": "file",//db,file
+      "CacheType": "web",//web,redis
+      "IsUpdateCache": true
+    }
+  ],
+  "Redis": {
+    "Server": "127.0.0.1:6379"
+  }
+}
