@@ -1,0 +1,27 @@
+﻿@page
+@model FastEtlWeb.Pages.DicTypeModel
+@{
+    Layout = null;
+}
+<html>
+<head>
+    @Html.Partial("Meta")
+    @Html.Partial("link")
+    @Html.Partial("script")
+    @Html.Partial("DateTime")
+    <link href="/content/css/Form.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="form-body" style="margin-top:-25px;">
+    <form id="DicTypeForm">
+        @Html.Hidden("DicId")
+    </form>
+    <div id="DicTypeContent" style="width:40%;float:left;"></div>
+    <div id="DicTypeRight" style="width:59%;float:right"></div>
+</body>
+</html>
+<script>
+    $(function () {
+        $.QueryList("DicType?handler=DicTypeList", "DicTypeForm", "DicTypeContent", "DicTypeTable");
+    });
+
+</script>

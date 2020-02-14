@@ -1,0 +1,88 @@
+﻿@page
+@model FastEtlWeb.Pages.DicModel
+@using FastData.Core;
+@using FastEtlWeb.DataModel
+@{ 
+    var typeList = new List<SelectListItem>();
+    typeList.Add(new SelectListItem { Text = AppEtl.DataDbType.Oracle, Value = AppEtl.DataDbType.Oracle });
+    typeList.Add(new SelectListItem { Text = AppEtl.DataDbType.MySql, Value = AppEtl.DataDbType.MySql });
+}
+<section class="content-header" style="padding:5px 5px 5px 20px;color:blue;">字典</section>
+<section class="content">
+    <form class="form-inline" id="DicForm" style="margin-top:-10px;">
+        <div class="form-group">
+            <label>类型</label>
+            @Html.DropDownListForDic("DicId", new { @class = "form-control" },true)
+            <button type="button" class="btn btn-primary btn-sm" id="AddBtn">增加</button>
+            <button type="button" class="btn btn-primary btn-sm" id="EditBtn">编辑类型</button>
+        </div>
+    </form>
+    <div id="DicContent" style="margin-top:-8px;"></div>
+</section>
+<script>
+    $(function () {
+        $.QueryList("dic?handler=dicList", "DicForm", "DicContent", "DicTable");
+    });
+
+    $("#DicId").change(function () {
+        $.QueryList("dic?handler=dicList", "DicForm", "DicContent", "DicTable");
+    });
+
+    $("#AddBtn").click(function () {
+        layer.open({
+            type: 2,
+            area: ['500px', '310px'],
+            fixed: false,
+            content: "DicForm",
+            title: "增加字典",
+            end: function () {
+                $.QueryList("dic?handler=dicList", "DicForm", "DicContent", "DicTable");
+            }
+        });
+    });
+
+    $("#EditBtn").click(function () {
+        layer.open({
+            type: 2,
+            area: ['700px', '420px'],
+            fixed: false,
+            content: "DicType",
+            title: "编辑字典类型",
+            end: function () {
+                $.QueryList("dic?handler=dicList", "DicForm", "DicContent", "DicTable");
+            }
+        });
+    });
+
+    function FnEdit(id) {
+        layer.open({
+            type: 2,
+            area: ['500px', '310px'],
+            fixed: false,
+            content: "DicForm?id="+id,
+            title: "编辑字典",
+            end: function () {
+                $.QueryList("dic?handler=dicList", "DicForm", "DicContent", "DicTable");
+            }
+        });
+    }
+
+    function FnDel(id) {
+        var index = layer.confirm("是否删除字典", {
+            btn: ['是', '否']
+        }, function () {
+            layer.close(index);
+            $.ajax({
+                type: "post",
+                url: "Dic?handler=Del",
+                data: { "id": id },
+                success: function (result) {
+                    layer.closeAll('loading');
+                    layer.msg(result.msg);
+                    if (result.success)
+                        $.QueryList("dic?handler=dicList", "DicForm", "DicContent", "DicTable");
+                }
+            });
+        }, function () { });
+    }
+</script>
