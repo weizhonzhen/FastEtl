@@ -1,0 +1,126 @@
+﻿@page
+@model DataFormModel
+@{
+    Layout = null;
+}
+<html>
+<head>
+    @Html.Partial("Meta")
+    @Html.Partial("link")
+    @Html.Partial("script")
+    <link href="/content/css/Form.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="form-body">
+    <form id="submitForm" style="margin-top:-10px;">
+        @Html.HiddenFor(a => Model.info.Id)
+        <div class="input-group">
+            <div class="input-group-addon input-group-none"><label>类型</label></div>
+            @Html.DropDownListForData(a => a.info.Type, new { @class = "form-control" })
+        </div>
+        <div class="input-group">
+            <div class="input-group-addon input-group-none"><label>用户名</label></div>
+            @Html.TextBoxFor(a => a.info.UserName, new { @class = "form-control", @autocomplete = "off" })
+        </div>
+        <div class="input-group">
+            <div class="input-group-addon input-group-none"><label>密码</label></div>
+            @Html.TextBoxFor(a => a.info.PassWord, new { @class = "form-control", @autocomplete = "off" })
+        </div>
+        <div class="input-group">
+            <div class="input-group-addon input-group-none"><label>服务器</label></div>
+            @Html.TextBoxFor(a => a.info.Host, new { @class = "form-control", @autocomplete = "off" })
+        </div>
+        <div class="input-group">
+            <div class="input-group-addon input-group-none"><label>端口</label></div>
+            @Html.TextBoxFor(a => a.info.Port, new { @class = "form-control", @autocomplete = "off" })
+        </div>
+        <div class="input-group">
+            <div class="input-group-addon input-group-none"><label>服务名</label></div>
+            @Html.TextBoxFor(a => a.info.ServerName, new { @class = "form-control", @autocomplete = "off" })
+        </div>
+        <div class="input-group">
+            <div class="input-group-addon input-group-none"><label>备注</label></div>
+            @Html.TextBoxFor(a => a.info.LinkName, new { @class = "form-control", @autocomplete = "off" })
+        </div>
+    </form>
+    <div class="center">
+        <button type="button" class="btn btn-primary center" id="FormBtn">确定</button>
+        <button type="button" class="btn btn-primary center" id="TestBtn">测试</button>
+        <button type="button" class="btn btn-primary center" id="CloseBtn">关闭</button>
+    </div> 
+    <div class="center" style="margin-top:15px;">
+        <button type="button" class="btn btn-primary center" id="LoadBtn">加载数据源</button>
+        <button type="button" class="btn btn-primary center" id="UpdateBtn">更新数据源</button>
+    </div>
+</body>
+</html>
+<script>
+    $("#TestBtn").click(function () {
+        parent.layer.load(2);
+        var reg = new RegExp("info.", "g");
+        $.ajax({
+            type: "post",
+            url: "DataForm?handler=Test",
+            data: $("#submitForm").serialize().replace(reg, ""),
+            success: function (result) {
+                parent.layer.closeAll('loading');
+                parent.layer.msg(result.msg);
+            }
+        });
+    });
+
+    $("#CloseBtn").click(function () {
+         var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+    });
+
+    $("#FormBtn").click(function () {
+        parent.layer.load(2);
+        var reg = new RegExp("info.", "g");
+        $.ajax({
+            type: "post",
+            url: "DataForm?handler=DataForm",
+            data: $("#submitForm").serialize().replace(reg, ""),
+            success: function (result) {
+                parent.layer.closeAll('loading');
+                parent.layer.msg(result.msg);
+
+                if (result.success)
+                    $("#CloseBtn").click();
+            }
+        });
+    });
+    
+    $("#LoadBtn").click(function () {
+        parent.layer.load(2);
+        var reg = new RegExp("info.", "g");
+        $.ajax({
+            type: "post",
+            url: "DataForm?handler=LoadCache",
+            data: $("#submitForm").serialize().replace(reg, ""),
+            success: function (result) {
+                parent.layer.closeAll('loading');
+                parent.layer.msg(result.msg);
+
+                if (result.success)
+                    $("#CloseBtn").click();
+            }
+        });
+    });
+    
+    $("#UpdateBtn").click(function () {
+        parent.layer.load(2);
+        var reg = new RegExp("info.", "g");
+        $.ajax({
+            type: "post",
+            url: "DataForm?handler=UpdateCache",
+            data: $("#submitForm").serialize().replace(reg, ""),
+            success: function (result) {
+                parent.layer.closeAll('loading');
+                parent.layer.msg(result.msg);
+
+                if (result.success)
+                    $("#CloseBtn").click();
+            }
+        });
+    });
+</script>
