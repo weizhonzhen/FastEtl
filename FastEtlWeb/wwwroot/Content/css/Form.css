@@ -1,0 +1,40 @@
+﻿#submitForm label {
+    margin-right: 53px;
+    margin-top: 20px;
+    margin-bottom: 0px;
+}
+
+#submitForm input {
+    margin-top: 13px;
+}
+
+#submitForm select {
+    margin-top: 20px;
+}
+
+/*chrom*/
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    #submitForm label {
+        margin-right: auto;
+        margin-top: 12px;
+    }
+
+    #submitForm select {
+        margin-top: 12px;
+    }
+}
+/*ff*/
+@-moz-document url-prefix() {
+    #submitForm label {
+        margin-right: auto;
+        margin-top: 12px;
+    }
+
+    #submitForm select {
+        margin-top: 12px;
+    }
+}
+
+#CheckBuldTable td label {
+    font-weight: normal;
+}
