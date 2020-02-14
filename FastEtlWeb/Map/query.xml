@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap>
+  <select id="Business.Details">
+    select a.*,b.name dicname,c.linkname
+    from data_business_details a
+    left join data_dic b on a.dic=b.id
+    left join data_source c on a.datasourceid=c.id
+    where a.id=:id
+  </select>
+
+  <select id="DropList.Source">
+    select * from data_source  
+    <dynamic prepend=" where 1=1 ">
+      <isNotNullOrEmpty prepend=" and " property="Key">upper(linkname) like '%#Key#%'</isNotNullOrEmpty>
+    </dynamic>
+  </select>
+
+  <select id="DropList.Dic">
+    select * from data_dic
+    <dynamic prepend=" where 1=1 ">
+      <isNotNullOrEmpty prepend=" and " property="Key">upper(name) like '%#Key#%'</isNotNullOrEmpty>
+    </dynamic>
+  </select>
+</sqlMap>
