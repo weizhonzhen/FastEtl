@@ -1,0 +1,118 @@
+﻿@model FastEtlWeb.Model.PageSizeModel
+@{
+    Layout = null;
+    if (string.IsNullOrEmpty(Model.Action))
+    { Model.Action = "toPage"; }
+
+    if (Model.PageId > Model.TotalPage || Model.PageId < 1)
+    { Model.PageId = 1; }
+
+    var nextId = (Model.PageId + 1) > Model.TotalPage ? Model.TotalPage : (Model.PageId + 1);
+    var preId = (Model.PageId - 1) <= 0 ? 1 : (Model.PageId - 1);
+    var startId = (Model.PageId - 6) <= 0 ? 1 : (Model.PageId - 6);
+
+    var endId = startId + 6;
+    if (endId > Model.TotalPage)
+    {
+        endId = Model.TotalPage;
+        if ((endId - 6) > 0)
+        { startId = endId - 6; }
+    }
+}
+
+<div class="pull-right" style="margin-top:-25px;">
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            @if (Model.PageId == 1)
+            {
+                <li class="disabled">
+                    <a href="#" aria-label="Previous">
+                        <span aria-hidden="true">首页</span>
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li>
+                    <a href="#" aria-label="Previous" onclick="@(Model.Action)(1)">
+                        <span aria-hidden="true">首页</span>
+                    </a>
+                </li>
+            }
+            @if (preId == Model.PageId)
+            {
+                <li class="disabled">
+                    <a href="#" aria-label="Previous">
+                        <span aria-hidden="true">上一页</span>
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li>
+                    <a href="#" aria-label="Previous" onclick="@(Model.Action)(@preId)">
+                        <span aria-hidden="true">上一页</span>
+                    </a>
+                </li>
+            }
+            <li>
+                @if (nextId == Model.PageId || Model.TotalPage == 0)
+                {
+                <li class="disabled">
+                    <a href="#" aria-label="Next">
+                        <span aria-hidden="true">下一页</span>
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li>
+                    <a href="#" aria-label="Next" onclick="@(Model.Action)(@nextId)">
+                        <span aria-hidden="true">下一页</span>
+                    </a>
+                </li>
+            }
+                @if (Model.PageId == Model.TotalPage || Model.TotalPage == 0)
+                {
+                    <li class="disabled">
+                        <a href="#" aria-label="Previous">
+                            <span aria-hidden="true">末页</span>
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    <li>
+                        <a href="#" aria-label="Previous" onclick="@(Model.Action)(@Model.TotalPage)">
+                            <span aria-hidden="true">末页</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+    <script>
+    function @(Model.Action)(id) {
+        var param = $("#@Model.FormId").serialize() + "&pageid=" + id;
+        if (@Model.IsParent= 'True')
+            parent.layer.load(2);
+        else
+            layer.load(2);
+        $.ajax({
+            type: "POST",
+            url: "@Model.Url",
+            data: param,
+            success: function (result) {
+                if (@Model.IsParent= 'True')
+                    parent.layer.closeAll('loading');
+                else
+                    layer.closeAll('loading');
+                $("#@Model.ContentId").html(result);
+                $("#@Model.TableId tbody tr").children().first().click();
+
+                if (@Model.IsOrderBy= 'True')
+                    $.TableOrderByColor('@Model.TableId');
+            }
+        });
+    }
+    </script>

@@ -1,0 +1,24 @@
+﻿<html>
+<head>
+    <title>FastElt</title>
+    @Html.Partial("Meta")
+    @Html.Partial("link")
+    @Html.Partial("script")
+</head>
+<body class="skin-blue">
+    @Html.Partial("top")
+    <div class="wrapper row-offcanvas row-offcanvas-left">
+        @Html.Partial("Left")
+        <aside class="right-side">
+            @RenderBody()
+        </aside>
+    </div>
+</body>
+</html>
+<script>
+    $(function(){
+        $("#patient_right").css("width", ($(window).width() - 170));
+        $(".left-side").css("height", ($(window).height() - $(".header").height()));
+        $(".content").css("height", $(".skin-blue").height() - $(".header").height() - $(".content-header").height()-10);
+    });
+</script>
