@@ -1,0 +1,82 @@
+﻿@using FastUntility.Core.Base;
+@{
+    var model = ViewData.Model as FastUntility.Core.Page.PageResult;
+    Layout = null;
+    var page = new FastEtlWeb.Model.PageSizeModel();
+
+    page.PageId = model.pModel.PageId;
+    page.PageSize = model.pModel.PageSize;
+    page.TotalPage = model.pModel.TotalPage;
+    page.TotalRecord = model.pModel.TotalRecord;
+
+    page.FormId = "BusinessForm";
+    page.ContentId = "BusinessContent";
+    page.Url = "Business?handler=BusinessList";
+    page.TableId = "BusinessTable";
+}
+
+<div class="box-body table-responsive" style="margin-top:-5px;">
+    <table id="BusinessTable" class="table table-bordered TableList">
+        <thead>
+            <tr>
+                <td align="center">业务表名</td>
+                <td align="center">业务名称</td>
+                <td align="center">更新时间</td>
+                <td align="center">更新频率</td>
+                <td align="center">抽取条数</td>
+                <td align="center">上次更新</td>
+                <td align="center">存放月数</td>
+                <td align="center">策略</td>
+                <td align="center">操作</td>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                if (model != null && model.list != null)
+                {
+                    foreach (var item in model.list)
+                    {
+                        <tr>
+                            <td>@item.GetValue("TableName")</td>
+                            <td>@item.GetValue("Name")</td>
+                            <td>@item.GetValue("UpdateTime") 点</td>
+                            <td>@item.GetValue("UpdateDay") 天</td>
+                            <td>@item.GetValue("UpdateCount") 万</td>
+                            <td>@item.GetValue("LastUpdateTime")</td>
+                            <td>@item.GetValue("SaveDataMonth") 年</td>
+                            <td>@GetType(item)</td>
+                            <td width="10%">
+                                <button type="button" class="btn btn-primary center btn-xs" onclick="FnEdit('@item.GetValue("id")')">编辑</button>
+                                <button type="button" class="btn btn-primary center btn-xs" onclick="FnDel('@item.GetValue("id")')">删除</button>
+                                <button type="button" class="btn btn-primary center btn-xs" onclick="FnEditDetails('@item.GetValue("id")','@item.GetValue("Name")')">编辑明细</button>
+                            </td>
+                        </tr>
+                    }
+                    if (model.list.Count == 0)
+                    {
+                        <tr><td colspan="9">找不到相关信息</td></tr>
+                    }
+                }
+            }
+        </tbody>
+    </table>
+    @Html.Partial("page", page)
+</div>
+@functions{
+    public static string GetType(Dictionary<string, object> item)
+    {
+        if (item.GetValue("Policy").ToStr() == "0")
+            return "重复保留";
+
+        if (item.GetValue("Policy").ToStr() == "1")
+            return "重复删除";
+
+        if (item.GetValue("Policy").ToStr() == "2")
+            return "重复更新";
+
+        return "";
+    }
+}
+<script>
+    $.TableClickColor("BusinessTable");
+</script>

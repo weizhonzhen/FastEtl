@@ -1,0 +1,55 @@
+﻿@{
+    var model = ViewData.Model as FastUntility.Core.Page.PageResult;
+    Layout = null;
+    var page = new FastEtlWeb.Model.PageSizeModel();
+
+    page.PageId = model.pModel.PageId;
+    page.PageSize = model.pModel.PageSize;
+    page.TotalPage = model.pModel.TotalPage;
+    page.TotalRecord = model.pModel.TotalRecord;
+
+    page.FormId = "DicForm";
+    page.ContentId = "DicContent";
+    page.Url = "dic?handler=dicList";
+    page.TableId = "DicTable";
+}
+
+<div class="box-body table-responsive" style="margin-top:-5px;">
+    <table id="DicTable" class="table table-bordered TableList">
+        <thead>
+            <tr>
+                <td align="center">名称</td>
+                <td align="center">值</td>
+                <td align="center">对照值</td>
+                <td align="center">操作</td>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                if (model != null && model.list != null)
+                {
+                    foreach (var item in model.list)
+                    {
+                        <tr>
+                            <td>@item.GetValue("name")</td>
+                            <td>@item.GetValue("value")</td>
+                            <td>@item.GetValue("contrastvalue")</td>
+                            <td width="10%">
+                                <button type="button" class="btn btn-primary center btn-xs" onclick="FnEdit('@item.GetValue("id")')">编辑</button>
+                                <button type="button" class="btn btn-primary center btn-xs" onclick="FnDel('@item.GetValue("id")')">删除</button>
+                            </td>
+                        </tr>
+                    }
+                    if (model.list.Count == 0)
+                    {
+                        <tr><td colspan="4">找不到相关信息</td></tr>
+                    }
+                }
+            }
+        </tbody>
+    </table>
+    @Html.Partial("page", page)
+</div>
+<script>
+    $.TableClickColor("DicTable");
+</script>

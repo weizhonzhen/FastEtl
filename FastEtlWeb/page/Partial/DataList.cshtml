@@ -1,0 +1,63 @@
+﻿@{
+    var model = ViewData.Model as FastUntility.Core.Page.PageResult;
+    Layout = null;
+    var page = new FastEtlWeb.Model.PageSizeModel();
+
+    page.PageId = model.pModel.PageId;
+    page.PageSize = model.pModel.PageSize;
+    page.TotalPage = model.pModel.TotalPage;
+    page.TotalRecord = model.pModel.TotalRecord;
+
+    page.FormId = "DataForm";
+    page.ContentId = "DataContent";
+    page.Url = "data?handler=dataList";
+    page.TableId = "DataTable";
+}
+
+<div class="box-body table-responsive" style="margin-top:-5px;">
+    <table id="DataTable" class="table table-bordered TableList">
+        <thead>
+            <tr>
+                <td align="center">类型</td>
+                <td align="center">用户名</td>
+                <td align="center">密码</td>
+                <td align="center">服务器</td>
+                <td align="center">端口</td>
+                <td align="center">服务名</td>
+                <td align="center">备注</td>
+                <td align="center">操作</td>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                if (model != null && model.list != null)
+                {
+                    foreach (var item in model.list)
+                    {
+                        <tr>
+                            <td>@item.GetValue("TYPE")</td>
+                            <td>@item.GetValue("USERNAME")</td>
+                            <td>@item.GetValue("PASSWORD")</td>
+                            <td>@item.GetValue("HOST")</td>
+                            <td>@item.GetValue("PORT")</td>
+                            <td>@item.GetValue("SERVERNAME")</td>
+                            <td>@item.GetValue("LINKNAME")</td>
+                            <td width="10%">
+                                <button type="button" class="btn btn-primary center btn-xs" onclick="FnEdit('@item.GetValue("id")')">编辑</button>
+                                <button type="button" class="btn btn-primary center btn-xs" onclick="FnDel('@item.GetValue("id")')">删除</button>
+                            </td>
+                        </tr>
+                    }
+                    if (model.list.Count == 0)
+                    {
+                        <tr><td colspan="7">找不到相关信息</td></tr>
+                    }
+                }
+            }
+        </tbody>
+    </table>
+    @Html.Partial("page", page)
+</div>
+<script>
+    $.TableClickColor("DataTable");
+</script>

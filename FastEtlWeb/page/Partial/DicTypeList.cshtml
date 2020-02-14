@@ -1,0 +1,55 @@
+﻿@{
+    var model = ViewData.Model as FastUntility.Core.Page.PageResult;
+    Layout = null;
+    var page = new FastEtlWeb.Model.PageSizeModel();
+
+    page.PageId = model.pModel.PageId;
+    page.PageSize = model.pModel.PageSize;
+    page.TotalPage = model.pModel.TotalPage;
+    page.TotalRecord = model.pModel.TotalRecord;
+
+    page.FormId = "DicTypeForm";
+    page.ContentId = "DicTypeContent";
+    page.Url = "dicType?handler=dicTypeList";
+    page.TableId = "DicTypeTable";
+}
+<table id="DicTypeTable" class="table table-bordered TableList">
+    <thead>
+        <tr>
+            <td align="center">
+                <button type="button" class="btn btn-primary center btn-xs" id="AddBtn">增加</button>
+            </td>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            if (model != null && model.list != null)
+            {
+                foreach (var item in model.list)
+                {
+                    <tr>
+                        <td data-id="@item.GetValue("id")">@item.GetValue("name")</td>
+                    </tr>
+                }
+                if (model.list.Count == 0)
+                {
+                    <tr><td>找不到相关信息</td></tr>
+                }
+            }
+        }
+    </tbody>
+</table>
+@Html.Partial("minpage", page)
+<script>
+    $.TableClickColor("DicTypeTable");
+
+    $("#DicTypeTable tbody tr td").click(function () {
+        var param = "id=" + $(this).data("id");
+        $.QueryListParam("DicTypeForm", param, "DicTypeRight", "");
+    });
+
+    $("#AddBtn").click(function () {
+        var param = "id=";
+        $.QueryListParam("DicTypeForm", param, "DicTypeRight", "");
+    });
+</script>
