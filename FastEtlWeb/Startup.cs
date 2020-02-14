@@ -49,7 +49,9 @@ namespace FastEtlWeb
                     if (contextFeature != null)
                     {                       
                         BaseLog.SaveLog(contextFeature.Error.Message, "error");
-                        await next();
+                        context.Response.ContentType = "application/json";
+                        context.Response.StatusCode = 404;
+                        await context.Response.WriteAsync(contextFeature.Error.Message);
                     }                    
                 });
             });
