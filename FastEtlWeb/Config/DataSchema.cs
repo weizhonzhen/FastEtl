@@ -40,31 +40,34 @@ public static class DataSchema
         var isSuccess = false;
         if (db.config.DbType.ToLower() == AppEtl.DataDbType.Oracle.ToLower())
         {
-            isSuccess = db.ExecuteSql(string.Format("create table {0}(Id varchar2(64) primary key,AddTime date)", table.TableName), null, false).writeReturn.IsSuccess;
+            isSuccess = db.ExecuteSql(string.Format("create table {0}(Id varchar2(64) primary key,AddTime date,key varchar(255))", table.TableName), null, false).writeReturn.IsSuccess;
             if (isSuccess)
             {
                 db.ExecuteSql(string.Format("Comment on column {0}.Id is '主键'", table.TableName), null, false);
                 db.ExecuteSql(string.Format("Comment on column {0}.AddTime is '抽取时间'", table.TableName), null, false);
+                db.ExecuteSql(string.Format("Comment on column {0}.key is '关键主键'", table.TableName), null, false);
             }
         }
 
         if (db.config.DbType.ToLower() == AppEtl.DataDbType.MySql.ToLower())
         {
-            isSuccess = db.ExecuteSql(string.Format("create table {0}(Id varchar(64) primary key,AddTime date)", table.TableName), null, false).writeReturn.IsSuccess;
+            isSuccess = db.ExecuteSql(string.Format("create table {0}(Id varchar(64) primary key,AddTime date,key varchar(255))", table.TableName), null, false).writeReturn.IsSuccess;
             if (isSuccess)
             {
                 db.ExecuteSql(string.Format("alter table {0} modify Id varchar2(64) comment '主键'", table.TableName), null, false);
                 db.ExecuteSql(string.Format("alter table {0} modify AddTime date comment '抽取时间'", table.TableName), null, false);
+                db.ExecuteSql(string.Format("alter table {0} modify key varchar2(255) comment '关键主键'", table.TableName), null, false);
             }
         }
 
         if (db.config.DbType.ToLower() == AppEtl.DataDbType.SqlServer.ToLower())
         {
-            isSuccess = db.ExecuteSql(string.Format("create table {0}(Id varchar(64) primary key,AddTime date)", table.TableName), null, false).writeReturn.IsSuccess;
+            isSuccess = db.ExecuteSql(string.Format("create table {0}(Id varchar(64) primary key,AddTime date,key varchar(255))", table.TableName), null, false).writeReturn.IsSuccess;
             if (isSuccess)
             {
                 db.ExecuteSql(string.Format("exec sys.sp_addextendedproperty N'MS_Description',N'主键',N'SCHEMA', N'dbo', N'TABLE',N'{0}',N'column',N'Id'", table.TableName), null, false);
                 db.ExecuteSql(string.Format("exec sys.sp_addextendedproperty N'MS_Description',N'抽取时间',N'SCHEMA', N'dbo', N'TABLE',N'{0}',N'column',N'AddTime'", table.TableName), null, false);
+                db.ExecuteSql(string.Format("exec sys.sp_addextendedproperty N'MS_Description',N'关键主键',N'SCHEMA', N'dbo', N'TABLE',N'{0}',N'column',N'key'", table.TableName), null, false);
             }
         }
 
