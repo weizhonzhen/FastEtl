@@ -1,4 +1,4 @@
-﻿using FastData.Core;
+using FastData.Core;
 using FastData.Core.Context;
 using FastEtlService.core.DataModel;
 using FastEtlService.core.Model;
@@ -236,6 +236,7 @@ public static class DataSchema
                     {
                         conn.Open();
                         var cmd = conn.CreateCommand();
+                        InitTvps(cmd,dt.TableName);
                         cmd.CommandText = GetTvps(db, dt.TableName);
                         var catParam = cmd.Parameters.AddWithValue(string.Format("@{0}", dt.TableName), dt);
                         catParam.SqlDbType = SqlDbType.Structured;
@@ -671,5 +672,51 @@ public static class DataSchema
             }
         }
         return result;
+    }
+    
+    /// <summary>
+    /// tvps
+    /// </summary>
+    /// <param name="cmd"></param>
+    public static void InitTvps(DbCommand cmd, string TableName)
+    {
+        var sql = new StringBuilder();
+        cmd.CommandText = string.Format("select a.name,(select top 1 name from sys.systypes c where a.xtype=c.xtype) as type,length,isnullable,prec,scale from syscolumns a where a.id=object_id('{0}') order by a.colid asc", TableName);
+        var dr = cmd.ExecuteReader();
+        var dic = BaseJson.DataReaderToDic(dr);
+        dr.Close();
+
+        sql.AppendFormat("if not exists(SELECT 1 FROM sys.table_types where name='{0}')", TableName);
+        sql.AppendFormat("CREATE TYPE {0} AS TABLE(", TableName);
+
+        foreach (var item in dic)
+        {
+            switch (item.GetValue("type").ToStr())
+            {
+                case "char":
+                case "nchar":
+                case "varchar":
+                case "nvarchar":
+                case "varchar2":
+                case "nvarchar2":
+                    sql.AppendFormat("[{0}] [{1}]({2}) {3},", item.GetValue("name"), item.GetValue("type"), item.GetValue("length"), item.GetValue("isnullable").ToStr() == "1" ? "NULL" : "NOT NULL");
+                    break;
+                case "decimal":
+                case "numeric":
+                case "number":
+                    if (item.GetValue("prec").ToStr() == "0" && item.GetValue("scale").ToStr() == "0")
+                        sql.AppendFormat("[{0}] [{1}] {2},", item.GetValue("name"), item.GetValue("type"), item.GetValue("isnullable").ToStr() == "1" ? "NULL" : "NOT NULL");
+                    else
+                        sql.AppendFormat("[{0}] [{1}]({2},{3}) {4},", item.GetValue("name"), item.GetValue("type"), item.GetValue("prec"), item.GetValue("scale"), item.GetValue("isnullable").ToStr() == "1" ? "NULL" : "NOT NULL");
+                    break;
+                default:
+                    sql.AppendFormat("[{0}] [{1}] {2},", item.GetValue("name"), item.GetValue("type"), item.GetValue("isnullable").ToStr() == "1" ? "NULL" : "NOT NULL");
+                    break;
+            }
+        }
+
+        sql.Append(")").Replace(",)", ")");
+        cmd.CommandText = sql.ToString();
+        cmd.ExecuteNonQuery();
     }
 }
