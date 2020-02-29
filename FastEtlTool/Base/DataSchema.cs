@@ -1,4 +1,4 @@
-﻿using FastData.Context;
+using FastData.Context;
 using MySql.Data.MySqlClient;
 using Oracle.ManagedDataAccess.Client;
 using FastEtlModel.CacheModel;
@@ -40,7 +40,7 @@ namespace FastEtlTool.Base
                 {
                     conn.Open();
                     var cmd = conn.CreateCommand();
-                    cmd.CommandText = "select a.table_name,comments from user_tables a inner join user_tab_comments b on a.TABLE_NAME=b.TABLE_NAME";
+                    cmd.CommandText = "select a.table_name,comments from all_tables a inner join all_tab_comments b on a.TABLE_NAME=b.TABLE_NAME  and a.TABLESPACE_NAME!='SYSAUX' and a.TABLESPACE_NAME!='SYSTEM'";
 
                     var rd = cmd.ExecuteReader();
                     dt.Load(rd);
@@ -120,12 +120,12 @@ namespace FastEtlTool.Base
                     conn.Open();
                     var cmd = conn.CreateCommand();
                     cmd.CommandText = @"select a.column_name,data_type,data_length,b.comments,
-                                            (select count(0) from user_cons_columns aa, user_constraints bb
+                                            (select count(0) from all_cons_columns aa, all_constraints bb
                                                 where aa.constraint_name = bb.constraint_name and bb.constraint_type = 'P' and bb.table_name = '"
-                                        + tableName + @"' and aa.column_name=a.column_name),(select count(0) from user_ind_columns t,user_indexes i 
+                                        + tableName + @"' and aa.column_name=a.column_name),(select count(0) from all_ind_columns t,all_indexes i 
                                             where t.index_name = i.index_name and t.table_name = i.table_name and t.table_name = '"
                                         + tableName + @"' and t.column_name=a.column_name),nullable,data_precision,data_scale
-                                            from user_tab_columns a inner join user_col_comments b
+                                            from all_tab_columns a inner join all_col_comments b
                                             on a.table_name='" + tableName +
                                         "' and a.table_name=b.table_name and a.column_name=b.column_name order by a.column_id asc";
                     var rd = cmd.ExecuteReader();
@@ -211,7 +211,7 @@ namespace FastEtlTool.Base
             var sql = "";
 
             if (db.config.DbType == DataDbType.Oracle)
-                sql = string.Format("select count(0) count from user_tab_columns where table_name='{0}' and column_name='{1}'", tableName.ToUpper(), columnName.ToUpper());
+                sql = string.Format("select count(0) count from all_tab_columns where table_name='{0}' and column_name='{1}'", tableName.ToUpper(), columnName.ToUpper());
 
             if (db.config.DbType == DataDbType.SqlServer)
                 sql = string.Format("select * from syscolumns where id = object_id('{0}') and name = '{1}'", tableName, columnName);
@@ -234,7 +234,7 @@ namespace FastEtlTool.Base
             var sql = "";
 
             if (db.config.DbType == DataDbType.Oracle)
-                sql = string.Format("select count(0) count from user_tables where table_name='{0}'", tableName.ToUpper());
+                sql = string.Format("select count(0) count from all_tables where table_name='{0}'", tableName.ToUpper());
 
             if (db.config.DbType == DataDbType.SqlServer)
                 sql = string.Format("select count(0) count from sysobjects where name='{0}'", tableName);
