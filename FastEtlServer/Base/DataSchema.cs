@@ -56,7 +56,7 @@ namespace FastService.Base
             var sql = "";
 
             if (db.config.DbType == FastApp.DataDbType.Oracle)
-                sql = string.Format("select count(0) count from user_tables where table_name='{0}'", tableName.ToUpper());
+                sql = string.Format("select count(0) count from all_tables where table_name='{0}'", tableName.ToUpper());
 
             if (db.config.DbType == FastApp.DataDbType.SqlServer)
                 sql = string.Format("select count(0) count from sysobjects where name='{0}'", tableName);
@@ -80,7 +80,7 @@ namespace FastService.Base
             var sql = "";
 
             if (db.config.DbType == FastApp.DataDbType.Oracle)
-                sql = string.Format("select count(0) count from user_tab_columns where table_name='{0}' and column_name='{1}'", tableName.ToUpper(), columnName.ToUpper());
+                sql = string.Format("select count(0) count from all_tab_columns where table_name='{0}' and column_name='{1}'", tableName.ToUpper(), columnName.ToUpper());
 
             if (db.config.DbType == FastApp.DataDbType.SqlServer)
                 sql = string.Format("select * from syscolumns where id = object_id('{0}') and name = '{1}'", tableName, columnName);
@@ -619,7 +619,7 @@ namespace FastService.Base
             var sql = "";
 
             if (db.config.DbType == FastApp.DataDbType.Oracle)
-                sql = string.Format("select a.COLUMN_NAME name,a.DATA_TYPE type from user_tab_columns a where table_name='{0}'", tableName);
+                sql = string.Format("select a.COLUMN_NAME name,a.DATA_TYPE type from all_tab_columns a where table_name='{0}'", tableName);
 
             if (db.config.DbType == FastApp.DataDbType.SqlServer)
                 sql = string.Format("select name,(select top 1 name from sys.systypes c where a.xtype=c.xtype) as type from syscolumns a where id = object_id('{0}')", tableName);
