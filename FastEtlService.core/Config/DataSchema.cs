@@ -559,7 +559,7 @@ public static class DataSchema
         var sql = "";
         
         if (db.config.DbType.ToLower() == AppEtl.DataDbType.Oracle.ToLower())
-            sql = string.Format("select a.COLUMN_NAME name,a.DATA_TYPE type from user_tab_columns a where table_name='{0}'", tableName);
+            sql = string.Format("select a.COLUMN_NAME name,a.DATA_TYPE type from all_tab_columns a where table_name='{0}'", tableName);
 
         if (db.config.DbType.ToLower() == AppEtl.DataDbType.SqlServer.ToLower())
             sql = string.Format("select name,(select top 1 name from sys.systypes c where a.xtype=c.xtype) as type from syscolumns a where id = object_id('{0}')", tableName);
