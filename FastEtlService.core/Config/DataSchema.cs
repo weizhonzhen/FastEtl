@@ -45,7 +45,7 @@ public static class DataSchema
         var sql = "";
 
         if (db.config.DbType.ToLower() == AppEtl.DataDbType.Oracle.ToLower())
-            sql = string.Format("select count(0) count from user_tables where table_name='{0}'", tableName.ToUpper());
+            sql = string.Format("select count(0) count from all_tables where table_name='{0}'", tableName.ToUpper());
 
         if (db.config.DbType.ToLower() == AppEtl.DataDbType.SqlServer.ToLower())
             sql = string.Format("select count(0) count from sysobjects where name='{0}'", tableName);
