@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model FastEtlWeb.Pages.BusinessDetailsModel
 @{
     Layout = null;
@@ -33,7 +33,7 @@
                         {
                             <tr data-value="@item.GetValue("fieldid")">
                                 <td>
-                                    <input type="text" id="input1-@i" value="@item.GetValue("fieldname")" class="form-control" style="margin:0px 0px;width:100px;" autocomplete="off" />
+                                    <input type="text" data-start="" id="input1-@i" value="@item.GetValue("fieldname")" class="form-control" style="margin:0px 0px;width:100px;" autocomplete="off" />
                                 </td>
                                 <td data-value="@item.GetValue("datasourceid")">
                                     <input type="text" data-type="source" id="input2-@i" value="@item.GetValue("linkname")" class="form-control" style="margin:0px 0px;width:150px;" autocomplete="off" />
@@ -54,21 +54,21 @@
                                     <input type="text" data-type="dic" id="input7-@i" value="@item.GetValue("dicname")" class="form-control" style="margin:0px 0px;width:150px;" autocomplete="off" />
                                 </td>
                                 <td>
-                                    <input type="text" id="input8" value="@item.GetValue("sql")" class="form-control" style="margin:0px 0px;width:350px;" autocomplete="off" />
+                                    <input type="text" data-end="" id="input8" value="@item.GetValue("sql")" class="form-control" style="margin:0px 0px;width:350px;" autocomplete="off" />
                                 </td>
                             </tr>
                             i++;
                         }
                     }
                     <tr>
-                        <td><input type="text" id="input1-@i" class="form-control" style="margin:0px 0px;width:100px;" autocomplete="off" /></td>
+                        <td><input type="text" data-start="" id="input1-@i" class="form-control" style="margin:0px 0px;width:100px;" autocomplete="off" /></td>
                         <td><input type="text" data-type="source" id="input2-@i" class="form-control" style="margin:0px 0px;width:150px;" autocomplete="off" /></td>
                         <td><input type="text" data-type="table" id="input3-@i" class="form-control" style="margin:0px 0px;width:250px;" autocomplete="off" /></td>
                         <td><input type="text" data-type="field" id="input4-@i" class="form-control" style="margin:0px 0px;width:250px;" autocomplete="off" /></td>
                         <td><input type="text" data-type="field" id="input5-@i" class="form-control" style="margin:0px 0px;width:250px;" autocomplete="off" /></td>
                         <td><input type="text" data-type="field" id="input6-@i" class="form-control" style="margin: 0px 0px;width:250px;" autocomplete="off" /></td>
                         <td><input type="text" data-type="dic" id="input7-@i" class="form-control" style="margin:0px 0px;width:150px;" autocomplete="off" /></td>
-                        <td><input type="text" id="input8-@i" class="form-control" style="margin:0px 0px;width:350px;" autocomplete="off" /></td>
+                        <td><input type="text" data-end="" id="input8-@i" class="form-control" style="margin:0px 0px;width:350px;" autocomplete="off" /></td>
                     </tr>
                 }
             </tbody>
@@ -177,7 +177,22 @@
             $(this).children().each(function () { $(this).children().removeAttr("readonly"); });
             $("#BusinessTable tbody tr").not(this).children().each(function () { $(this).children().attr("readonly", "readonly"); });            
             $(this).find("input").keyup(function (event) {
-                if (event.keyCode == 13) 
+                if (event.keyCode == 13 && $(this).data("end") != undefined)
+                    $("#AddBtn").click();
+
+                if (event.keyCode == 13 && $(this).data("end") == undefined)
+                    $(this).parent().next().children().focus();
+
+                if (event.keyCode == 37 && $(this).data("start") == undefined)
+                    $(this).parent().prev().children().focus();
+
+                if (event.keyCode == 38 && $(this).data("start") == undefined)
+                    $(this).parent().prev().children().focus();                
+                
+                if (event.keyCode == 39 && $(this).data("end") == undefined)
+                    $(this).parent().next().children().focus();
+
+                if (event.keyCode == 40 && $(this).data("end") == undefined)
                     $(this).parent().next().children().focus();
             });
         });
