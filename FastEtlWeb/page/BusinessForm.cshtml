@@ -35,9 +35,9 @@
 }
 <html>
 <head>
-    @Html.Partial("Meta")
-    @Html.Partial("link")
-    @Html.Partial("script")
+    await Html.PartialAsync("Meta")
+    await Html.PartialAsync("link")
+    await Html.PartialAsync("script")
     <link href="/content/css/Form.css" rel="stylesheet" type="text/css" />
 </head>
 <body class="form-body">
