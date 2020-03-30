@@ -50,13 +50,13 @@
                     }
                     if (model.list.Count == 0)
                     {
-                        <tr><td colspan="7">找不到相关信息</td></tr>
+                        <tr><td colspan="8">找不到相关信息</td></tr>
                     }
                 }
             }
         </tbody>
     </table>
-    @Html.Partial("page", page)
+    await Html.PartialAsync("page", page)
 </div>
 <script>
     $.TableClickColor("DataTable");
