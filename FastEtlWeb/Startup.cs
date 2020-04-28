@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
+using System.Collections.Generic;
 
 namespace FastEtlWeb
 {
