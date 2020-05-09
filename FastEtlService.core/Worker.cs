@@ -24,8 +24,7 @@ namespace FastEtlService.core
                     {
                         using (var db = new DataContext(AppEtl.Db))
                         {
-                            var taskList = new List<Task>();
-                            BaseLog.SaveLog("ø™ º≥È»°", "FastEtlService");
+                            BaseLog.SaveLog("ÂºÄÂßãÊäΩÂèñ", "FastEtlService");
 
                             var list = FastRead.Query<Data_Business>(a => a.Id != null).ToList<Data_Business>(db);
 
@@ -33,7 +32,7 @@ namespace FastEtlService.core
                             {
                                 if (DataSchema.IsExistsTable(db, item.TableName) && item.UpdateTime == DateTime.Now.Hour && item.LastUpdateTime.Day + item.UpdateDay >= DateTime.Now.Day)
                                 {
-                                    taskList.Add(Task.Factory.StartNew(() =>
+                                    Parallel.Invoke(() =>
                                     {
                                         var leaf = FastRead.Query<Data_Business_Details>(a => a.Id == item.Id).ToList<Data_Business_Details>(db);
 
@@ -47,7 +46,7 @@ namespace FastEtlService.core
                                             {
                                                 DataSchema.ExpireData(db, item);
 
-                                                //µ⁄“ª¡–
+                                                //Á¨¨‰∏ÄÂàó
                                                 var link = DataSchema.InitColLink(leaf, db);
                                                 var tempLeaf = leaf.Find(a => a.FieldName.ToLower() == columnName);
                                                 var pageInfo = DataSchema.GetTableCount(tempLeaf, item);
@@ -62,7 +61,7 @@ namespace FastEtlService.core
                                                     pageInfo.pageId = i;
                                                     var pageData = DataSchema.GetFirstColumnData(link[0], tempLeaf, item, pageInfo);
 
-                                                    //±È¿˙ÃÓ≥‰table
+                                                    //ÈÅçÂéÜÂ°´ÂÖÖtable
                                                     for (var row = 0; row < pageData.list.Count; row++)
                                                     {
                                                         var dtRow = dt.NewRow();
@@ -71,11 +70,11 @@ namespace FastEtlService.core
                                                         dtRow["Key"] = pageData.list[row].GetValue("key");
                                                         dtRow[columnName] = pageData.list[row].GetValue("data");
 
-                                                        //◊÷µ‰∂‘’’
+                                                        //Â≠óÂÖ∏ÂØπÁÖß
                                                         if (!string.IsNullOrEmpty(tempLeaf.Dic))
                                                             dtRow[columnName] = FastRead.Query<Data_Dic_Details>(a => a.Value.ToLower() == dtRow[columnName].ToStr().ToLower() && a.DicId == tempLeaf.Dic, a => new { a.ContrastValue }).ToDic(db).GetValue("ContrastValue");
 
-                                                        // ˝æ›≤ﬂ¬‘
+                                                        //Êï∞ÊçÆÁ≠ñÁï•
                                                         isAdd = DataSchema.DataPolicy(db, item, dtRow["Key"], columnName, dtRow[columnName]);
 
                                                         for (var col = 3; col < dt.Columns.Count; col++)
@@ -86,11 +85,11 @@ namespace FastEtlService.core
                                                                 tempLeaf = leaf.Find(a => a.FieldName.ToLower() == columnName);
                                                                 dtRow[columnName] = DataSchema.GetColumnData(link[col - 3], tempLeaf, dtRow["Key"]);
 
-                                                                //◊÷µ‰∂‘’’
+                                                                //Â≠óÂÖ∏ÂØπÁÖß
                                                                 if (!string.IsNullOrEmpty(tempLeaf.Dic))
                                                                     dtRow[columnName] = FastRead.Query<Data_Dic_Details>(a => a.Value.ToLower() == dtRow[columnName].ToStr().ToLower() && a.DicId == tempLeaf.Dic, a => new { a.ContrastValue }).ToDic(db).GetValue("ContrastValue");
 
-                                                                // ˝æ›≤ﬂ¬‘
+                                                                //Êï∞ÊçÆÁ≠ñÁï•
                                                                 if (item.Policy == "2")
                                                                     isAdd = DataSchema.DataPolicy(db, item, dtRow["Key"], columnName, dtRow[columnName]);
                                                             }
@@ -111,12 +110,11 @@ namespace FastEtlService.core
                                                 FastWrite.Update<Data_Business>(item, a => a.Id == item.Id, a => new { a.LastUpdateTime }, db);
                                             }
                                         }
-                                    }));
+                                    });
                                 }
                             }
 
-                            Task.WaitAll(taskList.ToArray());
-                            BaseLog.SaveLog("Ω· ¯≥È»°", "FastEtlService");
+                            BaseLog.SaveLog("ÁªìÊùüÊäΩÂèñ", "FastEtlService");
                         }
                     }
                     await Task.Delay(1000 * 60 * 30, stoppingToken);
@@ -130,13 +128,13 @@ namespace FastEtlService.core
         
         public override Task StartAsync(CancellationToken cancellationToken)
         {
-            BaseLog.SaveLog("∆Ù∂Ø∑˛ŒÒ", "FastEtlService");
+            BaseLog.SaveLog("ÂêØÂä®ÊúçÂä°", "FastEtlService");
             return base.StartAsync(cancellationToken);
         }
 
         public override Task StopAsync(CancellationToken cancellationToken)
         {
-            BaseLog.SaveLog("Õ£÷π∑˛ŒÒ", "FastEtlService");
+            BaseLog.SaveLog("ÂÅúÊ≠¢ÊúçÂä°", "FastEtlService");
             return base.StopAsync(cancellationToken);
         }
     }
