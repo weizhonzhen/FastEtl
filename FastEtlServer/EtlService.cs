@@ -1,4 +1,4 @@
-﻿using FastUntility.Base;
+using FastUntility.Base;
 using System;
 using System.ServiceProcess;
 using System.Timers;
@@ -6,10 +6,10 @@ using FastData;
 using FastData.Context;
 using FastEtlModel.DataModel;
 using System.Threading.Tasks;
-using FastEtlService.Base;
+using FastService.Base;
 using System.Collections.Generic;
 
-namespace FastEtlService
+namespace FastService
 {
     public partial class EtlService : ServiceBase
     {
@@ -72,14 +72,13 @@ namespace FastEtlService
                         //不允许停止服务
                         this.CanStop = false;
 
-                        var taskList = new List<Task>();
                         var list = FastRead.Query<Data_Business>(a => a.Id != null).ToList<Data_Business>(db);
 
                         foreach (var item in list)
                         {
                             if (DataSchema.IsExistsTable(db, item.TableName) && item.UpdateTime == DateTime.Now.Hour && item.LastUpdateTime.Day + item.UpdateDay >= DateTime.Now.Day)
                             {
-                                taskList.Add(Task.Factory.StartNew(() =>
+                                Parallel.Invoke(() =>
                                  {
                                      var leaf = FastRead.Query<Data_Business_Details>(a => a.Id == item.Id).ToList<Data_Business_Details>(db);
 
@@ -92,7 +91,7 @@ namespace FastEtlService
                                          if (leaf.Exists(a => a.FieldName.ToLower() == columnName))
                                          {
                                              DataSchema.ExpireData(db, item);
-
+                                             
                                              //第一列
                                              var link = DataSchema.InitColLink(leaf, db);
                                              var tempLeaf = leaf.Find(a => a.FieldName.ToLower() == columnName);
@@ -157,11 +156,9 @@ namespace FastEtlService
                                              FastWrite.Update<Data_Business>(item, a => a.Id == item.Id, a => new { a.LastUpdateTime }, db);
                                          }
                                      }
-                                 }));
+                                 });
                             }
                         }
-
-                        Task.WaitAll(taskList.ToArray());
 
                         //允许停止服务
                         this.CanStop = true;
