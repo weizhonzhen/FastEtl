@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using FastRedis.Core;
+using System.Threading.Tasks;
+
 public static class DataSchema
 {
     /// <summary>
@@ -630,7 +632,9 @@ public static class DataSchema
             table.Comments = row.ItemArray[1] == DBNull.Value ? "" : row.ItemArray[1].ToString();
             table.Name = row.ItemArray[0] == DBNull.Value ? "" : row.ItemArray[0].ToString();
             list.Add(table);
-            InitColumn(item, IsLoad, table.Name);
+            Parallel.Invoke(() => {
+                InitColumn(item, IsLoad, table.Name);
+            });
         }
 
         RedisInfo.Set<List<CacheTable>>(key, list);
