@@ -11,6 +11,7 @@ using System.Linq;
 using FastUntility.Base;
 using FastData.Model;
 using FastApp;
+using System.Threading.Tasks;
 
 namespace FastEtlTool.Base
 {
@@ -90,7 +91,10 @@ namespace FastEtlTool.Base
                 table.Comments = item.ItemArray[1] == DBNull.Value ? "" : item.ItemArray[1].ToString();
                 table.Name = item.ItemArray[0] == DBNull.Value ? "" : item.ItemArray[0].ToString();
                 list.Add(table);
-                InitColumn(link, IsLoad, table.Name);
+
+                Parallel.Invoke(() => {
+                    InitColumn(link, IsLoad, table.Name);
+                });
             }
 
             AppCache.SetTableList(list, link);
