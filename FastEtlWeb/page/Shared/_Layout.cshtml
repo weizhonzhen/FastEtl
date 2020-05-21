@@ -1,14 +1,14 @@
 ﻿<html>
 <head>
     <title>FastElt</title>
-    await Html.PartialAsync("Meta")
-    await Html.PartialAsync("link")
-    await Html.PartialAsync("script")
+    @await Html.PartialAsync("Meta")
+    @await Html.PartialAsync("link")
+    @await Html.PartialAsync("script")
 </head>
 <body class="skin-blue">
-    await Html.PartialAsync("top")
+    @await Html.PartialAsync("top")
     <div class="wrapper row-offcanvas row-offcanvas-left">
-        await Html.PartialAsync("Left")
+        @await Html.PartialAsync("Left")
         <aside class="right-side">
             @RenderBody()
         </aside>
