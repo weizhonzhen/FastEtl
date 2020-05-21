@@ -60,7 +60,7 @@
             }
         </tbody>
     </table>
-    await Html.PartialAsync("page", page)
+    @await Html.PartialAsync("page", page)
 </div>
 @functions{
     public static string GetType(Dictionary<string, object> item)
