@@ -1,4 +1,4 @@
-using FastData.Core.Context;
+﻿using FastData.Core.Context;
 using FastData.Core.Model;
 using FastEtlWeb.Cache;
 using FastEtlWeb.DataModel;
@@ -35,13 +35,13 @@ public static class DataSchema
     /// 创建表
     /// </summary>
     /// <returns></returns>
-    public static bool CreateTable(DataContext db, Data_Business table)
+    public static WriteReturn CreateTable(DataContext db, Data_Business table)
     {
-        var isSuccess = false;
+        var result = new WriteReturn();
         if (db.config.DbType.ToLower() == AppEtl.DataDbType.Oracle.ToLower())
         {
-            isSuccess = db.ExecuteSql(string.Format("create table {0}(Id varchar2(64) primary key,AddTime date,key varchar(255))", table.TableName), null, false).writeReturn.IsSuccess;
-            if (isSuccess)
+            result = db.ExecuteSql(string.Format("create table {0}(Id varchar2(64) primary key,AddTime date,key varchar(255))", table.TableName), null, false).writeReturn;
+            if (result.IsSuccess)
             {
                 db.ExecuteSql(string.Format("Comment on column {0}.Id is '主键'", table.TableName), null, false);
                 db.ExecuteSql(string.Format("Comment on column {0}.AddTime is '抽取时间'", table.TableName), null, false);
@@ -51,8 +51,8 @@ public static class DataSchema
 
         if (db.config.DbType.ToLower() == AppEtl.DataDbType.MySql.ToLower())
         {
-            isSuccess = db.ExecuteSql(string.Format("create table {0}(Id varchar(64) primary key,AddTime date,key varchar(255))", table.TableName), null, false).writeReturn.IsSuccess;
-            if (isSuccess)
+            result = db.ExecuteSql(string.Format("create table {0}(Id varchar(64) primary key,AddTime date,key varchar(255))", table.TableName), null, false).writeReturn;
+            if (result.IsSuccess)
             {
                 db.ExecuteSql(string.Format("alter table {0} modify Id varchar2(64) comment '主键'", table.TableName), null, false);
                 db.ExecuteSql(string.Format("alter table {0} modify AddTime date comment '抽取时间'", table.TableName), null, false);
@@ -62,8 +62,8 @@ public static class DataSchema
 
         if (db.config.DbType.ToLower() == AppEtl.DataDbType.SqlServer.ToLower())
         {
-            isSuccess = db.ExecuteSql(string.Format("create table {0}(Id varchar(64) primary key,AddTime date,key varchar(255))", table.TableName), null, false).writeReturn.IsSuccess;
-            if (isSuccess)
+            result = db.ExecuteSql(string.Format("create table {0}(Id varchar(64) primary key,AddTime date,key varchar(255))", table.TableName), null, false).writeReturn;
+            if (result.IsSuccess)
             {
                 db.ExecuteSql(string.Format("exec sys.sp_addextendedproperty N'MS_Description',N'主键',N'SCHEMA', N'dbo', N'TABLE',N'{0}',N'column',N'Id'", table.TableName), null, false);
                 db.ExecuteSql(string.Format("exec sys.sp_addextendedproperty N'MS_Description',N'抽取时间',N'SCHEMA', N'dbo', N'TABLE',N'{0}',N'column',N'AddTime'", table.TableName), null, false);
@@ -71,7 +71,7 @@ public static class DataSchema
             }
         }
 
-        return isSuccess;
+        return result;
     }
 
     /// <summary>
@@ -99,7 +99,10 @@ public static class DataSchema
                     return "date";
                 case "decimal":
                 case "numeric":
-                    return string.Format("decimal({0},{1})", item.Precision, item.Scale);
+                    if (item.Precision == 0 && item.Scale == 0)
+                        return item.Type;
+                    else
+                        return string.Format("decimal({0},{1})", item.Precision, item.Scale);
                 case "money":
                 case "smallmoney":
                 case "real":
@@ -112,7 +115,7 @@ public static class DataSchema
                         if (item.Length > 4000)
                             return "clob";
                         else
-                            return string.Format("nvarchar2({0})", item.Precision);
+                            return string.Format("nvarchar2({0})", item.Precision/2);
                     }
                 case "varchar":
                 case "char":
@@ -201,7 +204,7 @@ public static class DataSchema
                     return string.Format("varchar({0})", item.Length);
                 case "nchar":
                 case "nvarchar2":
-                    return string.Format("nvarchar({0})", item.Length);
+                    return string.Format("nvarchar({0})", item.Length/2);
                 case "date":
                     return "datetime";
                 case "long":
@@ -217,7 +220,10 @@ public static class DataSchema
                     return "uniqueidentifier";
                 case "number":
                 case "decimal":
-                    return string.Format("decimal({0},{1})", item.Precision, item.Scale);
+                    if (item.Precision == 0 && item.Scale == 0)
+                        return item.Type;
+                    else
+                        return string.Format("decimal({0},{1})", item.Precision, item.Scale);
                 case "integer":
                     return "int";
                 default:
@@ -241,7 +247,10 @@ public static class DataSchema
                 case "char":
                     return string.Format("nchar({0})", item.Length);
                 case "decimal":
-                    return string.Format("decimal({0},{1})", item.Precision, item.Scale);
+                    if (item.Precision == 0 && item.Scale == 0)
+                        return item.Type;
+                    else
+                        return string.Format("decimal({0},{1})", item.Precision, item.Scale);
                 default:
                     return item.Type;
             }
@@ -262,7 +271,10 @@ public static class DataSchema
                 case "varchar2":
                     return string.Format("varchar({0})", item.Length);
                 case "number":
-                    return string.Format("decimal({0},{1})", item.Precision, item.Scale);
+                    if (item.Precision == 0 && item.Scale == 0)
+                        return item.Type;
+                    else
+                        return string.Format("decimal({0},{1})", item.Precision, item.Scale);
                 default:
                     return item.Type;
             }
@@ -293,13 +305,18 @@ public static class DataSchema
                     return "text";
                 case "decimal":
                 case "numeric":
-                    return string.Format("decimal({0},{1})", item.Precision, item.Scale);
+                    if (item.Precision == 0 && item.Scale == 0)
+                        return item.Type;
+                    else
+                        return string.Format("decimal({0},{1})", item.Precision, item.Scale);
                 case "char":
-                case "nchar":
                     return string.Format("char({0})", item.Length);
+                case "nchar":
+                    return string.Format("char({0})", item.Length/2);
                 case "varchar":
-                case "nvarchar":
                     return string.Format("varchar({0})", item.Length);
+                case "nvarchar":
+                    return string.Format("varchar({0})", item.Length/2);
                 default:
                     return item.Type;
             }
@@ -311,16 +328,20 @@ public static class DataSchema
             switch (item.Type.ToLower())
             {
                 case "char":
-                case "nchar":
                 case "varchar":
-                case "nvarchar":
                 case "varchar2":
-                case "nvarchar2":
                     return string.Format("{0}({1})", item.Type, item.Length == -1 ? "max" : item.Length.ToString());
+                case "nchar":
+                case "nvarchar":
+                case "nvarchar2":
+                    return string.Format("{0}({1})", item.Type, item.Length == -1 ? "max" : (item.Length/2).ToString());
                 case "decimal":
                 case "numeric":
                 case "number":
-                    return string.Format("{0}({1},{2})", item.Type, item.Precision, item.Scale);
+                    if (item.Precision == 0 && item.Scale == 0)
+                        return item.Type;
+                    else
+                        return string.Format("{0}({1},{2})", item.Type, item.Precision, item.Scale);
                 default:
                     return item.Type;
             }
@@ -366,9 +387,9 @@ public static class DataSchema
     /// 增加列
     /// </summary>
     /// <returns></returns>
-    public static bool AddColumn(DataContext db, Data_Business table, Data_Business_Details column, CacheColumn columnInfo, Data_Source dataSource)
+    public static WriteReturn AddColumn(DataContext db, Data_Business table, Data_Business_Details column, CacheColumn columnInfo, Data_Source dataSource)
     {
-        return db.ExecuteSql(string.Format("alter table {0} add {1} {2}", table.TableName, column.FieldName, GetFieldType(columnInfo, db.config, dataSource)), null, false).writeReturn.IsSuccess;
+        return db.ExecuteSql(string.Format("alter table {0} add {1} {2}", table.TableName, column.FieldName, GetFieldType(columnInfo, db.config, dataSource)), null, false).writeReturn;
     }
 
     /// <summary>
@@ -538,10 +559,10 @@ public static class DataSchema
     /// 获取列的信息
     /// </summary>
     /// <returns></returns>
-    private static void InitColumn(Data_Source item, bool IsLoad, string tableName)
+    public static void InitColumn(Data_Source item, bool IsLoad, string tableName)
     {
         var key = string.Format(AppEtl.CacheKey.Column, item.Host, tableName);
-        if (RedisInfo.Exists(key) && IsLoad)
+        if (RedisInfo.Exists(key,AppEtl.CacheDb) && IsLoad)
             return;
 
         var list = new List<CacheColumn>();
@@ -567,15 +588,16 @@ public static class DataSchema
             var column = new CacheColumn();
             column.Name = (row.ItemArray[0] == DBNull.Value ? "" : row.ItemArray[0].ToString());
             column.Type = row.ItemArray[1] == DBNull.Value ? "" : row.ItemArray[1].ToString();
-            column.Length = row.ItemArray[2] == DBNull.Value ? 0 : decimal.Parse(row.ItemArray[2].ToString());
+            column.Length = row.ItemArray[2] == DBNull.Value ? 0 : int.Parse(row.ItemArray[2].ToString());
             column.Comments = row.ItemArray[3] == DBNull.Value ? "" : row.ItemArray[3].ToString();
+            column.IsKey = row.ItemArray[4].ToString() != "0" ? true : false;
             column.Precision = row.ItemArray[7] == DBNull.Value ? 0 : int.Parse(row.ItemArray[7].ToString());
             column.ShowName = string.Format("{0}({1})", column.Name, column.Comments);
 
             list.Add(column);
         }
 
-        RedisInfo.Set<List<CacheColumn>>(key, list);
+        RedisInfo.Set<List<CacheColumn>>(key, list,8640, AppEtl.CacheDb);
     }
 
     /// <summary>
@@ -605,7 +627,7 @@ public static class DataSchema
     public static void InitTable(Data_Source item, bool IsLoad)
     {
         var key = string.Format(AppEtl.CacheKey.Table, item.Host);
-        if (RedisInfo.Exists(key) && IsLoad)
+        if (RedisInfo.Exists(key, AppEtl.CacheDb) && IsLoad)
             return;
 
         var list = new List<CacheTable>();
@@ -637,7 +659,7 @@ public static class DataSchema
             });
         }
 
-        RedisInfo.Set<List<CacheTable>>(key, list);
+        RedisInfo.Set<List<CacheTable>>(key, list, 8640, AppEtl.CacheDb);
     }
 }
 

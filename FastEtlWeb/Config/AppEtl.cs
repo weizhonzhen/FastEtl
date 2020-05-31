@@ -1,5 +1,6 @@
 ﻿public static class AppEtl
 {
+    public static int CacheDb = 9;
     public static string Db = "Etl";
 
     public class DataDbType
