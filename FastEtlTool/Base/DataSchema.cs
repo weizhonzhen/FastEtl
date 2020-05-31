@@ -413,7 +413,7 @@ namespace FastEtlTool.Base
         /// <returns></returns>
         private static string GetFieldType(Cache_Column item, ConfigModel config, Data_Source source)
         {
-            if (config.DbType == DataDbType.Oracle && source.Type.ToLower() == DataDbType.SqlServer.ToLower())
+            if (config.DbType.ToLower() == DataDbType.Oracle.ToLower() && source.Type.ToLower() == DataDbType.SqlServer.ToLower())
             {
                 #region sqlserver to oracle
                 if (string.IsNullOrEmpty(item.Type))
@@ -431,7 +431,10 @@ namespace FastEtlTool.Base
                         return "date";
                     case "decimal":
                     case "numeric":
-                        return string.Format("decimal({0},{1})", item.Precision, item.Scale);
+                        if (item.Precision == 0 && item.Scale == 0)
+                            return item.Type;
+                        else
+                            return string.Format("decimal({0},{1})", item.Precision, item.Scale);
                     case "money":
                     case "smallmoney":
                     case "real":
@@ -444,7 +447,7 @@ namespace FastEtlTool.Base
                             if (item.Length > 4000)
                                 return "clob";
                             else
-                                return string.Format("nvarchar2({0})", item.Precision);
+                                return string.Format("nvarchar2({0})", item.Precision / 2);
                         }
                     case "varchar":
                     case "char":
@@ -466,7 +469,7 @@ namespace FastEtlTool.Base
                 }
                 #endregion
             }
-            else if (config.DbType == DataDbType.Oracle && source.Type.ToLower() == DataDbType.MySql.ToLower())
+            else if (config.DbType.ToLower() == DataDbType.Oracle.ToLower() && source.Type.ToLower() == DataDbType.MySql.ToLower())
             {
                 #region mysql to oracle
                 if (string.IsNullOrEmpty(item.Type))
@@ -521,7 +524,7 @@ namespace FastEtlTool.Base
                 }
                 #endregion
             }
-            else if (config.DbType == DataDbType.SqlServer && source.Type.ToLower() == DataDbType.Oracle.ToLower())
+            else if (config.DbType.ToLower() == DataDbType.SqlServer.ToLower() && source.Type.ToLower() == DataDbType.Oracle.ToLower())
             {
                 #region oracle to sqlserver
                 if (string.IsNullOrEmpty(item.Type))
@@ -533,7 +536,7 @@ namespace FastEtlTool.Base
                         return string.Format("varchar({0})", item.Length);
                     case "nchar":
                     case "nvarchar2":
-                        return string.Format("nvarchar({0})", item.Length);
+                        return string.Format("nvarchar({0})", item.Length / 2);
                     case "date":
                         return "datetime";
                     case "long":
@@ -549,7 +552,10 @@ namespace FastEtlTool.Base
                         return "uniqueidentifier";
                     case "number":
                     case "decimal":
-                        return string.Format("decimal({0},{1})", item.Precision, item.Scale);
+                        if (item.Precision == 0 && item.Scale == 0)
+                            return item.Type;
+                        else
+                            return string.Format("decimal({0},{1})", item.Precision, item.Scale);
                     case "integer":
                         return "int";
                     default:
@@ -557,7 +563,7 @@ namespace FastEtlTool.Base
                 }
                 #endregion
             }
-            else if (config.DbType == DataDbType.SqlServer && source.Type.ToLower() == DataDbType.MySql.ToLower())
+            else if (config.DbType.ToLower() == DataDbType.SqlServer.ToLower() && source.Type.ToLower() == DataDbType.MySql.ToLower())
             {
                 #region MySql to sqlserver
                 if (string.IsNullOrEmpty(item.Type))
@@ -573,13 +579,16 @@ namespace FastEtlTool.Base
                     case "char":
                         return string.Format("nchar({0})", item.Length);
                     case "decimal":
-                        return string.Format("decimal({0},{1})", item.Precision,item.Scale);
+                        if (item.Precision == 0 && item.Scale == 0)
+                            return item.Type;
+                        else
+                            return string.Format("decimal({0},{1})", item.Precision, item.Scale);
                     default:
                         return item.Type;
                 }
                 #endregion
             }
-            else if (config.DbType == DataDbType.MySql && source.Type.ToLower() == DataDbType.Oracle.ToLower())
+            else if (config.DbType.ToLower() == DataDbType.MySql.ToLower() && source.Type.ToLower() == DataDbType.Oracle.ToLower())
             {
                 #region Oracle to MySql
                 if (string.IsNullOrEmpty(item.Type))
@@ -594,13 +603,16 @@ namespace FastEtlTool.Base
                     case "varchar2":
                         return string.Format("varchar({0})", item.Length);
                     case "number":
-                        return string.Format("decimal({0},{1})", item.Precision, item.Scale);
+                        if (item.Precision == 0 && item.Scale == 0)
+                            return item.Type;
+                        else
+                            return string.Format("decimal({0},{1})", item.Precision, item.Scale);
                     default:
                         return item.Type;
                 }
                 #endregion
             }
-            else if (config.DbType == DataDbType.MySql && source.Type.ToLower() == DataDbType.SqlServer.ToLower())
+            else if (config.DbType.ToLower() == DataDbType.MySql.ToLower() && source.Type.ToLower() == DataDbType.SqlServer.ToLower())
             {
                 #region SqlServer to MySql
                 if (string.IsNullOrEmpty(item.Type))
@@ -625,13 +637,18 @@ namespace FastEtlTool.Base
                         return "text";
                     case "decimal":
                     case "numeric":
-                        return string.Format("decimal({0},{1})", item.Precision,item.Scale);
+                        if (item.Precision == 0 && item.Scale == 0)
+                            return item.Type;
+                        else
+                            return string.Format("decimal({0},{1})", item.Precision, item.Scale);
                     case "char":
-                    case "nchar":
                         return string.Format("char({0})", item.Length);
+                    case "nchar":
+                        return string.Format("char({0})", item.Length / 2);
                     case "varchar":
-                    case "nvarchar":
                         return string.Format("varchar({0})", item.Length);
+                    case "nvarchar":
+                        return string.Format("varchar({0})", item.Length / 2);
                     default:
                         return item.Type;
                 }
@@ -643,16 +660,20 @@ namespace FastEtlTool.Base
                 switch (item.Type.ToLower())
                 {
                     case "char":
-                    case "nchar":
                     case "varchar":
-                    case "nvarchar":
                     case "varchar2":
-                    case "nvarchar2":
                         return string.Format("{0}({1})", item.Type, item.Length == -1 ? "max" : item.Length.ToString());
+                    case "nchar":
+                    case "nvarchar":
+                    case "nvarchar2":
+                        return string.Format("{0}({1})", item.Type, item.Length == -1 ? "max" : (item.Length / 2).ToString());
                     case "decimal":
                     case "numeric":
                     case "number":
-                        return string.Format("{0}({1},{2})", item.Type, item.Precision, item.Scale);
+                        if (item.Precision == 0 && item.Scale == 0)
+                            return item.Type;
+                        else
+                            return string.Format("{0}({1},{2})", item.Type, item.Precision, item.Scale);
                     default:
                         return item.Type;
                 }
