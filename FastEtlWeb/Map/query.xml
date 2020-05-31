@@ -5,9 +5,19 @@
     from data_business_details a
     left join data_dic b on a.dic=b.id
     left join data_source c on a.datasourceid=c.id
-    where a.id=:id
+    <dynamic prepend=" where 1=1 ">
+      <isNotNullOrEmpty prepend=" and " property="Id">a.id=:Id</isNotNullOrEmpty>
+    </dynamic>
   </select>
 
+  <select id="Business.List">
+    select a.* from Data_Business a
+    <dynamic prepend=" where 1=1 ">
+      <isNotNullOrEmpty prepend=" and " property="TableName">a.TableName like '%#TableName#%'</isNotNullOrEmpty>
+      <isNotNullOrEmpty prepend=" " property="OrderBy">order by #OrderBy#</isNotNullOrEmpty>
+    </dynamic>
+  </select>
+  
   <select id="DropList.Source">
     select * from data_source  
     <dynamic prepend=" where 1=1 ">
