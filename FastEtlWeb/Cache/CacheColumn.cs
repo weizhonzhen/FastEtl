@@ -26,7 +26,7 @@
         /// <summary>
         /// 长度
         /// </summary>
-        public decimal Length { get; set; }
+        public int Length { get; set; }
 
         /// <summary>
         /// 精度
@@ -37,5 +37,10 @@
         /// 小数点位数
         /// </summary>
         public int Scale { get; set; }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool IsKey { get; set; }
     }
 }
