@@ -213,6 +213,16 @@
 
         return msg;
     },
+    QueryForm: function (input, submit) {
+        $("#" + input).keypress(function (e) {
+            if (e.keyCode == 13)
+                e.preventDefault();
+        });
+        $("#" + input).keydown(function (event) {
+            if (event.keyCode == 13)
+                $("#" + submit).click();
+        });
+    },
     IsValidDate: function (date) {
         return true;
     }
