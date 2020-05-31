@@ -1,5 +1,5 @@
 ﻿@page
-@model FastEtlWeb.Pages.BusinessFormModel
+@model FastEtlWeb.Pages.BusinessFormListModel
 @using FastUntility.Core.Base;
 @{
     Layout = null;
@@ -9,7 +9,7 @@
     var SaveDataMonthList = new List<SelectListItem>();
     var PolicyList = new List<SelectListItem>();
 
-    UpdateTimeList.Add(new SelectListItem { Text = "马上更新", Value = "99",Selected=true });
+    UpdateTimeList.Add(new SelectListItem { Text = "马上更新", Value = "99" });
     for (var i = 0; i < 24; i++)
     {
         UpdateTimeList.Add(new SelectListItem { Text = i + " 点", Value = i.ToStr() });
@@ -43,35 +43,29 @@
 </head>
 <body class="form-body">
     <form id="submitForm" style="margin-top:-10px;">
-        @Html.HiddenFor(a => Model.info.Id)
-        @Html.HiddenFor(a => Model.info.LastUpdateTime)
         <div class="input-group">
-            <div class="input-group-addon input-group-none"><label>业务表名</label></div>
-            @Html.TextBoxFor(a => a.info.TableName, new { @class = "form-control" , @autocomplete = "off"})
-        </div>
-        <div class="input-group">
-            <div class="input-group-addon input-group-none"><label>业务名称</label></div>
-            @Html.TextBoxFor(a => a.info.Name, new { @class = "form-control", @autocomplete = "off" })
+            <div class="input-group-addon input-group-none"><label>数据源</label></div>
+            @Html.DropDownListForDataSource(a => a.info.DataId, new { @class = "form-control", @autocomplete = "off" })
         </div>
         <div class="input-group">
             <div class="input-group-addon input-group-none"><label>更新时间</label></div>
-            @Html.DropDownListFor(a => a.info.UpdateTime,UpdateTimeList, new { @class = "form-control" })
+            @Html.DropDownListFor(a => a.info.UpdateTime, UpdateTimeList, new { @class = "form-control" })
         </div>
         <div class="input-group">
             <div class="input-group-addon input-group-none"><label>更新频率</label></div>
-            @Html.DropDownListFor(a => a.info.UpdateDay,UpdateDayList, new { @class = "form-control" })
+            @Html.DropDownListFor(a => a.info.UpdateDay, UpdateDayList, new { @class = "form-control" })
         </div>
         <div class="input-group">
             <div class="input-group-addon input-group-none"><label>抽取条数</label></div>
-            @Html.DropDownListFor(a => a.info.UpdateCount, UpdateCountList,new { @class = "form-control" })
+            @Html.DropDownListFor(a => a.info.UpdateCount, UpdateCountList, new { @class = "form-control" })
         </div>
         <div class="input-group">
             <div class="input-group-addon input-group-none"><label>存放月数</label></div>
-            @Html.DropDownListFor(a => a.info.SaveDataMonth,SaveDataMonthList, new { @class = "form-control"})
+            @Html.DropDownListFor(a => a.info.SaveDataMonth, SaveDataMonthList, new { @class = "form-control" })
         </div>
         <div class="input-group">
             <div class="input-group-addon input-group-none"><label>策略</label></div>
-            @Html.DropDownListFor(a => a.info.Policy,PolicyList, new { @class = "form-control" })
+            @Html.DropDownListFor(a => a.info.Policy, PolicyList, new { @class = "form-control" })
         </div>
     </form>
     <div class="center">
@@ -91,7 +85,7 @@
         var reg = new RegExp("info.", "g");
          $.ajax({
              type: "post",
-             url: "BusinessForm?handler=BusinessForm",
+             url: "BusinessFormList?handler=BusinessFormList",
              data: $("#submitForm").serialize().replace(reg, ""),
              success: function (result) {
                  parent.layer.closeAll('loading');

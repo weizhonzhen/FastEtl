@@ -46,7 +46,7 @@ namespace FastEtlWeb.Pages
                     item.Id = Guid.NewGuid().ToString();
                     info = db.Add(item).writeReturn;
                     if (info.IsSuccess)
-                       info.IsSuccess = DataSchema.CreateTable(db, item);
+                       info = DataSchema.CreateTable(db, item);
                 }
                 else
                 {
@@ -58,7 +58,7 @@ namespace FastEtlWeb.Pages
                         if (oldTableName.ToLower() != item.TableName.ToLower())
                         {
                             DataSchema.DropTable(db, oldTableName);
-                            info.IsSuccess = DataSchema.CreateTable(db, item);
+                            info = DataSchema.CreateTable(db, item);
                         }
                         else
                             DataSchema.UpdateTableComment(db, item);

@@ -55,24 +55,24 @@ namespace FastEtlWeb.Pages
                 {
                     var host = FastRead.Query<Data_Source>(a => a.Id == item.HostId, a => new { a.Host }).ToDic(db).GetValue("host").ToStr();
                     var key = string.Format(AppEtl.CacheKey.Table, host);
-                    var data = RedisInfo.Get<List<CacheTable>>(key);
+                    var data = RedisInfo.Get<List<CacheTable>>(key, AppEtl.CacheDb);
                     data = data.FindAll(a => a.Name.ToUpper().Contains(item.Key.ToUpper()));
                     if (data.Count > 0)
                         return new JsonResult(new { success = true, data = data });
                     else
-                        return new JsonResult(new { success = true, data = RedisInfo.Get<List<CacheTable>>(key).Take(10) });
+                        return new JsonResult(new { success = true, data = RedisInfo.Get<List<CacheTable>>(key, AppEtl.CacheDb).Take(10) });
                 }
 
                 if (item.Type.ToLower() == "field")
                 {
                     var host = FastRead.Query<Data_Source>(a => a.Id == item.HostId, a => new { a.Host }).ToDic(db).GetValue("host").ToStr();
                     var key = string.Format(AppEtl.CacheKey.Column, host, item.Table);
-                    var data = RedisInfo.Get<List<CacheColumn>>(key);
+                    var data = RedisInfo.Get<List<CacheColumn>>(key, AppEtl.CacheDb);
                     data = data.FindAll(a => a.Name.ToUpper().Contains(item.Key.ToUpper()));
                     if (data.Count > 0)
                         return new JsonResult(new { success = true, data = data });
                     else
-                        return new JsonResult(new { success = true, data = RedisInfo.Get<List<CacheColumn>>(key).Take(10) });
+                        return new JsonResult(new { success = true, data = RedisInfo.Get<List<CacheColumn>>(key, AppEtl.CacheDb).Take(10) });
                 }
 
                 if (item.Type.ToLower() == "dic")
@@ -106,7 +106,7 @@ namespace FastEtlWeb.Pages
                 var table = FastRead.Query<Data_Business>(a => a.Id == item.Id).ToItem<Data_Business>(db);
                 var source = FastRead.Query<Data_Source>(a => a.Id == item.DataSourceId).ToItem<Data_Source>(db);
                 var key = string.Format(AppEtl.CacheKey.Column, source.Host, item.TableName);
-                var colunm = RedisInfo.Get<List<CacheColumn>>(key).Find(a => a.Name == item.ColumnName);
+                var colunm = RedisInfo.Get<List<CacheColumn>>(key, AppEtl.CacheDb).Find(a => a.Name == item.ColumnName);
 
                 db.BeginTrans();
                 if (FastRead.Query<Data_Business_Details>(a => a.FieldId == item.FieldId).ToCount(db) == 0)
@@ -115,7 +115,7 @@ namespace FastEtlWeb.Pages
                     info = FastWrite.Add(item);
                     if (info.IsSuccess)
                     {
-                        info.IsSuccess = DataSchema.AddColumn(db, table, item, colunm, source);
+                        info= DataSchema.AddColumn(db, table, item, colunm, source);
                         if (info.IsSuccess)
                             DataSchema.UpdateColumnComment(db, table, item, colunm, source);
                     }
