@@ -103,10 +103,10 @@
             </ul>
         </nav>
     </div>
-    <script>
+<script>
     function @(Model.Action)(id)
     {
-        var param = $("#@Model.FormId").serialize() + "&pageid=" + id;
+        var param = $("#@Model.FormId").serialize() + "&PageId=" + id +"&PageSize=@Model.PageSize";
         if (@Model.IsParent= 'True')
             parent.layer.load(2);
         else
@@ -129,4 +129,4 @@
             }
         });
     }
-    </script>
+</script>
