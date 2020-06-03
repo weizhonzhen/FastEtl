@@ -46,7 +46,7 @@ namespace FastEtlWeb.Pages
 
                     var tableModel = BaseMap.CopyModel<Data_Business, Data_Business_List>(item);
                     tableModel.Id = Guid.NewGuid().ToStr();
-                    tableModel.Name = table.Name;
+                    tableModel.Name = string.IsNullOrEmpty(table.Comments) ? table.Name : table.Comments;
                     tableModel.TableName = table.Name;
 
                     if (result.IsSuccess)
@@ -58,6 +58,7 @@ namespace FastEtlWeb.Pages
 
                     var columnList = RedisInfo.Get<List<CacheColumn>>(columnKey, AppEtl.CacheDb);
                     var keyName = columnList.Find(a => a.IsKey == true)?.Name;
+                    var keyList = columnList.FindAll(a => a.IsKey == true);
                     foreach (var column in columnList)
                     {
                         var columnModel = new Data_Business_Details();
@@ -76,12 +77,18 @@ namespace FastEtlWeb.Pages
 
                         if (result.IsSuccess)
                         {
-                            result = DataSchema.AddColumn(db, tableModel, columnModel, column, data);
+                            if ((keyList.Count > 1 && keyList.Exists(a => a.Name == columnModel.FieldName)))
+                                result = DataSchema.AddColumn(db, tableModel, columnModel, column, data, false);
+                            else
+                                result = DataSchema.AddColumn(db, tableModel, columnModel, column, data);
                             if (result.IsSuccess)
                                 DataSchema.UpdateColumnComment(db, tableModel, columnModel, column, data);
                         }
                         result.IsSuccess = true;
                     }
+
+                    if (keyList.Count > 1)
+                        DataSchema.AddColumnMoreKey(db, tableModel, keyList);
                 }
 
                 if (result.IsSuccess)
