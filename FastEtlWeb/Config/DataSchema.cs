@@ -40,34 +40,31 @@ public static class DataSchema
         var result = new WriteReturn();
         if (db.config.DbType.ToLower() == AppEtl.DataDbType.Oracle.ToLower())
         {
-            result = db.ExecuteSql(string.Format("create table {0}(Id varchar2(64) primary key,AddTime date,key varchar(255))", table.TableName), null, false).writeReturn;
+            result = db.ExecuteSql(string.Format("create table {0}(EtlAddTime date,Etlkey varchar(255))", table.TableName), null, false).writeReturn;
             if (result.IsSuccess)
             {
-                db.ExecuteSql(string.Format("Comment on column {0}.Id is '主键'", table.TableName), null, false);
-                db.ExecuteSql(string.Format("Comment on column {0}.AddTime is '抽取时间'", table.TableName), null, false);
-                db.ExecuteSql(string.Format("Comment on column {0}.key is '关键主键'", table.TableName), null, false);
+                db.ExecuteSql(string.Format("Comment on column {0}.EtlAddTime is '抽取时间'", table.TableName), null, false);
+                db.ExecuteSql(string.Format("Comment on column {0}.Etlkey is '关键主键'", table.TableName), null, false);
             }
         }
 
         if (db.config.DbType.ToLower() == AppEtl.DataDbType.MySql.ToLower())
         {
-            result = db.ExecuteSql(string.Format("create table {0}(Id varchar(64) primary key,AddTime date,key varchar(255))", table.TableName), null, false).writeReturn;
+            result = db.ExecuteSql(string.Format("create table {0}(AddTime date,key varchar(255))", table.TableName), null, false).writeReturn;
             if (result.IsSuccess)
             {
-                db.ExecuteSql(string.Format("alter table {0} modify Id varchar2(64) comment '主键'", table.TableName), null, false);
-                db.ExecuteSql(string.Format("alter table {0} modify AddTime date comment '抽取时间'", table.TableName), null, false);
-                db.ExecuteSql(string.Format("alter table {0} modify key varchar2(255) comment '关键主键'", table.TableName), null, false);
+                db.ExecuteSql(string.Format("alter table {0} modify EtlAddTime date comment '抽取时间'", table.TableName), null, false);
+                db.ExecuteSql(string.Format("alter table {0} modify Etlkey varchar2(255) comment '关键主键'", table.TableName), null, false);
             }
         }
 
         if (db.config.DbType.ToLower() == AppEtl.DataDbType.SqlServer.ToLower())
         {
-            result = db.ExecuteSql(string.Format("create table {0}(Id varchar(64) primary key,AddTime date,key varchar(255))", table.TableName), null, false).writeReturn;
+            result = db.ExecuteSql(string.Format("create table {0}(AddTime date,key varchar(255))", table.TableName), null, false).writeReturn;
             if (result.IsSuccess)
             {
-                db.ExecuteSql(string.Format("exec sys.sp_addextendedproperty N'MS_Description',N'主键',N'SCHEMA', N'dbo', N'TABLE',N'{0}',N'column',N'Id'", table.TableName), null, false);
-                db.ExecuteSql(string.Format("exec sys.sp_addextendedproperty N'MS_Description',N'抽取时间',N'SCHEMA', N'dbo', N'TABLE',N'{0}',N'column',N'AddTime'", table.TableName), null, false);
-                db.ExecuteSql(string.Format("exec sys.sp_addextendedproperty N'MS_Description',N'关键主键',N'SCHEMA', N'dbo', N'TABLE',N'{0}',N'column',N'key'", table.TableName), null, false);
+                db.ExecuteSql(string.Format("exec sys.sp_addextendedproperty N'MS_Description',N'抽取时间',N'SCHEMA', N'dbo', N'TABLE',N'{0}',N'column',N'EtlAddTime'", table.TableName), null, false);
+                db.ExecuteSql(string.Format("exec sys.sp_addextendedproperty N'MS_Description',N'关键主键',N'SCHEMA', N'dbo', N'TABLE',N'{0}',N'column',N'Etlkey'", table.TableName), null, false);
             }
         }
 
@@ -387,9 +384,26 @@ public static class DataSchema
     /// 增加列
     /// </summary>
     /// <returns></returns>
-    public static WriteReturn AddColumn(DataContext db, Data_Business table, Data_Business_Details column, CacheColumn columnInfo, Data_Source dataSource)
+    public static WriteReturn AddColumn(DataContext db, Data_Business table, Data_Business_Details column, CacheColumn columnInfo, Data_Source dataSource, bool IsCheckKey = true)
     {
-        return db.ExecuteSql(string.Format("alter table {0} add {1} {2}", table.TableName, column.FieldName, GetFieldType(columnInfo, db.config, dataSource)), null, false).writeReturn;
+        if (columnInfo.IsKey && IsCheckKey)
+            return db.ExecuteSql(string.Format("alter table {0} add {1} {2} primary key", table.TableName, column.FieldName, GetFieldType(columnInfo, db.config, dataSource)), null, false).writeReturn;
+        else
+            return db.ExecuteSql(string.Format("alter table {0} add {1} {2}", table.TableName, column.FieldName, GetFieldType(columnInfo, db.config, dataSource)), null, false).writeReturn;
+    }
+
+    /// <summary>
+    /// 增加列多主键
+    /// </summary>
+    /// <returns></returns>
+    public static WriteReturn AddColumnMoreKey(DataContext db, Data_Business table, List<CacheColumn> list)
+    {
+        var filedName = "";
+        foreach(var temp in list)
+        {
+            filedName += temp.Name + ",";
+        }
+        return db.ExecuteSql(string.Format("alter table {0} add constraint {0}_key primary key ({1})", table.TableName, filedName.Substring(0, filedName.Length - 1)), null, false).writeReturn;
     }
 
     /// <summary>
@@ -400,6 +414,7 @@ public static class DataSchema
     /// <returns></returns>
     public static bool UpdateTableComment(DataContext db, Data_Business table)
     {
+        table.Name=table.Name.Replace("'", "");
         var sql = "";
         if (db.config.DbType.ToLower() == AppEtl.DataDbType.MySql.ToLower())
             sql = string.Format("alter table {0} comment '{1}'", table.TableName, table.Name);
@@ -426,9 +441,10 @@ public static class DataSchema
     /// <returns></returns>
     public static bool UpdateColumnComment(DataContext db, Data_Business table, Data_Business_Details column, CacheColumn columnInfo, Data_Source dataSource)
     {
+        columnInfo.Comments = columnInfo.Comments.Replace("'", "");
         var sql = "";
         if (db.config.DbType.ToLower() == AppEtl.DataDbType.MySql.ToLower())
-            sql = string.Format("alter table {0} modify {1} {2} comment '{3}'", table.TableName, column.FieldName, GetFieldType(columnInfo, db.config, dataSource), columnInfo.Comments);
+            sql = string.Format("alter table {0} modify {1} {2} comment '{3}'", table.TableName, column.FieldName, GetFieldType(columnInfo, db.config, dataSource), columnInfo);
 
         if (db.config.DbType.ToLower() == AppEtl.DataDbType.Oracle.ToLower())
             sql = string.Format("Comment on column {0}.{1} is '{2}'", table.TableName, column.FieldName, columnInfo.Comments);
