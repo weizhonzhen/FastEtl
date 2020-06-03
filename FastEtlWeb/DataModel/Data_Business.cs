@@ -30,10 +30,10 @@ namespace FastEtlWeb.DataModel
         /// <summary>
         /// 业务名称
         /// </summary>
-        [StringLength(16, ErrorMessage = "{0}最大长度16")]
+        [StringLength(1024, ErrorMessage = "{0}最大长度1024")]
         [Required(ErrorMessage = "{0}不能为空")]
         [Display(Name = "业务名称")]
-        [Column(Comments = "业务名称", DataType = "varchar2", Length = 16, IsNull = false)]
+        [Column(Comments = "业务名称", DataType = "varchar2", Length = 1024, IsNull = false)]
         public string Name { get; set; }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace FastEtlWeb.DataModel
         [Required(ErrorMessage = "{0}不能为空")]
         [Display(Name = "更新时间")]
         [Column(Comments = "更新时间(点)", DataType = "number(2)",IsNull = false)]
-        public decimal UpdateTime { get; set; }
+        public decimal? UpdateTime { get; set; }
 
         /// <summary>
         /// 更新频率(天)

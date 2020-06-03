@@ -28,7 +28,7 @@ namespace FastEtlWeb.DataModel
         /// </summary>
         [Required(ErrorMessage = "{0}不能为空")]
         [Display(Name = "字段名")]
-        [Column(Comments = "字段名", DataType = "varchar2", Length = 16, IsNull =false)]
+        [Column(Comments = "字段名", DataType = "varchar2", Length = 64, IsNull =false)]
         public string FieldName { get; set; }
 
         /// <summary>
