@@ -1,4 +1,4 @@
-using FastData.Core;
+﻿using FastData.Core;
 using FastData.Core.Context;
 using FastEtlService.core.DataModel;
 using FastEtlService.core.Model;
@@ -77,22 +77,60 @@ public static class DataSchema
     /// <returns></returns>
     public static PageData GetFirstColumnData(Dictionary<string, object> link, Data_Business_Details columnInfo, Data_Business tableInfo, PageModel page)
     {
-        var data = new PageData();
-        var type = link.GetValue("type").ToStr().ToLower();
-        var conn = link.GetValue("conn") as DbConnection;
         var sql = "";
-        
-        if (type == AppEtl.DataDbType.Oracle.ToLower())
+        var data = new PageData();
+        try
         {
+            var type = link.GetValue("type").ToStr().ToLower();
+            var conn = link.GetValue("conn") as DbConnection;
             var cmd = conn.CreateCommand();
+            if (type == AppEtl.DataDbType.Oracle.ToLower())
+            {
+                if (!IsFirtExtract(cmd, tableInfo.TableName))
+                    sql = string.Format("select field.a,field.b from(select ROWNUM RN,{0} a,{1} b from {2}) field where rn<={3} and rn>={4}"
+                                        , columnInfo.Key, columnInfo.ColumnName, columnInfo.TableName, page.pageId * page.pageSize, (page.pageId - 1) * page.pageSize + 1);
+                else
+                {
+                    if (string.IsNullOrEmpty(columnInfo.TableName))
+                        sql = string.Format("select * from ({0}) rownum <= {1}", columnInfo.Sql, tableInfo.UpdateCount * 1000);
+                    else
+                        sql = string.Format("select {0} a,{1} b from {2} where rownum <={3} order by {4} desc"
+                                        , columnInfo.Key, columnInfo.ColumnName, columnInfo.TableName, tableInfo.UpdateCount * 1000, string.IsNullOrEmpty(columnInfo.OrderBy) ? columnInfo.Key : columnInfo.OrderBy);
+                }
+            }
 
-            if (IsFirtExtract(cmd, tableInfo.TableName))
-                sql = string.Format("select * from(select field.a,field.b,ROWNUM RN from(select {0} a,{1} b from {2}) field where rownum<={3}) where rn>={4}"
-                                    , columnInfo.Key, columnInfo.ColumnName, columnInfo.TableName, page.pageId * page.pageSize, (page.pageId - 1) * page.pageSize + 1);
-            else
-                    sql = string.Format("select {0} a,{1} b from {2} where rownum <={3} order by {4} desc"
-                                        , columnInfo.Key, columnInfo.ColumnName, columnInfo.TableName, tableInfo.UpdateCount, columnInfo.OrderBy);
-           
+            if (type == AppEtl.DataDbType.SqlServer.ToLower())
+            {
+                if (!IsFirtExtract(cmd, tableInfo.TableName))
+                {
+                    sql = string.Format("select top {0} * from (select row_number()over({1})temprownumber,* from (select tempcolumn=0,{1} a,{2} b from {3})t)tt where temprownumber>={4}"
+                                , page.pageSize, columnInfo.Key, columnInfo.ColumnName, columnInfo.TableName, page.pageId * page.pageSize - 1);
+                }
+                else
+                {
+                    if (string.IsNullOrEmpty(columnInfo.TableName))
+                        sql = string.Format("select top {1} * from ({0})a", columnInfo.Sql, tableInfo.UpdateCount * 1000);
+                    else
+                        sql = string.Format("select top {0} {1} a,{2} b from {3} order by {4} desc"
+                                , tableInfo.UpdateCount * 1000, columnInfo.Key, columnInfo.ColumnName, columnInfo.TableName, string.IsNullOrEmpty(columnInfo.OrderBy) ? columnInfo.Key : columnInfo.OrderBy);
+                }
+            }
+
+            if (type == AppEtl.DataDbType.MySql.ToLower())
+            {
+                if (!IsFirtExtract(cmd, tableInfo.TableName))
+                    sql = string.Format("select {0} a,{1} b from {2} where limit {3},{4}"
+                                , columnInfo.Key, columnInfo.ColumnName, columnInfo.TableName, (page.pageId - 1) * page.pageSize + 1, page.pageId * page.pageSize);
+                else
+                {
+                    if (string.IsNullOrEmpty(columnInfo.TableName))
+                        sql = string.Format("select * from ({0}) limit {1}", columnInfo.Sql, tableInfo.UpdateCount * 1000);
+                    else
+                        sql = string.Format("select {0} a,{1} b from {2} where limit {3} order by {4} desc"
+                                    , columnInfo.Key, columnInfo.ColumnName, columnInfo.TableName, tableInfo.UpdateCount * 1000, string.IsNullOrEmpty(columnInfo.OrderBy) ? columnInfo.Key : columnInfo.OrderBy);
+                }
+            }
+
             cmd.CommandText = sql;
             var dr = cmd.ExecuteReader();
             while (dr.Read())
@@ -104,62 +142,9 @@ public static class DataSchema
             }
             dr.Close();
         }
-
-        if (type == AppEtl.DataDbType.SqlServer.ToLower())
+        catch(Exception ex)
         {
-            var cmd = conn.CreateCommand();
-            if (IsFirtExtract(cmd, tableInfo.TableName))
-            {
-                sql = string.Format("select top {0} * from (select row_number()over({1})temprownumber,* from (select tempcolumn=0,{1} a,{2} b from {3})t)tt where temprownumber>={4}"
-                            , page.pageSize, columnInfo.Key, columnInfo.ColumnName, columnInfo.TableName, page.pageId * page.pageSize - 1);
-            }
-            else
-            {
-                if (string.IsNullOrEmpty(columnInfo.TableName))
-                    sql = string.Format("select top {1} * from ({0})a", columnInfo.Sql, tableInfo.UpdateCount);
-                else
-                    sql = string.Format("select top {0} {1} a,{2} b from {3} order by {4} desc"
-                            , tableInfo.UpdateCount, columnInfo.Key, columnInfo.ColumnName, columnInfo.TableName, columnInfo.OrderBy);
-            }
-
-            cmd.CommandText = sql;
-            var dr = cmd.ExecuteReader();
-            while (dr.Read())
-            {
-                var dic = new Dictionary<string, object>();
-                dic.Add("key", dr[0]);
-                dic.Add("data", dr[1]);
-                data.list.Add(dic);
-            }
-            dr.Close();
-        }
-
-        if (type == AppEtl.DataDbType.MySql.ToLower())
-        {
-            var cmd = conn.CreateCommand();
-            if (IsFirtExtract(cmd, tableInfo.TableName))
-                sql = string.Format("select {0} a,{1} b from {2} where limit {3},{4}"
-                            , columnInfo.Key, columnInfo.ColumnName, columnInfo.TableName, (page.pageId - 1) * page.pageSize + 1, page.pageId * page.pageSize);
-            else
-            {
-                if (string.IsNullOrEmpty(columnInfo.TableName))
-                    sql = string.Format("select * from ({0}) limit {1}", columnInfo.Sql, tableInfo.UpdateCount);
-                else
-                    sql = string.Format("select {0} a,{1} b from {2} where limit {3} order by {4} desc"
-                                , columnInfo.Key, columnInfo.ColumnName, columnInfo.TableName, tableInfo.UpdateCount, columnInfo.OrderBy);
-            }
-
-            cmd.CommandText = sql;
-            var dr = cmd.ExecuteReader();
-            while (dr.Read())
-            {
-                var dic = new Dictionary<string, object>();
-                dic.Add("key", dr[0]);
-                dic.Add("data", dr[1]);
-                data.list.Add(dic);
-            }
-
-            dr.Close();
+            BaseLog.SaveLog(ex.ToString() + sql, "GetTableError");
         }
 
         return data;
@@ -174,47 +159,27 @@ public static class DataSchema
         object result = DBNull.Value;
         var type = link.GetValue("type").ToStr();
         var conn = link.GetValue("conn") as DbConnection;
-        
+        var cmd = conn.CreateCommand();
+
         if (type == AppEtl.DataDbType.Oracle.ToLower())
-        {
-            var cmd = conn.CreateCommand();
             cmd.CommandText = string.Format("select {0} from {1} where rownum =1 and {2}='{3}' order by {4} desc"
-                                , columnInfo.ColumnName, columnInfo.TableName, columnInfo.Key, key, columnInfo.OrderBy);
-            var dr = cmd.ExecuteReader();
-            while (dr.Read())
-            {
-                result = dr[0];
-            }
-            dr.Close();
-        }
+                                , columnInfo.ColumnName, columnInfo.TableName, columnInfo.Key, key, string.IsNullOrEmpty(columnInfo.OrderBy) ? columnInfo.Key : columnInfo.OrderBy);
 
         if (type == AppEtl.DataDbType.SqlServer.ToLower())
-        {
-            var cmd = conn.CreateCommand();
             cmd.CommandText = string.Format("select top 1 {0} from {1} where {2}='{3}' order by {4} desc"
-                            , columnInfo.ColumnName, columnInfo.TableName, columnInfo.Key, key, columnInfo.OrderBy);
-            var dr = cmd.ExecuteReader();
-            while (dr.Read())
-            {
-                result = dr[0];
-            }
-            dr.Close();
-        }
+                            , columnInfo.ColumnName, columnInfo.TableName, columnInfo.Key, key, string.IsNullOrEmpty(columnInfo.OrderBy) ? columnInfo.Key : columnInfo.OrderBy);
+
 
         if (type == AppEtl.DataDbType.MySql.ToLower())
-        {
-            var cmd = conn.CreateCommand();
             cmd.CommandText = string.Format("select {0} from {1} where limit 1 and {2}={3} order by {4} desc"
-                            , columnInfo.ColumnName, columnInfo.TableName, columnInfo.Key, key, columnInfo.OrderBy);
-            var dr = cmd.ExecuteReader();
-            while (dr.Read())
-            {
-                result = dr[0];
-            }
+                            , columnInfo.ColumnName, columnInfo.TableName, columnInfo.Key, key, string.IsNullOrEmpty(columnInfo.OrderBy) ? columnInfo.Key : columnInfo.OrderBy);
 
-            dr.Close();
+        var dr = cmd.ExecuteReader();
+        while (dr.Read())
+        {
+            result = dr[0];
         }
-
+        dr.Close();
         return result;
     }
 
@@ -236,7 +201,7 @@ public static class DataSchema
                     {
                         conn.Open();
                         var cmd = conn.CreateCommand();
-                        InitTvps(cmd,dt.TableName);
+                        InitTvps(cmd, dt.TableName);
                         cmd.CommandText = GetTvps(db, dt.TableName);
                         var catParam = cmd.Parameters.AddWithValue(string.Format("@{0}", dt.TableName), dt);
                         catParam.SqlDbType = SqlDbType.Structured;
@@ -340,9 +305,10 @@ public static class DataSchema
     public static void ExpireData(DataContext db, Data_Business item)
     {
         var month = item.SaveDataMonth.ToStr().ToInt(0) * -1;
-        var sql = string.Format("delete from {0} where addtime<='{1}'", item.TableName, DateTime.Now.AddMonths(month));
-
-        db.ExecuteSql(sql, null, true);
+        var param = new List<OracleParameter>();
+        param.Add(new OracleParameter { ParameterName = "etladdtime", Value = DateTime.Now.AddMonths(month) });
+        var sql = string.Format("delete from {0} where etladdtime<=:etladdtime", item.TableName);
+        db.ExecuteSql(sql, param.ToArray(), true);
     }
 
     /// <summary>
@@ -371,43 +337,31 @@ public static class DataSchema
     /// <summary>
     /// 获取表datatable
     /// </summary>
-    public static DataTable GetTable(DataContext db, string table)
+    public static DataTable GetTable(Dictionary<string, object> link, string table)
     {
         var dt = new DataTable();
-        if (db.config.DbType.ToLower() == AppEtl.DataDbType.Oracle.ToLower())
+        var sql = "";
+        try
         {
-            using (var conn = DbProviderFactories.GetFactory(AppEtl.Provider.Oracle).CreateConnection())
-            {
-                conn.ConnectionString = db.config.ConnStr;
-                conn.Open();
-                var cmd = conn.CreateCommand();
-                cmd.CommandText = string.Format("select * from {0} where rownum <=1", table);
-                dt.Load(cmd.ExecuteReader());
-            }
-        }
+            var type = link.GetValue("type").ToStr();
+            var conn = link.GetValue("conn") as DbConnection;
 
-        if (db.config.DbType.ToLower() == AppEtl.DataDbType.MySql.ToLower())
-        {
-            using (var conn = DbProviderFactories.GetFactory(AppEtl.Provider.MySql).CreateConnection())
-            {
-                conn.ConnectionString = db.config.ConnStr;
-                conn.Open();
-                var cmd = conn.CreateCommand();
-                cmd.CommandText = string.Format("select * from {0} where limit 1", table);
-                dt.Load(cmd.ExecuteReader());
-            }
-        }
+            if (type == AppEtl.DataDbType.Oracle.ToLower())
+                sql = string.Format("select * from {0} where rownum <=1", table);
 
-        if (db.config.DbType.ToLower() == AppEtl.DataDbType.SqlServer.ToLower())
+            if (type == AppEtl.DataDbType.MySql.ToLower())
+                sql = string.Format("select * from {0} where limit 1", table);
+
+            if (type == AppEtl.DataDbType.SqlServer.ToLower())
+                sql = string.Format("select top 1 * from {0}", table);
+
+            var cmd = conn.CreateCommand();
+            cmd.CommandText = sql;
+            dt.Load(cmd.ExecuteReader());
+        }
+        catch(Exception ex)
         {
-            using (var conn = DbProviderFactories.GetFactory(AppEtl.Provider.SqlServer).CreateConnection())
-            {
-                conn.ConnectionString = db.config.ConnStr;
-                conn.Open();
-                var cmd = conn.CreateCommand();
-                cmd.CommandText = string.Format("select top 1 * from {0}", table);
-                dt.Load(cmd.ExecuteReader());
-            }
+            BaseLog.SaveLog(ex.ToString() + sql, "GetTableError");
         }
 
         dt.Clear();
@@ -483,7 +437,7 @@ public static class DataSchema
     /// <summary>
     /// 获取tvps语句
     /// </summary>
-    /// <returns></returns>
+    /// <returns></returns>.
     private static string GetTvps(DataContext db, string tableName)
     {
         var sql1 = new StringBuilder();
@@ -557,7 +511,7 @@ public static class DataSchema
     private static List<Dictionary<string, object>> ColumnList(DataContext db, string tableName)
     {
         var sql = "";
-        
+
         if (db.config.DbType.ToLower() == AppEtl.DataDbType.Oracle.ToLower())
             sql = string.Format("select a.COLUMN_NAME name,a.DATA_TYPE type from all_tab_columns a where table_name='{0}'", tableName);
 
@@ -579,9 +533,10 @@ public static class DataSchema
     public static PageModel GetTableCount(Data_Business_Details columnInfo, Data_Business tableInfo)
     {
         var page = new PageModel();
-        page.total = tableInfo.UpdateCount.ToStr().ToLong(0);
+        page.total = tableInfo.UpdateCount.ToStr().ToLong(0) * 10000;
+
         page.pageId = 1;
-        page.pageSize = 1000;
+        page.pageSize = tableInfo.UpdateCount.ToStr().ToLong(0) * 10000;
 
         if ((page.total % page.pageSize) == 0)
             page.pageCount = long.Parse((page.total / page.pageSize).ToString());
@@ -601,18 +556,25 @@ public static class DataSchema
     {
         var isExists = true;
         cmd.CommandText = string.Format("select count(0) from {0}", tableName);
-        var dr = cmd.ExecuteReader();
-
-        while (dr.Read())
+        try
         {
-            if (dr[0].ToStr().ToInt(0) > 0)
-                isExists = false;
-        }
+            var dr = cmd.ExecuteReader();
 
-        dr.Close();
+            while (dr.Read())
+            {
+                if (dr[0].ToStr().ToInt(0) > 0)
+                    isExists = false;
+            }
+
+            dr.Close();
+        }
+        catch(Exception ex)
+        {
+            BaseLog.SaveLog(ex.ToString() + cmd.CommandText, "IsFirtExtractError");
+        }
         return isExists;
     }
-        
+
     /// <summary>
     /// 关闭长连接
     /// </summary>
@@ -626,7 +588,7 @@ public static class DataSchema
             conn.Dispose();
         }
     }
-    
+
     /// <summary>
     /// 初始化取数据长连接
     /// </summary>
@@ -634,16 +596,21 @@ public static class DataSchema
     public static List<Dictionary<string, object>> InitColLink(List<Data_Business_Details> list, DataContext db)
     {
         var result = new List<Dictionary<string, object>>();
+
         foreach (var item in list)
         {
+            if (result.Exists(a => a.GetValue("id").ToStr() == item.DataSourceId))
+                continue;
+
             var link = FastRead.Query<Data_Source>(a => a.Id == item.DataSourceId).ToItem<Data_Source>(db);
-            
+
             if (link.Type.ToLower() == AppEtl.DataDbType.SqlServer.ToLower())
             {
                 var dic = new Dictionary<string, object>();
-                var conn = DbProviderFactories.GetFactory(AppEtl.Provider.SqlServer).CreateConnection();
+                var conn = DbProviderFactories.GetFactory(AppEtl.DataDbType.SqlServer).CreateConnection();
                 conn.ConnectionString = GetConnStr(link);
                 conn.Open();
+                dic.Add("id", item.DataSourceId);
                 dic.Add("conn", conn);
                 dic.Add("type", AppEtl.DataDbType.SqlServer.ToLower());
                 result.Add(dic);
@@ -652,9 +619,10 @@ public static class DataSchema
             if (link.Type.ToLower() == AppEtl.DataDbType.MySql.ToLower())
             {
                 var dic = new Dictionary<string, object>();
-                var conn = DbProviderFactories.GetFactory(AppEtl.Provider.MySql).CreateConnection();
+                var conn = DbProviderFactories.GetFactory(AppEtl.DataDbType.MySql).CreateConnection();
                 conn.ConnectionString = GetConnStr(link);
                 conn.Open();
+                dic.Add("id", item.DataSourceId);
                 dic.Add("conn", conn);
                 dic.Add("type", AppEtl.DataDbType.MySql.ToLower());
                 result.Add(dic);
@@ -663,9 +631,10 @@ public static class DataSchema
             if (link.Type.ToLower() == AppEtl.DataDbType.Oracle.ToLower())
             {
                 var dic = new Dictionary<string, object>();
-                var conn = DbProviderFactories.GetFactory(AppEtl.Provider.Oracle).CreateConnection();
+                var conn = DbProviderFactories.GetFactory(AppEtl.DataDbType.Oracle).CreateConnection();
                 conn.ConnectionString = GetConnStr(link);
                 conn.Open();
+                dic.Add("id", item.DataSourceId);
                 dic.Add("conn", conn);
                 dic.Add("type", AppEtl.DataDbType.Oracle.ToLower());
                 result.Add(dic);
@@ -673,7 +642,7 @@ public static class DataSchema
         }
         return result;
     }
-    
+
     /// <summary>
     /// tvps
     /// </summary>
@@ -718,5 +687,54 @@ public static class DataSchema
         sql.Append(")").Replace(",)", ")");
         cmd.CommandText = sql.ToString();
         cmd.ExecuteNonQuery();
+    }
+
+    /// <summary>
+    /// 表长连接
+    /// </summary>
+    /// <param name="db"></param>
+    /// <returns></returns>
+    public static Dictionary<string, object> TableLink(DataContext db)
+    {
+        var dic = new Dictionary<string, object>();
+        if (db.config.DbType.ToLower() == AppEtl.DataDbType.SqlServer.ToLower())
+        {
+            var conn = DbProviderFactories.GetFactory(AppEtl.DataDbType.SqlServer).CreateConnection();
+            conn.ConnectionString = db.config.ConnStr;
+            conn.Open();
+            dic.Add("conn", conn);
+            dic.Add("type", AppEtl.DataDbType.SqlServer.ToLower());
+        }
+
+        if (db.config.DbType.ToLower() == AppEtl.DataDbType.MySql.ToLower())
+        {
+            var conn = DbProviderFactories.GetFactory(AppEtl.DataDbType.MySql).CreateConnection();
+            conn.ConnectionString = db.config.ConnStr;
+            conn.Open();
+            dic.Add("conn", conn);
+            dic.Add("type", AppEtl.DataDbType.MySql.ToLower());
+        }
+
+        if (db.config.DbType.ToLower() == AppEtl.DataDbType.Oracle.ToLower())
+        {
+            var conn = DbProviderFactories.GetFactory(AppEtl.DataDbType.Oracle).CreateConnection();
+            conn.ConnectionString = db.config.ConnStr;
+            conn.Open();
+            dic.Add("conn", conn);
+            dic.Add("type", AppEtl.DataDbType.Oracle.ToLower());
+        }
+
+        return dic;
+    }
+
+    /// <summary>
+    /// 关闭表长连接
+    /// </summary>
+    /// <returns></returns>
+    public static void CloseTableLink(Dictionary<string, object> link)
+    {
+        var conn = link.GetValue("conn") as DbConnection;
+        conn.Close();
+        conn.Dispose();
     }
 }
