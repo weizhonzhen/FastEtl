@@ -8,6 +8,7 @@ using FastUntility.Core.Base;
 using FastData.Core.Context;
 using FastData.Core;
 using FastEtlService.core.DataModel;
+using NPOI.HSSF.Model;
 
 namespace FastEtlService.core
 {
@@ -24,103 +25,114 @@ namespace FastEtlService.core
                     {
                         using (var db = new DataContext(AppEtl.Db))
                         {
-                            BaseLog.SaveLog("ÂºÄÂßãÊäΩÂèñ", "FastEtlService");
+                            var tableLink = DataSchema.TableLink(db);
+                            BaseLog.SaveLog("ø™ º≥È»°", "FastEtlService");
 
                             var list = FastRead.Query<Data_Business>(a => a.Id != null).ToList<Data_Business>(db);
 
                             foreach (var item in list)
                             {
-                                if (DataSchema.IsExistsTable(db, item.TableName) && item.UpdateTime == DateTime.Now.Hour && item.LastUpdateTime.Day + item.UpdateDay >= DateTime.Now.Day)
+                                var isExec = item.UpdateTime == DateTime.Now.Hour;
+                                if (item.UpdateTime == 99)
+                                    isExec = true;
+
+                                if (DataSchema.IsExistsTable(db, item.TableName) && isExec)
                                 {
                                     Parallel.Invoke(() =>
                                     {
-                                        var leaf = FastRead.Query<Data_Business_Details>(a => a.Id == item.Id).ToList<Data_Business_Details>(db);
+                                        var leaf = FastRead.Query<Data_Business_Details>(a => a.Id == item.Id).ToList<Data_Business_Details>(db)??new List<Data_Business_Details>();
 
-                                        if (leaf.Count > 0)
+                                    if (leaf.Count > 0 && leaf.Exists(a => a.Key.ToStr() != ""))
+                                    {
+                                        var isAdd = true;
+                                        var dt = DataSchema.GetTable(tableLink, item.TableName);
+
+                                        if (string.IsNullOrEmpty(dt.TableName))
+                                            continue;
+
+                                        var columnName = dt.Columns[2].ColumnName.ToLower();
+
+                                        if (leaf.Exists(a => a.FieldName.ToLower() == columnName))
                                         {
-                                            var isAdd = true;
-                                            var dt = DataSchema.GetTable(db, item.TableName);
-                                            var columnName = dt.Columns[3].ColumnName.ToLower();
+                                            DataSchema.ExpireData(db, item);
 
-                                            if (leaf.Exists(a => a.FieldName.ToLower() == columnName))
+                                            //µ⁄“ª¡–
+                                            var link = DataSchema.InitColLink(leaf, db);
+                                            var tempLeaf = leaf.Find(a => a.FieldName.ToLower() == columnName);
+                                            var pageInfo = DataSchema.GetTableCount(tempLeaf, item);
+
+                                            for (var i = 1; i <= pageInfo.pageCount; i++)
                                             {
-                                                DataSchema.ExpireData(db, item);
+                                                var log = new Data_Log();
+                                                log.Id = Guid.NewGuid().ToStr();
+                                                log.TableName = string.Format("{0}_page_{1}", item.TableName, i);
+                                                log.BeginDateTime = DateTime.Now;
 
-                                                //Á¨¨‰∏ÄÂàó
-                                                var link = DataSchema.InitColLink(leaf, db);
-                                                var tempLeaf = leaf.Find(a => a.FieldName.ToLower() == columnName);
-                                                var pageInfo = DataSchema.GetTableCount(tempLeaf, item);
+                                                pageInfo.pageId = i;
+                                                var tempLink = link.Find(a => a.GetValue("id").ToStr() == tempLeaf.DataSourceId);
+                                                var pageData = DataSchema.GetFirstColumnData(tempLink, tempLeaf, item, pageInfo);
 
-                                                for (var i = 1; i <= pageInfo.pageCount; i++)
+                                                //±È¿˙ÃÓ≥‰table
+                                                for (var row = 0; row < pageData.list.Count; row++)
                                                 {
-                                                    var log = new Data_Log();
-                                                    log.Id = Guid.NewGuid().ToStr();
-                                                    log.TableName = string.Format("{0}_page_{1}", item.TableName, i);
-                                                    log.BeginDateTime = DateTime.Now;
+                                                    var dtRow = dt.NewRow();
+                                                    dtRow["EtlAddTime"] = DateTime.Now;
+                                                    dtRow["EtlKey"] = pageData.list[row].GetValue("key");
+                                                    dtRow[columnName] = pageData.list[row].GetValue("data");
 
-                                                    pageInfo.pageId = i;
-                                                    var pageData = DataSchema.GetFirstColumnData(link[0], tempLeaf, item, pageInfo);
+                                                    //◊÷µ‰∂‘’’
+                                                    if (!string.IsNullOrEmpty(tempLeaf.Dic))
+                                                        dtRow[columnName] = FastRead.Query<Data_Dic_Details>(a => a.Value.ToLower() == dtRow[columnName].ToStr().ToLower() && a.DicId == tempLeaf.Dic, a => new { a.ContrastValue }).ToDic(db).GetValue("ContrastValue");
 
-                                                    //ÈÅçÂéÜÂ°´ÂÖÖtable
-                                                    for (var row = 0; row < pageData.list.Count; row++)
+                                                    // ˝æ›≤ﬂ¬‘
+                                                    isAdd = DataSchema.DataPolicy(db, item, dtRow["EtlKey"], columnName, dtRow[columnName]);
+
+                                                    for (var col = 2; col < dt.Columns.Count; col++)
                                                     {
-                                                        var dtRow = dt.NewRow();
-                                                        dtRow["Id"] = Guid.NewGuid().ToString();
-                                                        dtRow["AddTime"] = DateTime.Now;
-                                                        dtRow["Key"] = pageData.list[row].GetValue("key");
-                                                        dtRow[columnName] = pageData.list[row].GetValue("data");
-
-                                                        //Â≠óÂÖ∏ÂØπÁÖß
-                                                        if (!string.IsNullOrEmpty(tempLeaf.Dic))
-                                                            dtRow[columnName] = FastRead.Query<Data_Dic_Details>(a => a.Value.ToLower() == dtRow[columnName].ToStr().ToLower() && a.DicId == tempLeaf.Dic, a => new { a.ContrastValue }).ToDic(db).GetValue("ContrastValue");
-
-                                                        //Êï∞ÊçÆÁ≠ñÁï•
-                                                        isAdd = DataSchema.DataPolicy(db, item, dtRow["Key"], columnName, dtRow[columnName]);
-
-                                                        for (var col = 3; col < dt.Columns.Count; col++)
+                                                        columnName = dt.Columns[col].ColumnName.ToLower();
+                                                        if (leaf.Exists(a => a.FieldName.ToLower() == columnName))
                                                         {
-                                                            columnName = dt.Columns[col].ColumnName.ToLower();
-                                                            if (leaf.Exists(a => a.FieldName.ToLower() == columnName))
-                                                            {
-                                                                tempLeaf = leaf.Find(a => a.FieldName.ToLower() == columnName);
-                                                                dtRow[columnName] = DataSchema.GetColumnData(link[col - 3], tempLeaf, dtRow["Key"]);
+                                                            tempLeaf = leaf.Find(a => a.FieldName.ToLower() == columnName);
+                                                            tempLink = link.Find(a => a.GetValue("id").ToStr() == tempLeaf.DataSourceId);
+                                                            dtRow[columnName] = DataSchema.GetColumnData(tempLink, tempLeaf, dtRow["EtlKey"]);
 
-                                                                //Â≠óÂÖ∏ÂØπÁÖß
-                                                                if (!string.IsNullOrEmpty(tempLeaf.Dic))
-                                                                    dtRow[columnName] = FastRead.Query<Data_Dic_Details>(a => a.Value.ToLower() == dtRow[columnName].ToStr().ToLower() && a.DicId == tempLeaf.Dic, a => new { a.ContrastValue }).ToDic(db).GetValue("ContrastValue");
+                                                            //◊÷µ‰∂‘’’
+                                                            if (!string.IsNullOrEmpty(tempLeaf.Dic))
+                                                                dtRow[columnName] = FastRead.Query<Data_Dic_Details>(a => a.Value.ToLower() == dtRow[columnName].ToStr().ToLower() && a.DicId == tempLeaf.Dic, a => new { a.ContrastValue }).ToDic(db).GetValue("ContrastValue");
 
-                                                                //Êï∞ÊçÆÁ≠ñÁï•
-                                                                if (item.Policy == "2")
-                                                                    isAdd = DataSchema.DataPolicy(db, item, dtRow["Key"], columnName, dtRow[columnName]);
-                                                            }
+                                                            // ˝æ›≤ﬂ¬‘
+                                                            if (item.Policy == "2")
+                                                                isAdd = DataSchema.DataPolicy(db, item, dtRow["EtlKey"], columnName, dtRow[columnName]);
                                                         }
-
-                                                        if (isAdd)
-                                                            dt.Rows.Add(dtRow);
                                                     }
 
-                                                    if (dt.Rows.Count > 0)
-                                                        DataSchema.AddList(db, dt, ref log);
-                                                    db.Add(log);
-                                                    dt.Clear();
+                                                    if (isAdd)
+                                                        dt.Rows.Add(dtRow);
                                                 }
 
-                                                DataSchema.CloseLink(link);
-                                                item.LastUpdateTime = DateTime.Now;
-                                                FastWrite.Update<Data_Business>(item, a => a.Id == item.Id, a => new { a.LastUpdateTime }, db);
+                                                if (dt.Rows.Count > 0)
+                                                    DataSchema.AddList(db, dt, ref log);
+                                                db.Add(log);
+                                                dt.Clear();
                                             }
+
+                                            DataSchema.CloseLink(link);
+                                            item.LastUpdateTime = DateTime.Now;
+                                            FastWrite.Update<Data_Business>(item, a => a.Id == item.Id, a => new { a.LastUpdateTime }, db);
                                         }
+                                    }
                                     });
                                 }
                             }
 
-                            BaseLog.SaveLog("ÁªìÊùüÊäΩÂèñ", "FastEtlService");
+                            BaseLog.SaveLog("Ω· ¯≥È»°", "FastEtlService");
+                            DataSchema.CloseTableLink(tableLink);
                         }
                     }
                     await Task.Delay(1000 * 60 * 30, stoppingToken);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 BaseLog.SaveLog(ex.ToString(), "FastEtlServiceError");
             }
@@ -128,13 +140,13 @@ namespace FastEtlService.core
         
         public override Task StartAsync(CancellationToken cancellationToken)
         {
-            BaseLog.SaveLog("ÂêØÂä®ÊúçÂä°", "FastEtlService");
+            BaseLog.SaveLog("∆Ù∂Ø∑˛ŒÒ", "FastEtlService");
             return base.StartAsync(cancellationToken);
         }
 
         public override Task StopAsync(CancellationToken cancellationToken)
         {
-            BaseLog.SaveLog("ÂÅúÊ≠¢ÊúçÂä°", "FastEtlService");
+            BaseLog.SaveLog("Õ£÷π∑˛ŒÒ", "FastEtlService");
             return base.StopAsync(cancellationToken);
         }
     }
