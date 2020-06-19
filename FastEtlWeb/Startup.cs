@@ -1,13 +1,17 @@
 using FastData.Core;
 using FastEtlWeb.Filter;
+using FastUntility.Core.Base;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
-using System.Collections.Generic;
+using FastData.Core.Repository;
 
 namespace FastEtlWeb
 {
@@ -24,6 +28,7 @@ namespace FastEtlWeb
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IFastRepository, FastRepository>();
             services.AddResponseCompression();
             services.AddRazorPages();
             services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
@@ -41,14 +46,14 @@ namespace FastEtlWeb
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-             app.UseExceptionHandler(error =>
+            app.UseExceptionHandler(error =>
             {
                 error.Use(async (context, next) =>
                 {
                     var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
                     if (contextFeature != null)
-                    {                       
-                         BaseLog.SaveLog(contextFeature.Error.Message, "error");
+                    {
+                        BaseLog.SaveLog(contextFeature.Error.Message, "error");
                         context.Response.ContentType = "application/json;charset=utf-8";
                         context.Response.StatusCode = 200;
                         var result = new Dictionary<string, object>();
@@ -58,7 +63,7 @@ namespace FastEtlWeb
                     }                    
                 });
             });
-            
+           
             app.UseStaticFiles();
             app.UseRouting();            
             app.UseEndpoints(endpoints =>
