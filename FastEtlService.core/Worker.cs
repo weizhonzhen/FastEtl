@@ -8,12 +8,18 @@ using FastUntility.Core.Base;
 using FastData.Core.Context;
 using FastData.Core;
 using FastEtlService.core.DataModel;
-using NPOI.HSSF.Model;
+using FastData.Core.Repository;
 
 namespace FastEtlService.core
 {
     public class Worker : BackgroundService
     {
+        private IFastRepository IFast;
+        public Worker(IFastRepository _IFast)
+        {
+            IFast = _IFast;
+        }
+
         private Object thisLock = new Object();
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -28,7 +34,7 @@ namespace FastEtlService.core
                             var tableLink = DataSchema.TableLink(db);
                             BaseLog.SaveLog("开始抽取", "FastEtlService");
 
-                            var list = FastRead.Query<Data_Business>(a => a.Id != null).ToList<Data_Business>(db);
+                            var list = IFast.Query<Data_Business>(a => a.Id != null).ToList<Data_Business>(db);
 
                             foreach (var item in list)
                             {
@@ -40,15 +46,12 @@ namespace FastEtlService.core
                                 {
                                     Parallel.Invoke(() =>
                                     {
-                                        var leaf = FastRead.Query<Data_Business_Details>(a => a.Id == item.Id).ToList<Data_Business_Details>(db)??new List<Data_Business_Details>();
+                                        var leaf = IFast.Query<Data_Business_Details>(a => a.Id == item.Id).ToList<Data_Business_Details>(db)??new List<Data_Business_Details>();
 
                                     if (leaf.Count > 0 && leaf.Exists(a => a.Key.ToStr() != ""))
                                     {
                                         var isAdd = true;
                                         var dt = DataSchema.GetTable(tableLink, item.TableName);
-
-                                        if (string.IsNullOrEmpty(dt.TableName))
-                                            continue;
 
                                         var columnName = dt.Columns[2].ColumnName.ToLower();
 
@@ -57,7 +60,7 @@ namespace FastEtlService.core
                                             DataSchema.ExpireData(db, item);
 
                                             //第一列
-                                            var link = DataSchema.InitColLink(leaf, db);
+                                            var link = DataSchema.InitColLink(leaf, db,IFast);
                                             var tempLeaf = leaf.Find(a => a.FieldName.ToLower() == columnName);
                                             var pageInfo = DataSchema.GetTableCount(tempLeaf, item);
 
@@ -82,7 +85,7 @@ namespace FastEtlService.core
 
                                                     //字典对照
                                                     if (!string.IsNullOrEmpty(tempLeaf.Dic))
-                                                        dtRow[columnName] = FastRead.Query<Data_Dic_Details>(a => a.Value.ToLower() == dtRow[columnName].ToStr().ToLower() && a.DicId == tempLeaf.Dic, a => new { a.ContrastValue }).ToDic(db).GetValue("ContrastValue");
+                                                        dtRow[columnName] = IFast.Query<Data_Dic_Details>(a => a.Value.ToLower() == dtRow[columnName].ToStr().ToLower() && a.DicId == tempLeaf.Dic, a => new { a.ContrastValue }).ToDic(db).GetValue("ContrastValue");
 
                                                     //数据策略
                                                     isAdd = DataSchema.DataPolicy(db, item, dtRow["EtlKey"], columnName, dtRow[columnName]);
@@ -98,7 +101,7 @@ namespace FastEtlService.core
 
                                                             //字典对照
                                                             if (!string.IsNullOrEmpty(tempLeaf.Dic))
-                                                                dtRow[columnName] = FastRead.Query<Data_Dic_Details>(a => a.Value.ToLower() == dtRow[columnName].ToStr().ToLower() && a.DicId == tempLeaf.Dic, a => new { a.ContrastValue }).ToDic(db).GetValue("ContrastValue");
+                                                                dtRow[columnName] = IFast.Query<Data_Dic_Details>(a => a.Value.ToLower() == dtRow[columnName].ToStr().ToLower() && a.DicId == tempLeaf.Dic, a => new { a.ContrastValue }).ToDic(db).GetValue("ContrastValue");
 
                                                             //数据策略
                                                             if (item.Policy == "2")
@@ -118,7 +121,7 @@ namespace FastEtlService.core
 
                                             DataSchema.CloseLink(link);
                                             item.LastUpdateTime = DateTime.Now;
-                                            FastWrite.Update<Data_Business>(item, a => a.Id == item.Id, a => new { a.LastUpdateTime }, db);
+                                                IFast.Update<Data_Business>(item, a => a.Id == item.Id, a => new { a.LastUpdateTime }, db);
                                         }
                                     }
                                     });

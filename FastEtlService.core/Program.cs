@@ -1,6 +1,7 @@
 using FastData.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using FastData.Core.Repository;
 
 namespace FastEtlService.core
 {
@@ -14,6 +15,9 @@ namespace FastEtlService.core
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args).UseSystemd()
-                .ConfigureServices((hostContext, services) =>{services.AddHostedService<Worker>();});
+                .ConfigureServices((hostContext, services) =>{
+                    services.AddHostedService<Worker>();
+                    services.AddSingleton<IFastRepository, FastRepository>();
+                });
     }
 }
