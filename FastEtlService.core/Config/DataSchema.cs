@@ -1,5 +1,6 @@
 ﻿using FastData.Core;
 using FastData.Core.Context;
+using FastData.Core.Repository;
 using FastEtlService.core.DataModel;
 using FastEtlService.core.Model;
 using FastUntility.Core.Base;
@@ -343,20 +344,9 @@ public static class DataSchema
         var sql = "";
         try
         {
-            var type = link.GetValue("type").ToStr();
             var conn = link.GetValue("conn") as DbConnection;
-
-            if (type == AppEtl.DataDbType.Oracle.ToLower())
-                sql = string.Format("select * from {0} where rownum <=1", table);
-
-            if (type == AppEtl.DataDbType.MySql.ToLower())
-                sql = string.Format("select * from {0} where limit 1", table);
-
-            if (type == AppEtl.DataDbType.SqlServer.ToLower())
-                sql = string.Format("select top 1 * from {0}", table);
-
             var cmd = conn.CreateCommand();
-            cmd.CommandText = sql;
+            cmd.CommandText = string.Format("select * from {0} where 1=0", table);
             dt.Load(cmd.ExecuteReader());
         }
         catch(Exception ex)
@@ -593,7 +583,7 @@ public static class DataSchema
     /// 初始化取数据长连接
     /// </summary>
     /// <returns></returns>
-    public static List<Dictionary<string, object>> InitColLink(List<Data_Business_Details> list, DataContext db)
+    public static List<Dictionary<string, object>> InitColLink(List<Data_Business_Details> list, DataContext db,IFastRepository IFast)
     {
         var result = new List<Dictionary<string, object>>();
 
@@ -602,7 +592,7 @@ public static class DataSchema
             if (result.Exists(a => a.GetValue("id").ToStr() == item.DataSourceId))
                 continue;
 
-            var link = FastRead.Query<Data_Source>(a => a.Id == item.DataSourceId).ToItem<Data_Source>(db);
+            var link = IFast.Query<Data_Source>(a => a.Id == item.DataSourceId).ToItem<Data_Source>(db);
 
             if (link.Type.ToLower() == AppEtl.DataDbType.SqlServer.ToLower())
             {
