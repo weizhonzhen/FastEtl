@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using FastData.Core;
 using FastData.Core.Context;
 using FastData.Core.Model;
+using FastData.Core.Repository;
 using FastEtlWeb.DataModel;
 using FastUntility.Core.Base;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,11 @@ namespace FastEtlWeb.Pages
     public class BusinessFormModel : PageModel
     {
         public Data_Business info = new Data_Business();
+        private IFastRepository IFast;
+        public BusinessFormModel(IFastRepository _IFast)
+        {
+            IFast = _IFast;
+        }
 
         /// <summary>
         /// ╪сть
@@ -24,7 +30,7 @@ namespace FastEtlWeb.Pages
             {
                 using (var db = new DataContext(AppEtl.Db))
                 {
-                    info = FastRead.Query<Data_Business>(a => a.Id == id).ToItem<Data_Business>(db);
+                    info = IFast.Query<Data_Business>(a => a.Id == id).ToItem<Data_Business>(db);
                 }
             }
         }
@@ -41,7 +47,7 @@ namespace FastEtlWeb.Pages
             using (var db = new DataContext(AppEtl.Db))
             {
                 db.BeginTrans();
-                if (FastRead.Query<Data_Business>(a => a.Id == item.Id).ToCount(db) == 0)
+                if (IFast.Query<Data_Business>(a => a.Id == item.Id).ToCount(db) == 0)
                 {
                     item.Id = Guid.NewGuid().ToString();
                     info = db.Add(item).writeReturn;
@@ -50,7 +56,7 @@ namespace FastEtlWeb.Pages
                 }
                 else
                 {
-                    var oldTableName = FastRead.Query<Data_Business>(a => a.Id == item.Id, a => new { a.TableName }).ToDic(db).GetValue("TableName").ToStr();
+                    var oldTableName = IFast.Query<Data_Business>(a => a.Id == item.Id, a => new { a.TableName }).ToDic(db).GetValue("TableName").ToStr();
                     info = db.Update<Data_Business>(item, a => a.Id == item.Id).writeReturn;
 
                     if (info.IsSuccess)

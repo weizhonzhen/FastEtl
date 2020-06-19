@@ -6,11 +6,18 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using FastData.Core;
 using FastEtlWeb.DataModel;
 using FastUntility.Core.Base;
+using FastData.Core.Repository;
 
 namespace FastEtlWeb.Pages
 {
     public class DicModel : PageModel
     {
+        private IFastRepository IFast;
+        public DicModel(IFastRepository _IFast)
+        {
+            IFast = _IFast;
+        }
+
         /// <summary>
         /// 列表
         /// </summary>
@@ -25,9 +32,9 @@ namespace FastEtlWeb.Pages
                 page.PageSize = PageSize == 0 ? 10 : PageSize;
                 var list = new FastUntility.Core.Page.PageResult();
                 if (string.IsNullOrEmpty(DicId))
-                    list = FastRead.Query<Data_Dic_Details>(a => a.DicId != null).OrderBy<Data_Dic_Details>(a => new { a.DicId }).ToPage(page, db);
+                    list = IFast.Query<Data_Dic_Details>(a => a.DicId != null).OrderBy<Data_Dic_Details>(a => new { a.DicId }).ToPage(page, db);
                 else
-                    list = FastRead.Query<Data_Dic_Details>(a => a.DicId == DicId).OrderBy<Data_Dic_Details>(a => new { a.DicId }).ToPage(page, db);
+                    list = IFast.Query<Data_Dic_Details>(a => a.DicId == DicId).OrderBy<Data_Dic_Details>(a => new { a.DicId }).ToPage(page, db);
 
                 return new PartialViewResult
                 {
@@ -47,13 +54,13 @@ namespace FastEtlWeb.Pages
                 return new JsonResult(new { success = false, msg = "删除失败" });
             using (var db = new DataContext(AppEtl.Db))
             {
-                if (FastRead.Query<Data_Business_Details>(a => a.Dic == id).ToCount(db) == 0)
+                if (IFast.Query<Data_Business_Details>(a => a.Dic == id).ToCount(db) == 0)
                 {
-                    var dicId = FastRead.Query<Data_Dic_Details>(a => a.Id == id, a => new { a.DicId }).ToDic(db).GetValue("DicId").ToStr();
-                    if (FastWrite.Delete<Data_Dic_Details>(a => a.Id == id, db).IsSuccess)
+                    var dicId = IFast.Query<Data_Dic_Details>(a => a.Id == id, a => new { a.DicId }).ToDic(db).GetValue("DicId").ToStr();
+                    if (IFast.Delete<Data_Dic_Details>(a => a.Id == id, db).IsSuccess)
                     {
-                        if (FastRead.Query<Data_Dic_Details>(a => a.DicId == dicId).ToCount(db) == 0)
-                            FastWrite.Delete<Data_Dic>(a => a.Id == dicId);
+                        if (IFast.Query<Data_Dic_Details>(a => a.DicId == dicId).ToCount(db) == 0)
+                            IFast.Delete<Data_Dic>(a => a.Id == dicId);
                         return new JsonResult(new { success = true, msg = "删除成功" });
                     }
                     else

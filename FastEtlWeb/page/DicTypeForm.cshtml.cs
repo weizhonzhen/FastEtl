@@ -5,11 +5,18 @@ using FastData.Core;
 using FastData.Core.Context;
 using FastEtlWeb.DataModel;
 using FastData.Core.Model;
+using FastData.Core.Repository;
 
 namespace FastEtlWeb.Pages
 {
     public class DicTypeFormModel : PageModel
     {
+        private IFastRepository IFast;
+        public DicTypeFormModel(IFastRepository _IFast)
+        {
+            IFast = _IFast;
+        }
+
         public Data_Dic info = new Data_Dic();
 
         public void OnPost(string id)
@@ -17,7 +24,7 @@ namespace FastEtlWeb.Pages
             using (var db = new DataContext(AppEtl.Db))
             {
                 if (!string.IsNullOrEmpty(id))
-                    info = FastRead.Query<Data_Dic>(a => a.Id == id).ToItem<Data_Dic>(db);
+                    info = IFast.Query<Data_Dic>(a => a.Id == id).ToItem<Data_Dic>(db);
             }
         }
 
@@ -31,7 +38,7 @@ namespace FastEtlWeb.Pages
             var info = new WriteReturn();
             using (var db = new DataContext(AppEtl.Db))
             {
-                if (FastRead.Query<Data_Dic>(a => a.Id == item.Id).ToCount(db) == 0)
+                if (IFast.Query<Data_Dic>(a => a.Id == item.Id).ToCount(db) == 0)
                 {
                     item.Id = Guid.NewGuid().ToString();
                     info = db.Add(item).writeReturn;
@@ -56,9 +63,9 @@ namespace FastEtlWeb.Pages
                 return new JsonResult(new { success = false, msg = "É¾³ýÊ§°Ü" });
             using (var db = new DataContext(AppEtl.Db))
             {
-                if (FastRead.Query<Data_Dic_Details>(a => a.DicId == id).ToCount(db) == 0)
+                if (IFast.Query<Data_Dic_Details>(a => a.DicId == id).ToCount(db) == 0)
                 {
-                    if (FastWrite.Delete<Data_Dic>(a => a.Id == id, db).IsSuccess)
+                    if (IFast.Delete<Data_Dic>(a => a.Id == id, db).IsSuccess)
                         return new JsonResult(new { success = true, msg = "É¾³ý³É¹¦" });
                     else
                         return new JsonResult(new { success = false, msg = "É¾³ýÊ§°Ü" });

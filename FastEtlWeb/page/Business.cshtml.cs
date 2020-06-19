@@ -1,4 +1,3 @@
-using FastData.Core;
 using FastData.Core.Context;
 using FastEtlWeb.DataModel;
 using FastUntility.Core.Base;
@@ -7,11 +6,19 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Oracle.ManagedDataAccess.Client;
 using System.Collections.Generic;
+using FastData.Core.Repository;
+using FastData.Core;
 
 namespace FastEtlWeb.Pages
 {
     public class BusinessModel : PageModel
     {
+        private IFastRepository IFast;
+        public BusinessModel(IFastRepository _IFast)
+        {
+            IFast = _IFast;
+        }
+
         /// <summary>
         /// ÁÐ±í
         /// </summary>
@@ -30,7 +37,7 @@ namespace FastEtlWeb.Pages
                 var param = new List<OracleParameter>();
                 param.Add(new OracleParameter { ParameterName = "TableName", Value = TableName.ToStr().ToUpper() });
                 param.Add(new OracleParameter { ParameterName = "OrderBy", Value = OrderBy });
-                var list = FastMap.QueryPage(page, "Business.List", param.ToArray(), db);
+                var list = IFast.QueryPage(page, "Business.List", param.ToArray(), db);
 
                 return new PartialViewResult
                 {
@@ -50,9 +57,9 @@ namespace FastEtlWeb.Pages
                 return new JsonResult(new { success = false, msg = "É¾³ýÊ§°Ü" });
             using (var db = new DataContext(AppEtl.Db))
             {
-                if (FastRead.Query<Data_Business_Details>(a => a.Id == id).ToCount(db) == 0)
+                if (IFast.Query<Data_Business_Details>(a => a.Id == id).ToCount(db) == 0)
                 {
-                    if (FastWrite.Delete<Data_Business>(a => a.Id == id, db).IsSuccess)
+                    if (IFast.Delete<Data_Business>(a => a.Id == id, db).IsSuccess)
                         return new JsonResult(new { success = true, msg = "É¾³ý³É¹¦" });
                     else
                         return new JsonResult(new { success = false, msg = "É¾³ýÊ§°Ü" });

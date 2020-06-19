@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using FastData.Core;
 using FastData.Core.Context;
 using FastData.Core.Model;
 using FastEtlWeb.Cache;
@@ -10,12 +9,19 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
 using FastUntility.Core.Base;
+using FastData.Core.Repository;
+using FastData.Core;
 
 namespace FastEtlWeb.Pages
 {
     public class BusinessFormListModel : PageModel
     {
         public Data_Business_List info = new Data_Business_List();
+        private IFastRepository IFast;
+        public BusinessFormListModel(IFastRepository _IFast)
+        {
+            IFast = _IFast;
+        }
 
         /// <summary>
         /// 操作
@@ -29,10 +35,10 @@ namespace FastEtlWeb.Pages
 
             using (var db = new DataContext(AppEtl.Db))
             {
-                if (FastRead.Query<Data_Source>(a => a.Id == item.DataId).ToCount(db) == 0)
+                if (IFast.Query<Data_Source>(a => a.Id == item.DataId).ToCount(db) == 0)
                     return new JsonResult(new { success = false, msg = "数据源不存在" });
 
-                var data = FastRead.Query<Data_Source>(a => a.Id == item.DataId).ToItem<Data_Source>(db);               
+                var data = IFast.Query<Data_Source>(a => a.Id == item.DataId).ToItem<Data_Source>(db);               
                 var tableKey = string.Format(AppEtl.CacheKey.Table, data.Host);
                 if (!RedisInfo.Exists(tableKey, AppEtl.CacheDb))
                     DataSchema.InitTable(data, false);

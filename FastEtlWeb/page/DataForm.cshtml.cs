@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using FastEtlWeb.DataModel;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using FastData.Core;
@@ -7,13 +6,19 @@ using FastData.Core.Context;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using FastData.Core.Repository;
 
 namespace FastEtlWeb.Pages
 {
     public class DataFormModel : PageModel
     {
         public Data_Source info = new Data_Source();
-        
+        private IFastRepository IFast;
+        public DataFormModel(IFastRepository _IFast)
+        {
+            IFast = _IFast;
+        }
+
         /// <summary>
         /// ╪сть
         /// </summary>
@@ -24,7 +29,7 @@ namespace FastEtlWeb.Pages
             {
                 using(var db=new DataContext(AppEtl.Db))
                 {
-                    info = FastRead.Query<Data_Source>(a => a.Id == id).ToItem<Data_Source>(db);
+                    info = IFast.Query<Data_Source>(a => a.Id == id).ToItem<Data_Source>(db);
                 }
             }
         }
@@ -57,7 +62,7 @@ namespace FastEtlWeb.Pages
             var info = new WriteReturn();
             using (var db = new DataContext(AppEtl.Db))
             {
-                if (FastRead.Query<Data_Source>(a => a.Id == item.Id).ToCount(db) == 0)
+                if (IFast.Query<Data_Source>(a => a.Id == item.Id).ToCount(db) == 0)
                 {
                     item.Id = Guid.NewGuid().ToString();
                     info = db.Add(item).writeReturn; 

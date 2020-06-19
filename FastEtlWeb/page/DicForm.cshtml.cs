@@ -2,6 +2,7 @@ using System;
 using FastData.Core;
 using FastData.Core.Context;
 using FastData.Core.Model;
+using FastData.Core.Repository;
 using FastEtlWeb.DataModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -11,6 +12,11 @@ namespace FastEtlWeb.Pages
     public class DicFormModel : PageModel
     {
         public Data_Dic_Details info = new Data_Dic_Details();
+        private IFastRepository IFast;
+        public DicFormModel(IFastRepository _IFast)
+        {
+            IFast = _IFast;
+        }
 
         public void OnGet(string id)
         {
@@ -18,7 +24,7 @@ namespace FastEtlWeb.Pages
             {
                 using (var db = new DataContext(AppEtl.Db))
                 {
-                    info = FastRead.Query<Data_Dic_Details>(a => a.Id == id).ToItem<Data_Dic_Details>(db);
+                    info = IFast.Query<Data_Dic_Details>(a => a.Id == id).ToItem<Data_Dic_Details>(db);
                 }
             }
         }
@@ -33,7 +39,7 @@ namespace FastEtlWeb.Pages
             var info = new WriteReturn();
             using (var db = new DataContext(AppEtl.Db))
             {
-                if (FastRead.Query<Data_Dic_Details>(a => a.Id == item.Id).ToCount(db) == 0)
+                if (IFast.Query<Data_Dic_Details>(a => a.Id == item.Id).ToCount(db) == 0)
                 {
                     item.Id = Guid.NewGuid().ToString();
                     info = db.Add(item).writeReturn;

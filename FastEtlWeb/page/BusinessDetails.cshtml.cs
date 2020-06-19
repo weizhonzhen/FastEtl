@@ -12,11 +12,18 @@ using System.Data.Common;
 using FastEtlWeb.Cache;
 using System.ComponentModel.DataAnnotations;
 using FastData.Core.Model;
+using FastData.Core.Repository;
 
 namespace FastEtlWeb.Pages
 {
     public class BusinessDetailsModel : PageModel
     {
+        private IFastRepository IFast;
+        public BusinessDetailsModel(IFastRepository _IFast)
+        {
+            IFast = _IFast;
+        }
+
         public List<Dictionary<string, object>> list = new List<Dictionary<string, object>>();
         public string BusinessId = string.Empty;
         public void OnGet(string id)
@@ -28,7 +35,7 @@ namespace FastEtlWeb.Pages
                 item.ParameterName = "id";
                 item.Value = id;
                 param.Add(item);
-                list = FastMap.Query("Business.Details", param.ToArray(), db);
+                list = IFast.Query("Business.Details", param.ToArray(), db);
                 BusinessId = id;
             }
         }
@@ -44,16 +51,16 @@ namespace FastEtlWeb.Pages
                     temp.ParameterName = "Key";
                     temp.Value = item.Key.ToUpper();
                     param.Add(temp);
-                    var data = FastMap.Query("DropList.Source", param.ToArray(), db);
+                    var data = IFast.Query("DropList.Source", param.ToArray(), db);
                     if (data.Count > 0)
                         return new JsonResult(new { success = true, data = data });
                     else
-                        return new JsonResult(new { success = true, data = FastRead.Query<Data_Source>(a => a.Id != "").Take(10).ToDics(db) });
+                        return new JsonResult(new { success = true, data = IFast.Query<Data_Source>(a => a.Id != "").Take(10).ToDics(db) });
                 }
 
                 if (item.Type.ToLower() == "table")
                 {
-                    var host = FastRead.Query<Data_Source>(a => a.Id == item.HostId, a => new { a.Host }).ToDic(db).GetValue("host").ToStr();
+                    var host = IFast.Query<Data_Source>(a => a.Id == item.HostId, a => new { a.Host }).ToDic(db).GetValue("host").ToStr();
                     var key = string.Format(AppEtl.CacheKey.Table, host);
                     var data = RedisInfo.Get<List<CacheTable>>(key, AppEtl.CacheDb);
                     data = data.FindAll(a => a.Name.ToUpper().Contains(item.Key.ToUpper()));
@@ -65,7 +72,7 @@ namespace FastEtlWeb.Pages
 
                 if (item.Type.ToLower() == "field")
                 {
-                    var host = FastRead.Query<Data_Source>(a => a.Id == item.HostId, a => new { a.Host }).ToDic(db).GetValue("host").ToStr();
+                    var host = IFast.Query<Data_Source>(a => a.Id == item.HostId, a => new { a.Host }).ToDic(db).GetValue("host").ToStr();
                     var key = string.Format(AppEtl.CacheKey.Column, host, item.Table);
                     var data = RedisInfo.Get<List<CacheColumn>>(key, AppEtl.CacheDb);
                     data = data.FindAll(a => a.Name.ToUpper().Contains(item.Key.ToUpper()));
@@ -82,11 +89,11 @@ namespace FastEtlWeb.Pages
                     temp.ParameterName = "Key";
                     temp.Value = item.Key.ToUpper();
                     param.Add(temp);
-                    var data = FastMap.Query("DropList.Dic", param.ToArray(), db);
+                    var data = IFast.Query("DropList.Dic", param.ToArray(), db);
                     if (data.Count > 0)
                         return new JsonResult(new { success = true, data = data });
                     else
-                        return new JsonResult(new { success = true, data = FastRead.Query<Data_Dic>(a => a.Id != "").Take(10).ToDics(db) });
+                        return new JsonResult(new { success = true, data = IFast.Query<Data_Dic>(a => a.Id != "").Take(10).ToDics(db) });
                 }
 
                 return new JsonResult(new { success = false });
@@ -103,16 +110,16 @@ namespace FastEtlWeb.Pages
             var info = new WriteReturn();
             using (var db = new DataContext(AppEtl.Db))
             {
-                var table = FastRead.Query<Data_Business>(a => a.Id == item.Id).ToItem<Data_Business>(db);
-                var source = FastRead.Query<Data_Source>(a => a.Id == item.DataSourceId).ToItem<Data_Source>(db);
+                var table = IFast.Query<Data_Business>(a => a.Id == item.Id).ToItem<Data_Business>(db);
+                var source = IFast.Query<Data_Source>(a => a.Id == item.DataSourceId).ToItem<Data_Source>(db);
                 var key = string.Format(AppEtl.CacheKey.Column, source.Host, item.TableName);
                 var colunm = RedisInfo.Get<List<CacheColumn>>(key, AppEtl.CacheDb).Find(a => a.Name == item.ColumnName);
 
                 db.BeginTrans();
-                if (FastRead.Query<Data_Business_Details>(a => a.FieldId == item.FieldId).ToCount(db) == 0)
+                if (IFast.Query<Data_Business_Details>(a => a.FieldId == item.FieldId).ToCount(db) == 0)
                 {
                     item.FieldId = Guid.NewGuid().ToStr();
-                    info = FastWrite.Add(item);
+                    info = IFast.Add(item);
                     if (info.IsSuccess)
                     {
                         info= DataSchema.AddColumn(db, table, item, colunm, source);
@@ -122,7 +129,7 @@ namespace FastEtlWeb.Pages
                 }
                 else
                 {
-                    info = FastWrite.Update<Data_Business_Details>(item, a => a.FieldId == item.FieldId);
+                    info = IFast.Update<Data_Business_Details>(item, a => a.FieldId == item.FieldId);
                     if (info.IsSuccess)
                     {
                         info.IsSuccess = DataSchema.UpdateColumn(db, table, item, colunm, source);
@@ -153,14 +160,14 @@ namespace FastEtlWeb.Pages
         {
             using (var db = new DataContext(AppEtl.Db))
             {
-                if (FastRead.Query<Data_Business_Details>(a => a.FieldId == id).ToCount(db) == 0)
+                if (IFast.Query<Data_Business_Details>(a => a.FieldId == id).ToCount(db) == 0)
                     return new JsonResult(new { success = false, msg = "操作失败" });
                 else
                 {
-                    var colunm = FastRead.Query<Data_Business_Details>(a => a.FieldId == id).ToItem<Data_Business_Details>(db);
-                    var table = FastRead.Query<Data_Business>(a => a.Id == colunm.Id).ToItem<Data_Business>(db);
+                    var colunm = IFast.Query<Data_Business_Details>(a => a.FieldId == id).ToItem<Data_Business_Details>(db);
+                    var table = IFast.Query<Data_Business>(a => a.Id == colunm.Id).ToItem<Data_Business>(db);
 
-                    if (DataSchema.DropColumn(db, table, colunm) && FastWrite.Delete<Data_Business_Details>(a => a.FieldId == id).IsSuccess)
+                    if (DataSchema.DropColumn(db, table, colunm) && IFast.Delete<Data_Business_Details>(a => a.FieldId == id).IsSuccess)
                         return new JsonResult(new { success = true, msg = "操作成功" });
                     else
                         return new JsonResult(new { success = false, msg = "操作失败" });
