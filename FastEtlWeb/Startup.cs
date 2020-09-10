@@ -20,8 +20,6 @@ namespace FastEtlWeb
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            FastMap.InstanceMap();
-            FastMap.InstanceTable("FastEtlWeb.DataModel", "FastEtlWeb.dll");
         }
 
         public IConfiguration Configuration { get; }
@@ -33,6 +31,10 @@ namespace FastEtlWeb
             services.AddRazorPages();
             services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
 
+            ServiceContext.Init(new ServiceEngine(services.BuildServiceProvider()));
+            FastMap.InstanceMap();
+            FastMap.InstanceTable("FastEtlWeb.DataModel", "FastEtlWeb.dll");
+            
             services.AddMvc(options =>
             {
                 options.Filters.Add(new CheckFilter());
