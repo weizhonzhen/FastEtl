@@ -2,6 +2,7 @@ using FastData.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using FastData.Core.Repository;
+using FastUntility.Core;
 
 namespace FastEtlService.core
 {
@@ -18,6 +19,7 @@ namespace FastEtlService.core
                 .ConfigureServices((hostContext, services) =>{
                     services.AddHostedService<Worker>();
                     services.AddSingleton<IFastRepository, FastRepository>();
+                    ServiceContext.Init(new ServiceEngine(services.BuildServiceProvider()));
                 });
     }
 }
