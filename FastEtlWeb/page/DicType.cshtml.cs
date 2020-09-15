@@ -10,7 +10,7 @@ namespace FastEtlWeb.Pages
 {
     public class DicTypeModel : PageModel
     {
-        private IFastRepository IFast;
+        private readonly IFastRepository IFast;
         public DicTypeModel(IFastRepository _IFast)
         {
             IFast = _IFast;

@@ -17,7 +17,7 @@ namespace FastEtlWeb.Pages
     public class BusinessFormListModel : PageModel
     {
         public Data_Business_List info = new Data_Business_List();
-        private IFastRepository IFast;
+        private readonly IFastRepository IFast;
         public BusinessFormListModel(IFastRepository _IFast)
         {
             IFast = _IFast;

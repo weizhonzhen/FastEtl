@@ -12,7 +12,7 @@ namespace FastEtlWeb.Pages
     public class DicFormModel : PageModel
     {
         public Data_Dic_Details info = new Data_Dic_Details();
-        private IFastRepository IFast;
+        private readonly IFastRepository IFast;
         public DicFormModel(IFastRepository _IFast)
         {
             IFast = _IFast;

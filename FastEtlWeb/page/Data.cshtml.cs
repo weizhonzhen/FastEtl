@@ -10,7 +10,7 @@ namespace FastEtlWeb.Pages
 {
     public class DataModel : PageModel
     {
-        private IFastRepository IFast;
+        private readonly IFastRepository IFast;
         public DataModel(IFastRepository _IFast)
         {
             IFast = _IFast;

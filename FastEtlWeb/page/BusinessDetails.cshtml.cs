@@ -18,7 +18,7 @@ namespace FastEtlWeb.Pages
 {
     public class BusinessDetailsModel : PageModel
     {
-        private IFastRepository IFast;
+        private readonly IFastRepository IFast;
         public BusinessDetailsModel(IFastRepository _IFast)
         {
             IFast = _IFast;

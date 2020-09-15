@@ -7,13 +7,12 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Oracle.ManagedDataAccess.Client;
 using System.Collections.Generic;
 using FastData.Core.Repository;
-using FastData.Core;
 
 namespace FastEtlWeb.Pages
 {
     public class BusinessModel : PageModel
     {
-        private IFastRepository IFast;
+        private readonly IFastRepository IFast;
         public BusinessModel(IFastRepository _IFast)
         {
             IFast = _IFast;
