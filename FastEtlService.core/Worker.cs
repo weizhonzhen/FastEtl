@@ -14,7 +14,7 @@ namespace FastEtlService.core
 {
     public class Worker : BackgroundService
     {
-        private IFastRepository IFast;
+        private readonly IFastRepository IFast;
         public Worker(IFastRepository _IFast)
         {
             IFast = _IFast;
