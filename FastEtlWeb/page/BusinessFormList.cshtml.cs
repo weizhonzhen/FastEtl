@@ -65,8 +65,8 @@ namespace FastEtlWeb.Pages
                     var columnList = RedisInfo.Get<List<CacheColumn>>(columnKey, AppEtl.CacheDb);
                     var keyName = columnList.Find(a => a.IsKey == true)?.Name;
                     var keyList = columnList.FindAll(a => a.IsKey == true);
-                    foreach (var column in columnList)
-                    {
+                   
+                    columnList.ForEach(column => {
                         var columnModel = new Data_Business_Details();
                         columnModel.FieldId = Guid.NewGuid().ToStr();
                         columnModel.Id = tableModel.Id;
@@ -91,7 +91,7 @@ namespace FastEtlWeb.Pages
                                 DataSchema.UpdateColumnComment(db, tableModel, columnModel, column, data);
                         }
                         result.IsSuccess = true;
-                    }
+                    });
 
                     if (keyList.Count > 1)
                         DataSchema.AddColumnMoreKey(db, tableModel, keyList);
