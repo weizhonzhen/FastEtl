@@ -47,13 +47,12 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
             var typeList = new List<SelectListItem>();
             var list = FastRead.Query<Data_Dic>(a => a.Id != "", null, AppEtl.Db).ToList<Data_Dic>();
 
-            foreach (var item in list)
-            {
-                if (selectValue.ToStr() == item.Id)
-                    typeList.Add(new SelectListItem { Text = item.Name, Value = item.Id, Selected = true });
+            list.ForEach(a => {
+                if (selectValue.ToStr() == a.Id)
+                    typeList.Add(new SelectListItem { Text = a.Name, Value = a.Id, Selected = true });
                 else
-                    typeList.Add(new SelectListItem { Text = item.Name, Value = item.Id});
-            }
+                    typeList.Add(new SelectListItem { Text = a.Name, Value = a.Id });
+            });
 
             return html.DropDownListFor(expression, typeList, htmlAttributes);
         }
@@ -74,11 +73,7 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
             if(isAll)
                 typeList.Add(new SelectListItem { Text = "全部", Value = "" });
 
-            foreach (var item in list)
-            {
-                typeList.Add(new SelectListItem { Text = item.Name, Value = item.Id });
-            }
-           
+            list.ForEach(a => { typeList.Add(new SelectListItem { Text = a.Name, Value = a.Id }); });
             return html.DropDownList(name, typeList, htmlAttributes);
         }
 
@@ -96,10 +91,7 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
             var typeList = new List<SelectListItem>();
             var list = FastRead.Query<Data_Source>(a => a.Id != "", null, AppEtl.Db).ToList<Data_Source>();
 
-            foreach (var item in list)
-            {
-                typeList.Add(new SelectListItem { Text = string.Format("{0}({1}:{2})",item.LinkName,item.Host,item.Port), Value = item.Id });
-            }
+            list.ForEach(a => { typeList.Add(new SelectListItem { Text = string.Format("{0}({1}:{2})", a.LinkName, a.Host, a.Port), Value = a.Id }); });
 
             return html.DropDownListFor(expression, typeList, htmlAttributes);
         }
