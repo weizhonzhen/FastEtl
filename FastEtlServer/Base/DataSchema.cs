@@ -1,4 +1,4 @@
-using FastEtlModel.DataModel;
+﻿using FastEtlModel.DataModel;
 using FastData.Context;
 using FastUntility.Base;
 using System.Collections.Generic;
@@ -474,11 +474,8 @@ namespace FastService.Base
         {
             var sql = new StringBuilder();
             sql.AppendFormat("insert into {0}(", dt.TableName);
-            var list = DataSchema.ColumnList(db, dt.TableName);
-            foreach (var item in list)
-            {
-                sql.AppendFormat("{0},", item.GetValue("name"));
-            }
+            DataSchema.ColumnList(db, dt.TableName).ForEach(a => { sql.AppendFormat("{0},", a.GetValue("name")); });
+
             sql.Append(")").Replace(",)", ")");
             sql.Append("values");
 
@@ -491,7 +488,7 @@ namespace FastService.Base
                 }
                 sql.Append("),").Replace(",)", ")");
             }
-
+                        
             return sql.ToStr().Substring(0, sql.ToStr().Length - 1);
         }
         #endregion
@@ -504,12 +501,11 @@ namespace FastService.Base
         {
             var i = 0;
             var sql = new StringBuilder();
-            var list = DataSchema.ColumnList(db, tableName);
+            var paramList = new List<OracleParameter>();
 
             sql.AppendFormat("insert into {0} values(", tableName);
 
-            foreach (var item in list)
-            {
+            DataSchema.ColumnList(db, tableName).ForEach(item => {
                 sql.AppendFormat(":{0},", item.GetValue("name"));
                 var param = new OracleParameter(item.GetValue("name").ToStr(), GetOracleDbType(item.GetValue("type").ToStr()));
                 param.Direction = ParameterDirection.Input;
@@ -526,9 +522,11 @@ namespace FastService.Base
                 }
 
                 param.Value = pValue;
-                cmd.Parameters.Add(param);
+                paramList.Add(param);
                 i++;
-            }
+            });
+
+            cmd.Parameters.AddRange(paramList.ToArray());
             sql.Append(")");
 
             cmd.CommandText = sql.ToString().Replace(",)", ")");
@@ -548,11 +546,10 @@ namespace FastService.Base
 
             sql1.AppendFormat("insert into {0} (", tableName);
             sql2.Append("select ");
-            foreach (var item in list)
-            {
+            list.ForEach(item => {
                 sql1.AppendFormat("{0},", item.GetValue("name").ToStr());
                 sql2.AppendFormat("tb.{0},", item.GetValue("name").ToStr());
-            }
+            });
             sql1.Append(")");
             sql2.AppendFormat("from @{0} as tb", tableName);
 
@@ -639,8 +636,8 @@ namespace FastService.Base
         public static List<Dictionary<string, object>> InitColLink(List<Data_Business_Details> list, DataContext db)
         {
             var result = new List<Dictionary<string, object>>();
-            foreach (var item in list)
-            {
+            
+            list.ForEach(item => {
                 var link = FastRead.Query<Data_Source>(a => a.Id == item.DataSourceId).ToItem<Data_Source>(db);
 
                 if (link.Type.ToLower() == FastApp.DataDbType.SqlServer.ToLower())
@@ -663,7 +660,6 @@ namespace FastService.Base
                     dic.Add("type", FastApp.DataDbType.MySql.ToLower());
                     result.Add(dic);
                 }
-
                 if (link.Type.ToLower() == FastApp.DataDbType.Oracle.ToLower())
                 {
                     var dic = new Dictionary<string, object>();
@@ -674,7 +670,7 @@ namespace FastService.Base
                     dic.Add("type", FastApp.DataDbType.Oracle.ToLower());
                     result.Add(dic);
                 }
-            }
+            });
             return result;
         }
         #endregion
@@ -686,12 +682,11 @@ namespace FastService.Base
         /// <returns></returns>
         public static void CloseLink(List<Dictionary<string, object>> link)
         {
-            foreach (var item in link)
-            {
-                var conn = item.GetValue("conn") as DbConnection;
+            link.ForEach(a => {
+                var conn = a.GetValue("conn") as DbConnection;
                 conn.Close();
                 conn.Dispose();
-            }
+            });
         }
         #endregion
 
