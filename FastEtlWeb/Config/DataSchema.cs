@@ -399,10 +399,7 @@ public static class DataSchema
     public static WriteReturn AddColumnMoreKey(DataContext db, Data_Business table, List<CacheColumn> list)
     {
         var filedName = "";
-        foreach(var temp in list)
-        {
-            filedName += temp.Name + ",";
-        }
+        list.ForEach(a => { filedName += a.Name + ","; });
         return db.ExecuteSql(string.Format("alter table {0} add constraint {0}_key primary key ({1})", table.TableName, filedName.Substring(0, filedName.Length - 1)), null, false).writeReturn;
     }
 
