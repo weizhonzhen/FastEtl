@@ -1,4 +1,4 @@
-using FastData.Context;
+﻿using FastData.Context;
 using MySql.Data.MySqlClient;
 using Oracle.ManagedDataAccess.Client;
 using FastEtlModel.CacheModel;
