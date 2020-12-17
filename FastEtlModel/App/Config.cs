@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-
-namespace FastApp
+﻿namespace FastApp
 {
     public static class Config
     {
@@ -37,7 +33,7 @@ namespace FastApp
         /// <summary>
         /// mysql
         /// </summary>
-         public readonly static string MySql = "MySql.Data.MySqlClient";
+        public readonly static string MySql = "MySql.Data.MySqlClient";
 
         /// <summary>
         /// sql server
