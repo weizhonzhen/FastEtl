@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 using FastData.Core.Repository;
+using FastUntility.Core;
+using FastRedis.Core.Repository;
 
 namespace FastEtlWeb
 {
@@ -27,6 +29,7 @@ namespace FastEtlWeb
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IFastRepository, FastRepository>();
+            services.AddSingleton<IRedisRepository, RedisRepository>();
             services.AddResponseCompression();
             services.AddRazorPages();
             services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
@@ -34,7 +37,7 @@ namespace FastEtlWeb
             ServiceContext.Init(new ServiceEngine(services.BuildServiceProvider()));
             FastMap.InstanceMap();
             FastMap.InstanceTable("FastEtlWeb.DataModel", "FastEtlWeb.dll");
-            
+
             services.AddMvc(options =>
             {
                 options.Filters.Add(new CheckFilter());
