@@ -1,4 +1,4 @@
-﻿namespace FastEtlService
+﻿namespace FastService
 {
     partial class ProjectInstaller
     {

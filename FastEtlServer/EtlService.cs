@@ -1,4 +1,4 @@
-using FastUntility.Base;
+﻿using FastUntility.Base;
 using System;
 using System.ServiceProcess;
 using System.Timers;
