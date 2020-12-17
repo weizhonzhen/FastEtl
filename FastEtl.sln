@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastEtlWeb", "FastEtlWeb\FastEtlWeb.csproj", "{D7BC1E92-0475-48F7-B1D0-EE1DBEE22C61}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastEtlService.core", "FastEtlService.core\FastEtlService.core.csproj", "{D4A97683-0801-4A02-89DF-A449B0B3A65F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{D7BC1E92-0475-48F7-B1D0-EE1DBEE22C61}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7BC1E92-0475-48F7-B1D0-EE1DBEE22C61}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7BC1E92-0475-48F7-B1D0-EE1DBEE22C61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4A97683-0801-4A02-89DF-A449B0B3A65F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4A97683-0801-4A02-89DF-A449B0B3A65F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4A97683-0801-4A02-89DF-A449B0B3A65F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4A97683-0801-4A02-89DF-A449B0B3A65F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
