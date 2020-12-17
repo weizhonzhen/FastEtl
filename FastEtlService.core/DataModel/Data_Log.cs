@@ -18,7 +18,7 @@ namespace FastEtlService.core.DataModel
         /// <summary>
         /// 业务表名
         /// </summary>
-        [Column(Comments = "业务表名", DataType = "varchar2", Length = 32, IsNull = false)]
+        [Column(Comments = "业务表名", DataType = "varchar2", Length = 64, IsNull = false)]
         public string TableName { get; set; }
 
         /// <summary>
