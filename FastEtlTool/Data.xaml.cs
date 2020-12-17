@@ -104,6 +104,8 @@ namespace FastEtlTool
                                 if (isSuccess)
                                     isSuccess = DataSchema.UpdateTableComment(db, main);
                             }
+                            else
+                                DataSchema.CreateTable(db, main);
                         }
                     }
                 }
