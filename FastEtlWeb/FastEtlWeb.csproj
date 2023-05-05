@@ -9,7 +9,7 @@
     <PackageReference Include="Fast.Data.Core" Version="2.1.8.6" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
     <PackageReference Include="MySql.Data" Version="8.0.20" />
-    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.70" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.180" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.1" />
   </ItemGroup>
 
